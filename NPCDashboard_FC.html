@@ -1,0 +1,1581 @@
+<html>
+    <head>
+        <title>NPC Dashboard</title>
+        <script>
+            var NPC_special = 0;
+            var featIndex = 0;
+            var nsIndex = 0;
+            var immobility = 0;
+            const NPC_Traits_Tables = [
+                [
+                    [0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6],
+                    [0, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 8, 9, 9],
+                    [1, 1, 2, 2, 3, 4, 4, 5, 5, 6, 7, 7, 8, 8, 9, 10, 10, 11, 11, 12],
+                    [1, 2, 3, 3, 4, 5, 6, 6, 7, 8, 9, 9, 10, 11, 12, 12, 13, 14, 15, 15],
+                    [2, 3, 4, 5, 5, 6, 7, 8, 9, 10, 10, 11, 12, 13, 14, 15, 15, 16, 17, 18],
+                    [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
+                    [3, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 22, 23, 24],
+                    [3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27],
+                    [4, 5, 6, 8, 9, 10, 12, 13, 15, 16, 18, 19, 20, 22, 23, 25, 26, 28, 29, 30],
+                    [4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28, 30, 31, 33]
+                ],
+                [
+                    [0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10],
+                    [0, 1, 1, 2, 3, 3, 4, 5, 5, 6, 7, 7, 8, 9, 9, 10, 11, 11, 12, 12],
+                    [0, 1, 2, 3, 3, 4, 5, 6, 6, 7, 8, 9, 9, 10, 11, 12, 12, 13, 14, 15],
+                    [1, 2, 3, 4, 5, 5, 6, 7, 8, 9, 10, 10, 11, 12, 13, 14, 15, 15, 16, 17],
+                    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+                    [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22],
+                    [2, 3, 4, 5, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 19, 20, 21, 22, 23, 25],
+                    [2, 3, 5, 6, 7, 9, 10, 11, 13, 14, 15, 17, 18, 19, 21, 22, 23, 25, 27, 27],
+                    [2, 3, 5, 6, 8, 9, 11, 12, 14, 16, 17, 18, 20, 21, 23, 24, 26, 27, 29, 30],
+                    [3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20, 21, 23, 24, 26, 27, 29, 30, 32]
+                ],
+                [
+                    [0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6],
+                    [0, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 7, 7, 7, 8],
+                    [1, 2, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6, 6, 7, 7,8, 8, 8, 9],
+                    [1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11],
+                    [2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12],
+                    [2, 3, 3, 4, 5, 5, 6, 6, 7, 7, 8, 9, 9, 10, 10, 11, 11, 12, 13, 14],
+                    [3, 4, 4, 5, 6, 7, 7, 8, 8, 9, 10, 10, 11, 11, 12, 13, 13, 14, 14, 15],
+                    [3, 4, 4, 5, 6, 7, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14, 15, 16, 16, 17],
+                    [4, 5, 6, 6, 7, 8, 9, 9, 10, 11, 12, 12, 13, 14, 15, 15, 16, 17, 18, 18],
+                    [4, 5, 6, 7, 8, 8, 9, 10, 11, 12, 12, 13, 14, 15, 16, 16, 17, 18, 19, 20]
+                ],
+                [
+                    [2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12],
+                    [3, 3, 4, 5, 5, 6, 7, 7, 8, 9, 9, 10, 11, 11, 12, 13, 13, 14, 15, 15],
+                    [4, 5, 6, 6, 7, 8, 9, 9, 10, 11, 12, 12, 13, 14, 15, 15, 16, 17, 18, 18],
+                    [5, 6, 7, 8, 9, 10, 10, 11, 12, 13, 14, 15, 15, 16, 17, 18, 19, 20, 20, 21],
+                    [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24],
+                    [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27],
+                    [8, 10, 11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 25, 26, 28, 29, 30],
+                    [9, 11, 12, 13, 14, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29, 31, 32, 33],
+                    [10, 12, 13, 14, 16, 17, 18, 20, 21, 22, 24, 25, 26, 28, 29, 30, 32, 33, 34, 36],
+                    [11, 12,14, 15, 17, 18, 20, 21, 23, 24, 26, 27, 29, 30, 32, 33, 35, 36, 38, 39]
+                ]
+            ];
+
+            function lookupTrait(x, y, z) {
+                return NPC_Traits_Tables[x][y][z];
+            }
+
+            function translateNPCTraitsTables() {
+                    document.getElementById("p_init").innerHTML = lookupTrait(0, (Number(document.getElementById("npc_init").value) -1), (Number(document.getElementById("p_threat_level").value) -1));
+                    document.getElementById("p_atk").innerHTML = lookupTrait(1, (Number(document.getElementById("npc_atk").value) -1), (Number(document.getElementById("p_threat_level").value) -1));
+                    document.getElementById("p_def").innerHTML = lookupTrait(0, (Number(document.getElementById("npc_def").value) -1), (Number(document.getElementById("p_threat_level").value) -1));
+                    document.getElementById("p_fort").innerHTML = lookupTrait(2, (Number(document.getElementById("npc_res").value) -1), (Number(document.getElementById("p_threat_level").value) -1));
+                    document.getElementById("p_ref").innerHTML = lookupTrait(2, (Number(document.getElementById("npc_res").value) -1), (Number(document.getElementById("p_threat_level").value) -1));
+                    document.getElementById("p_wil").innerHTML = lookupTrait(2, (Number(document.getElementById("npc_res").value) -1), (Number(document.getElementById("p_threat_level").value) -1));
+            }
+
+            function setStandard() {
+                NPC_special = 0;
+            }
+
+            function setSpecial() {
+                NPC_special = 1;
+            }
+
+            function toggleSection(sectionName) { 
+                if (document.getElementById(sectionName).style.display=="none") {
+                    document.getElementById(sectionName).style.display="block";
+                }
+                else document.getElementById(sectionName).style.display="none";
+            }
+
+            function togglePlay() { 
+                if (document.getElementById("edit").checked==true) {
+                    document.getElementById("editSection").style.display="block";
+                    document.getElementById("playSection").style.display="none";
+                }
+                else if (document.getElementById("play").checked==true) {
+                    document.getElementById("playSection").style.display="block";
+                    document.getElementById("editSection").style.display="none";
+
+                    //Set size
+                    document.getElementById("p_size").innerHTML = document.getElementById("sizeList").value;
+
+                    //Assemble type definition
+                    var play_type = '|';
+                    if (document.getElementById("ty_animal").checked) { play_type += "Animal|";}
+                    if (document.getElementById("ty_beast").checked) { play_type += "Beast|";}
+                    if (document.getElementById("ty_construct").checked) { play_type += "Construct|";}
+                    if (document.getElementById("ty_elemental").checked) { play_type += "Elemental|";}
+                    if (document.getElementById("ty_fey").checked) { play_type += "Fey|";}
+                    if (document.getElementById("ty_folk").checked) { play_type += "Folk|";}
+                    if (document.getElementById("ty_horror").checked) { play_type += "Horror|";}
+                    if (document.getElementById("ty_ooze").checked) { play_type += "Ooze|";}
+                    if (document.getElementById("ty_outsider").checked) { play_type += "Outsider|";}
+                    if (document.getElementById("ty_plant").checked) { play_type += "Plant|";}
+                    if (document.getElementById("ty_spirit").checked) { play_type += "Spirit|";}
+                    if (document.getElementById("ty_undead").checked) { play_type += "Undead|";}
+
+                    //Set type definition
+                    document.getElementById("p_type").innerHTML = play_type;
+
+                    //Set XP value
+                    document.getElementById("p_XPTotal").innerHTML = Number(document.getElementById("xp_num").innerHTML) * Number(document.getElementById("p_threat_level").value);
+
+                    //Set attributes
+                    document.getElementById("p_str").innerHTML = Number(document.getElementById("npc_str").value);
+                    document.getElementById("p_dex").innerHTML = Number(document.getElementById("npc_dex").value);
+                    document.getElementById("p_con").innerHTML = Number(document.getElementById("npc_con").value);
+                    document.getElementById("p_int").innerHTML = Number(document.getElementById("npc_int").value);
+                    document.getElementById("p_wis").innerHTML = Number(document.getElementById("npc_wis").value);
+                    document.getElementById("p_cha").innerHTML = Number(document.getElementById("npc_cha").value);
+
+                    //Set traits
+                    translateNPCTraitsTables();
+
+                    //Set health
+                    if (NPC_special == 0) {
+                        document.getElementById("dam_save_mod").innerHTML = 0;
+                    }
+                }
+            }
+            
+            function calcTypeXP() {
+                var typePoints = 0;
+                if (document.getElementById("ty_animal").checked) { typePoints += Number(document.getElementById("ty_animal").value);}
+                if (document.getElementById("ty_beast").checked) { typePoints += Number(document.getElementById("ty_beast").value);}
+                if (document.getElementById("ty_construct").checked) { typePoints += Number(document.getElementById("ty_construct").value);}
+                if (document.getElementById("ty_elemental").checked) { typePoints += Number(document.getElementById("ty_elemental").value);}
+                if (document.getElementById("ty_fey").checked) { typePoints += Number(document.getElementById("ty_fey").value);}
+                if (document.getElementById("ty_folk").checked) { typePoints += Number(document.getElementById("ty_folk").value);}
+                if (document.getElementById("ty_horror").checked) { typePoints += Number(document.getElementById("ty_horror").value);}
+                if (document.getElementById("ty_ooze").checked) { typePoints += Number(document.getElementById("ty_ooze").value);}
+                if (document.getElementById("ty_outsider").checked) { typePoints += Number(document.getElementById("ty_outsider").value);}
+                if (document.getElementById("ty_plant").checked) { typePoints += Number(document.getElementById("ty_plant").value);}
+                if (document.getElementById("ty_spirit").checked) { typePoints += Number(document.getElementById("ty_spirit").value);}
+                if (document.getElementById("ty_undead").checked) { typePoints += Number(document.getElementById("ty_undead").value);}
+                document.getElementById("typeXP").innerHTML = typePoints;
+                return typePoints;
+            }
+
+            function calcMobilityXP() {
+                var mobilityPoints = 0;                
+                
+                var wSpd = (Number(document.getElementById("walker_spd").value)) / 10;
+                var bSpd = (Number(document.getElementById("burrower_spd").value)) / 10;
+                var fSpd = (Number(document.getElementById("flyer_spd").value)) / 10;
+                var sSpd = (Number(document.getElementById("swimmer_spd").value)) / 10;
+                
+                if (immobility == 1) {
+                    mobilityPoints = -5;
+                }
+
+                document.getElementById("mobilityXP").innerHTML = mobilityPoints;
+
+                return mobilityPoints;
+            }
+
+            function calcAttributesXP() {
+                //Reset points
+                var attributesPoints = 0;
+                //Get scores
+                var nStr = Number(document.getElementById("npc_str").value);
+                var nDex = Number(document.getElementById("npc_dex").value);
+                var nCon = Number(document.getElementById("npc_con").value);
+                var nInt = Number(document.getElementById("npc_int").value);
+                var nWis = Number(document.getElementById("npc_wis").value);
+                var nCha = Number(document.getElementById("npc_cha").value);
+
+                //If scores are less than 10, XP value for the score is set to 0. Otherwise set points to score - 10.
+                nStr = (nStr < 11) ? 0 : (nStr - 10);
+                nDex = (nDex < 11) ? 0 : (nDex - 10);
+                nCon = (nCon < 11) ? 0 : (nCon - 10);
+                nInt = (nInt < 11) ? 0 : (nInt - 10);
+                nWis = (nWis < 11) ? 0 : (nWis - 10);
+                nCha = (nCha < 11) ? 0 : (nCha - 10);
+
+                //Set AttributesPoints
+                attributesPoints = (nStr + nDex + nCon + nInt + nWis + nCha);
+                document.getElementById("attributeXP").innerHTML = attributesPoints;
+
+                //Return sum of scores
+                return attributesPoints;
+            }
+
+            function calcTraitsXP() {
+                var traitsPoints = 5;
+
+                //Get trait scores
+                var i = Number(document.getElementById("npc_init").value);
+                var a = Number(document.getElementById("npc_atk").value);
+                var d = Number(document.getElementById("npc_def").value);
+                var r = Number(document.getElementById("npc_res").value);
+                var c = Number(document.getElementById("npc_comp").value);
+
+                //Set traitsPoints
+                traitsPoints = Number(i + a + d + r + c);
+                document.getElementById("traitsXP").innerHTML = traitsPoints;
+
+                //Return sum of scores
+                return traitsPoints;
+            }
+
+            function calcHealthXP() {
+                var healthPoints = 1; //default value
+
+                //Get health score
+                var h = Number(document.getElementById("npc_hg").value);
+
+                //Set healthPoints
+                healthPoints = h;
+                document.getElementById("healthXP").innerHTML = healthPoints;
+
+                //Return sum of scores
+                return healthPoints;
+            }
+
+            function calcSSXP() {
+                var ssPoints = 0; //default value
+
+                //Get signature skill scores and add them to ssPoints.
+                ssPoints = (Number(document.getElementById("npc_ss_acr").value) 
+                + Number(document.getElementById("npc_ss_ath").value) 
+                + Number(document.getElementById("npc_ss_ble").value) 
+                + Number(document.getElementById("npc_ss_blu").value) 
+                + Number(document.getElementById("npc_ss_cra").value)
+                + Number(document.getElementById("npc_ss_dis").value)
+                + Number(document.getElementById("npc_ss_hag").value)
+                + Number(document.getElementById("npc_ss_imp").value)
+                + Number(document.getElementById("npc_ss_int").value)
+                + Number(document.getElementById("npc_ss_inv").value)
+                + Number(document.getElementById("npc_ss_med").value)
+                + Number(document.getElementById("npc_ss_not").value)
+                + Number(document.getElementById("npc_ss_pre").value)
+                + Number(document.getElementById("npc_ss_res").value)
+                + Number(document.getElementById("npc_ss_rid").value)
+                + Number(document.getElementById("npc_ss_sea").value)
+                + Number(document.getElementById("npc_ss_sen").value)
+                + Number(document.getElementById("npc_ss_sne").value)
+                + Number(document.getElementById("npc_ss_spe").value)
+                + Number(document.getElementById("npc_ss_sur").value)
+                + Number(document.getElementById("npc_ss_tac").value));
+
+                //Set healthPoints
+                document.getElementById("signatureSkillXP").innerHTML = ssPoints;
+
+                //Return sum of scores
+                return ssPoints;
+            }
+
+            function calcQualitiesXP() {
+                var qualityPoints = 0; //Default value
+
+                //Get quality scores
+                if (document.getElementById("npc_qual_ah").checked) { qualityPoints += Number(document.getElementById("npc_qual_ah").value);}
+                if (document.getElementById("npc_qual_ar").checked) { qualityPoints += Number(document.getElementById("npc_qual_ar").value);}
+                if (document.getElementById("npc_qual_aq").checked && document.getElementById("npc_qual_aq1").selected) { qualityPoints += Number(document.getElementById("npc_qual_aq1").value);}
+                if (document.getElementById("npc_qual_aq").checked && document.getElementById("npc_qual_aq2").selected) { qualityPoints += Number(document.getElementById("npc_qual_aq2").value);}
+                if (document.getElementById("npc_qual_at").checked && document.getElementById("npc_qual_at1").selected) { qualityPoints += Number(document.getElementById("npc_qual_at1").value);}
+                if (document.getElementById("npc_qual_at").checked && document.getElementById("npc_qual_at2").selected) { qualityPoints += Number(document.getElementById("npc_qual_at2").value);}
+                if (document.getElementById("npc_qual_at").checked && document.getElementById("npc_qual_at3").selected) { qualityPoints += Number(document.getElementById("npc_qual_at3").value);}
+                if (document.getElementById("npc_qual_at").checked && document.getElementById("npc_qual_at4").selected) { qualityPoints += Number(document.getElementById("npc_qual_at4").value);}
+                if (document.getElementById("npc_qual_at").checked && document.getElementById("npc_qual_at5").selected) { qualityPoints += Number(document.getElementById("npc_qual_at5").value);}
+                if (document.getElementById("npc_qual_at").checked && document.getElementById("npc_qual_at6").selected) { qualityPoints += Number(document.getElementById("npc_qual_at6").value);}
+                if (document.getElementById("npc_qual_at").checked && document.getElementById("npc_qual_at7").selected) { qualityPoints += Number(document.getElementById("npc_qual_at7").value);}
+                if (document.getElementById("npc_qual_at").checked && document.getElementById("npc_qual_at8").selected) { qualityPoints += Number(document.getElementById("npc_qual_at8").value);}
+                if (document.getElementById("npc_qual_at").checked && document.getElementById("npc_qual_at9").selected) { qualityPoints += Number(document.getElementById("npc_qual_at9").value);}
+                if (document.getElementById("npc_qual_at").checked && document.getElementById("npc_qual_at10").selected) { qualityPoints += Number(document.getElementById("npc_qual_at10").value);}
+                if (document.getElementById("npc_qual_ba").checked) { qualityPoints += Number(document.getElementById("npc_qual_ba").value);}
+                if (document.getElementById("npc_qual_bat").checked) { qualityPoints += Number(document.getElementById("npc_qual_bat").value);}
+                if (document.getElementById("npc_qual_be").checked) { qualityPoints += Number(document.getElementById("npc_qual_be").value);}
+                if (document.getElementById("npc_qual_bl").checked) { qualityPoints += Number(document.getElementById("npc_qual_bl").value);}
+                if (document.getElementById("npc_qual_br").checked) { qualityPoints += Number(document.getElementById("npc_qual_br").value);}
+                if (document.getElementById("npc_qual_boa").checked) { qualityPoints += Number(document.getElementById("npc_qual_boa").value);}
+                if (document.getElementById("npc_qual_ca").checked && document.getElementById("npc_qual_ca1").selected) { qualityPoints += Number(document.getElementById("npc_qual_ca1").value);}
+                if (document.getElementById("npc_qual_ca").checked && document.getElementById("npc_qual_ca2").selected) { qualityPoints += Number(document.getElementById("npc_qual_ca2").value);}
+                if (document.getElementById("npc_qual_ca").checked && document.getElementById("npc_qual_ca3").selected) { qualityPoints += Number(document.getElementById("npc_qual_ca3").value);}
+                if (document.getElementById("npc_qual_ca").checked && document.getElementById("npc_qual_ca4").selected) { qualityPoints += Number(document.getElementById("npc_qual_ca4").value);}
+                if (document.getElementById("npc_qual_ca").checked && document.getElementById("npc_qual_ca5").selected) { qualityPoints += Number(document.getElementById("npc_qual_ca5").value);}
+                if (document.getElementById("npc_qual_ca").checked && document.getElementById("npc_qual_ca6").selected) { qualityPoints += Number(document.getElementById("npc_qual_ca6").value);}
+                if (document.getElementById("npc_qual_ca").checked && document.getElementById("npc_qual_ca7").selected) { qualityPoints += Number(document.getElementById("npc_qual_ca7").value);}
+                if (document.getElementById("npc_qual_ca").checked && document.getElementById("npc_qual_ca8").selected) { qualityPoints += Number(document.getElementById("npc_qual_ca8").value);}
+                if (document.getElementById("npc_qual_ca").checked && document.getElementById("npc_qual_ca9").selected) { qualityPoints += Number(document.getElementById("npc_qual_ca9").value);}
+                if (document.getElementById("npc_qual_ca").checked && document.getElementById("npc_qual_ca10").selected) { qualityPoints += Number(document.getElementById("npc_qual_ca10").value);}
+                if (document.getElementById("npc_qual_ch1_aq").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch1_aq").value);}
+                if (document.getElementById("npc_qual_ch1_ar").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch1_ar").value);}
+                if (document.getElementById("npc_qual_ch1_cm").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch1_cm").value);}
+                if (document.getElementById("npc_qual_ch1_de").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch1_de").value);}
+                if (document.getElementById("npc_qual_ch1_fj").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch1_fj").value);}
+                if (document.getElementById("npc_qual_ch1_is").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch1_is").value);}
+                if (document.getElementById("npc_qual_ch1_pl").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch1_pl").value);}
+                if (document.getElementById("npc_qual_ch1_sw").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch1_sw").value);}
+                if (document.getElementById("npc_qual_ch2_aq").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch2_aq").value);}
+                if (document.getElementById("npc_qual_ch2_ar").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch2_ar").value);}
+                if (document.getElementById("npc_qual_ch2_cm").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch2_cm").value);}
+                if (document.getElementById("npc_qual_ch2_de").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch2_de").value);}
+                if (document.getElementById("npc_qual_ch2_fj").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch2_fj").value);}
+                if (document.getElementById("npc_qual_ch2_is").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch2_is").value);}
+                if (document.getElementById("npc_qual_ch2_pl").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch2_pl").value);}
+                if (document.getElementById("npc_qual_ch2_sw").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch2_sw").value);}
+                if (document.getElementById("npc_qual_chat").checked) { qualityPoints += Number(document.getElementById("npc_qual_chat").value);}
+                if (document.getElementById("npc_qual_clab").checked) { qualityPoints += Number(document.getElementById("npc_qual_clab").value);}
+                if (document.getElementById("npc_qual_cl").checked) { qualityPoints += Number(document.getElementById("npc_qual_cl").value);}
+                if (document.getElementById("npc_qual_cb").checked) { qualityPoints += Number(document.getElementById("npc_qual_cb").value);}
+                if (document.getElementById("npc_qual_ci").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci").value);}
+                if (document.getElementById("npc_qual_ci_baf").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_baf").value);}
+                if (document.getElementById("npc_qual_ci_ble").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_ble").value);}
+                if (document.getElementById("npc_qual_ci_bli").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_bli").value);}
+                if (document.getElementById("npc_qual_ci_dea").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_dea").value);}
+                if (document.getElementById("npc_qual_ci_enr").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_enr").value);}
+                if (document.getElementById("npc_qual_ci_ent").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_ent").value);}
+                if (document.getElementById("npc_qual_ci_fat").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_fat").value);}
+                if (document.getElementById("npc_qual_ci_fix").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_fix").value);}
+                if (document.getElementById("npc_qual_ci_fla").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_fla").value);}
+                if (document.getElementById("npc_qual_ci_ffo").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_ffo").value);}
+                if (document.getElementById("npc_qual_ci_fri").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_fri").value);}
+                if (document.getElementById("npc_qual_ci_hel").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_hel").value);}
+                if (document.getElementById("npc_qual_ci_hlp").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_hlp").value);}
+                if (document.getElementById("npc_qual_ci_hid").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_hid").value);}
+                if (document.getElementById("npc_qual_ci_inc").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_inc").value);}
+                if (document.getElementById("npc_qual_ci_inv").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_inv").value);}
+                if (document.getElementById("npc_qual_ci_par").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_par").value);}
+                if (document.getElementById("npc_qual_ci_pin").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_pin").value);}
+                if (document.getElementById("npc_qual_ci_pro").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_pro").value);}
+                if (document.getElementById("npc_qual_ci_sha").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_sha").value);}
+                if (document.getElementById("npc_qual_ci_sic").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_sic").value);}
+                if (document.getElementById("npc_qual_ci_slo").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_slo").value);}
+                if (document.getElementById("npc_qual_ci_spr").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_spr").value);}
+                if (document.getElementById("npc_qual_ci_stu").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_stu").value);}
+                if (document.getElementById("npc_qual_conim").checked) { qualityPoints += Number(document.getElementById("npc_qual_conim").value);}
+                if (document.getElementById("npc_qual_conv").checked) { qualityPoints += Number(document.getElementById("npc_qual_conv").value);}
+                if (document.getElementById("npc_qual_crithes").checked) { qualityPoints += Number(document.getElementById("npc_qual_crithes").value);}
+                if (document.getElementById("npc_qual_critsur").checked) { qualityPoints += Number(document.getElementById("npc_qual_critsur").value);}
+                if (document.getElementById("npc_qual_dd_ac").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_ac").value);}
+                if (document.getElementById("npc_qual_dd_ba").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_ba").value);}
+                if (document.getElementById("npc_qual_dd_co").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_co").value);}
+                if (document.getElementById("npc_qual_dd_di").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_di").value);}
+                if (document.getElementById("npc_qual_dd_el").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_el").value);}
+                if (document.getElementById("npc_qual_dd_ex").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_ex").value);}
+                if (document.getElementById("npc_qual_dd_fi").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_fi").value);}
+                if (document.getElementById("npc_qual_dd_fl").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_fl").value);}
+                if (document.getElementById("npc_qual_dd_fo").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_fo").value);}
+                if (document.getElementById("npc_qual_dd_he").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_he").value);}
+                if (document.getElementById("npc_qual_dd_sa").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_sa").value);}
+                if (document.getElementById("npc_qual_dd_so").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_so").value);}
+                if (document.getElementById("npc_qual_dd_st").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_st").value);}
+                if (document.getElementById("npc_qual_dd_su").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_su").value);}
+                if (document.getElementById("npc_qual_dd_le").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_le").value);}
+                if (document.getElementById("npc_qual_di_ac").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_ac").value);}
+                if (document.getElementById("npc_qual_di_ba").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_ba").value);}
+                if (document.getElementById("npc_qual_di_co").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_co").value);}
+                if (document.getElementById("npc_qual_di_di").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_di").value);}
+                if (document.getElementById("npc_qual_di_el").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_el").value);}
+                if (document.getElementById("npc_qual_di_ex").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_ex").value);}
+                if (document.getElementById("npc_qual_di_fi").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_fi").value);}
+                if (document.getElementById("npc_qual_di_fl").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_fl").value);}
+                if (document.getElementById("npc_qual_di_fo").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_fo").value);}
+                if (document.getElementById("npc_qual_di_he").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_he").value);}
+                if (document.getElementById("npc_qual_di_sa").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_sa").value);}
+                if (document.getElementById("npc_qual_di_so").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_so").value);}
+                if (document.getElementById("npc_qual_di_st").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_st").value);}
+                if (document.getElementById("npc_qual_di_su").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_su").value);}
+                if (document.getElementById("npc_qual_di_le").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_le").value);}
+                if (document.getElementById("npc_qual_dv").checked && document.getElementById("npc_qual_dv1").selected) { qualityPoints += Number(document.getElementById("npc_qual_dv1").value);}
+                if (document.getElementById("npc_qual_dv").checked && document.getElementById("npc_qual_dv2").selected) { qualityPoints += Number(document.getElementById("npc_qual_dv2").value);}
+                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_le").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_le").value);}
+                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_ac").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_ac").value);}
+                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_ba").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_ba").value);}
+                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_co").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_co").value);}
+                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_di").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_di").value);}
+                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_el").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_el").value);}
+                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_ex").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_ex").value);}
+                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_fi").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_fi").value);}
+                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_fl").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_fl").value);}
+                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_fo").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_fo").value);}
+                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_he").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_he").value);}
+                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_sa").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_sa").value);}
+                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_so").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_so").value);}
+                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_st").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_st").value);}
+                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_su").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_su").value);}
+                if (document.getElementById("npc_qual_dev").checked && document.getElementById("npc_qual_dev1").selected) { qualityPoints += Number(document.getElementById("npc_qual_dev1").value);}
+                if (document.getElementById("npc_qual_dev").checked && document.getElementById("npc_qual_dev2").selected) { qualityPoints += Number(document.getElementById("npc_qual_dev2").value);}
+                if (document.getElementById("npc_qual_dev").checked && document.getElementById("npc_qual_dev3").selected) { qualityPoints += Number(document.getElementById("npc_qual_dev3").value);}
+                if (document.getElementById("npc_qual_dev").checked && document.getElementById("npc_qual_dev4").selected) { qualityPoints += Number(document.getElementById("npc_qual_dev4").value);}
+                if (document.getElementById("npc_qual_dev").checked && document.getElementById("npc_qual_dev5").selected) { qualityPoints += Number(document.getElementById("npc_qual_dev5").value);}
+                if (document.getElementById("npc_qual_exp_acr").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_acr").value);}
+                if (document.getElementById("npc_qual_exp_ath").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_ath").value);}
+                if (document.getElementById("npc_qual_exp_ble").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_ble").value);}
+                if (document.getElementById("npc_qual_exp_blu").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_blu").value);}
+                if (document.getElementById("npc_qual_exp_cra").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_cra").value);}
+                if (document.getElementById("npc_qual_exp_dis").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_dis").value);}
+                if (document.getElementById("npc_qual_exp_hag").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_hag").value);}
+                if (document.getElementById("npc_qual_exp_imp").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_imp").value);}
+                if (document.getElementById("npc_qual_exp_int").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_int").value);}
+                if (document.getElementById("npc_qual_exp_inv").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_inv").value);}
+                if (document.getElementById("npc_qual_exp_med").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_med").value);}
+                if (document.getElementById("npc_qual_exp_not").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_not").value);}
+                if (document.getElementById("npc_qual_exp_pre").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_pre").value);}
+                if (document.getElementById("npc_qual_exp_res").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_res").value);}
+                if (document.getElementById("npc_qual_exp_rid").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_rid").value);}
+                if (document.getElementById("npc_qual_exp_sea").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_sea").value);}
+                if (document.getElementById("npc_qual_exp_sen").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_sen").value);}
+                if (document.getElementById("npc_qual_exp_sne").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_sne").value);}
+                if (document.getElementById("npc_qual_exp_spe").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_spe").value);}
+                if (document.getElementById("npc_qual_exp_sur").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_sur").value);}
+                if (document.getElementById("npc_qual_exp_tac").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_tac").value);}
+                if (document.getElementById("npc_qual_fh").checked) { qualityPoints += Number(document.getElementById("npc_qual_fh").value);}
+                if (document.getElementById("npc_qual_ff").checked) { qualityPoints += Number(document.getElementById("npc_qual_ff").value);}
+                if (document.getElementById("npc_qual_faf_an").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_an").value);}
+                if (document.getElementById("npc_qual_faf_be").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_be").value);}
+                if (document.getElementById("npc_qual_faf_co").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_co").value);}
+                if (document.getElementById("npc_qual_faf_el").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_el").value);}
+                if (document.getElementById("npc_qual_faf_fe").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_fe").value);}
+                if (document.getElementById("npc_qual_faf_fo").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_fo").value);}
+                if (document.getElementById("npc_qual_faf_ho").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_ho").value);}
+                if (document.getElementById("npc_qual_faf_oo").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_oo").value);}
+                if (document.getElementById("npc_qual_faf_ou").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_ou").value);}
+                if (document.getElementById("npc_qual_faf_pl").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_pl").value);}
+                if (document.getElementById("npc_qual_faf_sp").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_sp").value);}
+                if (document.getElementById("npc_qual_faf_un").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_un").value);}
+                if (document.getElementById("npc_qual_fl").checked && document.getElementById("npc_qual_fl1").selected) { qualityPoints += Number(document.getElementById("npc_qual_fl1").value);}
+                if (document.getElementById("npc_qual_fl").checked && document.getElementById("npc_qual_fl2").selected) { qualityPoints += Number(document.getElementById("npc_qual_fl2").value);}
+                if (document.getElementById("npc_qual_feat").checked) { qualityPoints += Number(document.getElementById("featNum").innerHTML) * 2;}                
+                if (document.getElementById("npc_qual_fera").checked) { qualityPoints += Number(document.getElementById("npc_qual_fera").value);}
+                if (document.getElementById("npc_qual_fero").checked) { qualityPoints += Number(document.getElementById("npc_qual_fero").value);}
+                if (document.getElementById("npc_qual_fz").checked && document.getElementById("npc_qual_fz1").selected) { qualityPoints += Number(document.getElementById("npc_qual_fz1").value);}
+                if (document.getElementById("npc_qual_fz").checked && document.getElementById("npc_qual_fz2").selected) { qualityPoints += Number(document.getElementById("npc_qual_fz2").value);}
+                if (document.getElementById("npc_qual_fz").checked && document.getElementById("npc_qual_fz3").selected) { qualityPoints += Number(document.getElementById("npc_qual_fz3").value);}
+                if (document.getElementById("npc_qual_grap").checked) { qualityPoints += Number(document.getElementById("npc_qual_grap").value);}
+                if (document.getElementById("npc_qual_gru").checked) { qualityPoints += Number(document.getElementById("npc_qual_gru").value);}
+                if (document.getElementById("npc_qual_hm").checked) { qualityPoints += Number(document.getElementById("npc_qual_hm").value);}
+                if (document.getElementById("npc_qual_ho").checked) { qualityPoints += Number(document.getElementById("npc_qual_ho").value);}
+                if (document.getElementById("npc_qual_is_vi").checked) { qualityPoints += Number(document.getElementById("npc_qual_is_vi").value);}
+                if (document.getElementById("npc_qual_is_he").checked) { qualityPoints += Number(document.getElementById("npc_qual_is_he").value);}
+                if (document.getElementById("npc_qual_is_sc").checked) { qualityPoints += Number(document.getElementById("npc_qual_is_sc").value);}
+                if (document.getElementById("npc_qual_icc").checked) { qualityPoints += Number(document.getElementById("npc_qual_icc").value);}
+                if (document.getElementById("npc_qual_irs_vi").checked) { qualityPoints += Number(document.getElementById("npc_qual_irs_vi").value);}
+                if (document.getElementById("npc_qual_irs_he").checked) { qualityPoints += Number(document.getElementById("npc_qual_irs_he").value);}
+                if (document.getElementById("npc_qual_irs_sc").checked) { qualityPoints += Number(document.getElementById("npc_qual_irs_sc").value);}
+                if (document.getElementById("npc_qual_imp_stab").checked) { qualityPoints += Number(document.getElementById("npc_qual_imp_stab").value);}
+                if (document.getElementById("npc_qual_int").checked) { qualityPoints += Number(document.getElementById("npc_qual_int").value);}
+                if (document.getElementById("npc_qual_inv").checked) { qualityPoints += Number(document.getElementById("npc_qual_inv").value);}
+                if (document.getElementById("npc_qual_kb").checked) { qualityPoints += Number(document.getElementById("npc_qual_kb").value);}
+                if (document.getElementById("npc_qual_lse").checked) { qualityPoints += Number(document.getElementById("npc_qual_lse").value);}
+                if (document.getElementById("npc_qual_lsl").checked) { qualityPoints += Number(document.getElementById("npc_qual_lsl").value);}
+                if (document.getElementById("npc_qual_lum").checked) { qualityPoints += Number(document.getElementById("npc_qual_lum").value);}
+                if (document.getElementById("npc_qual_me").checked) { qualityPoints += Number(document.getElementById("npc_qual_me").value);}
+                if (document.getElementById("npc_qual_men").checked) { qualityPoints += Number(document.getElementById("npc_qual_men").value);}
+                if (document.getElementById("npc_qual_moo").checked) { qualityPoints += Number(document.getElementById("npc_qual_moo").value);}
+                if (document.getElementById("npc_qual_ma").checked && document.getElementById("npc_qual_ma1").selected) { qualityPoints += Number(document.getElementById("npc_qual_ma1").value);}
+                if (document.getElementById("npc_qual_ma").checked && document.getElementById("npc_qual_ma2").selected) { qualityPoints += Number(document.getElementById("npc_qual_ma2").value);}
+                if (document.getElementById("npc_qual_ma").checked && document.getElementById("npc_qual_ma3").selected) { qualityPoints += Number(document.getElementById("npc_qual_ma3").value);}
+                if (document.getElementById("npc_qual_ma").checked && document.getElementById("npc_qual_ma4").selected) { qualityPoints += Number(document.getElementById("npc_qual_ma4").value);}
+                if (document.getElementById("npc_qual_ma").checked && document.getElementById("npc_qual_ma5").selected) { qualityPoints += Number(document.getElementById("npc_qual_ma5").value);}
+                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_le").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_le").value);}
+                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_ac").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_ac").value);}
+                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_ba").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_ba").value);}
+                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_co").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_co").value);}
+                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_di").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_di").value);}
+                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_el").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_el").value);}
+                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_ex").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_ex").value);}
+                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_fi").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_fi").value);}
+                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_fl").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_fl").value);}
+                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_fo").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_fo").value);}
+                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_he").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_he").value);}
+                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_sa").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_sa").value);}
+                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_so").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_so").value);}
+                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_st").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_st").value);}
+                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_su").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_su").value);}
+                if (document.getElementById("npc_qual_ns").checked) { qualityPoints += Number(document.getElementById("nsTotalLevels").innerHTML);}
+                if (document.getElementById("npc_qual_no").checked) { qualityPoints += Number(document.getElementById("npc_qual_no").value);}
+                if (document.getElementById("npc_qual_nb").checked) { qualityPoints += Number(document.getElementById("npc_qual_nb").value);}
+                if (document.getElementById("npc_qual_noc").checked) { qualityPoints += Number(document.getElementById("npc_qual_noc").value);}
+                if (document.getElementById("npc_qual_re").checked && document.getElementById("npc_qual_re1").selected) { qualityPoints += Number(document.getElementById("npc_qual_re1").value);}
+                if (document.getElementById("npc_qual_re").checked && document.getElementById("npc_qual_re2").selected) { qualityPoints += Number(document.getElementById("npc_qual_re2").value);}
+                if (document.getElementById("npc_qual_re").checked && document.getElementById("npc_qual_re3").selected) { qualityPoints += Number(document.getElementById("npc_qual_re3").value);}
+                if (document.getElementById("npc_qual_re").checked && document.getElementById("npc_qual_re4").selected) { qualityPoints += Number(document.getElementById("npc_qual_re4").value);}
+                if (document.getElementById("npc_qual_re").checked && document.getElementById("npc_qual_re5").selected) { qualityPoints += Number(document.getElementById("npc_qual_re5").value);}
+                if (document.getElementById("npc_qual_rend").checked) { qualityPoints += Number(document.getElementById("npc_qual_rend").value);}
+                if (document.getElementById("npc_qual_rep").checked && document.getElementById("npc_qual_rep1").selected) { qualityPoints += Number(document.getElementById("npc_qual_rep1").value);}
+                if (document.getElementById("npc_qual_rep").checked && document.getElementById("npc_qual_rep2").selected) { qualityPoints += Number(document.getElementById("npc_qual_rep2").value);}
+                if (document.getElementById("npc_qual_rep").checked && document.getElementById("npc_qual_rep3").selected) { qualityPoints += Number(document.getElementById("npc_qual_rep3").value);}
+                if (document.getElementById("npc_qual_rep").checked && document.getElementById("npc_qual_rep4").selected) { qualityPoints += Number(document.getElementById("npc_qual_rep4").value);}
+                if (document.getElementById("npc_qual_rep").checked && document.getElementById("npc_qual_rep5").selected) { qualityPoints += Number(document.getElementById("npc_qual_rep5").value);}
+                if (document.getElementById("npc_qual_sha").checked) { qualityPoints += Number(document.getElementById("npc_qual_sha").value);}
+                if (document.getElementById("npc_qual_shsh").checked && document.getElementById("npc_qual_shsh1").selected) { qualityPoints += Number(document.getElementById("npc_qual_shsh1").value);}
+                if (document.getElementById("npc_qual_shsh").checked && document.getElementById("npc_qual_shsh2").selected) { qualityPoints += Number(document.getElementById("npc_qual_shsh2").value);}
+                if (document.getElementById("npc_qual_shsh").checked && document.getElementById("npc_qual_shsh3").selected) { qualityPoints += Number(document.getElementById("npc_qual_shsh3").value);}
+                if (document.getElementById("npc_qual_sd").checked && document.getElementById("npc_qual_sd1").selected) { qualityPoints += Number(document.getElementById("npc_qual_sd1").value);}
+                if (document.getElementById("npc_qual_sd").checked && document.getElementById("npc_qual_sd2").selected) { qualityPoints += Number(document.getElementById("npc_qual_sd2").value);}
+                if (document.getElementById("npc_qual_sd").checked && document.getElementById("npc_qual_sd3").selected) { qualityPoints += Number(document.getElementById("npc_qual_sd3").value);}
+                if (document.getElementById("npc_qual_sd").checked && document.getElementById("npc_qual_sd4").selected) { qualityPoints += Number(document.getElementById("npc_qual_sd4").value);}
+                if (document.getElementById("npc_qual_sd").checked && document.getElementById("npc_qual_sd5").selected) { qualityPoints += Number(document.getElementById("npc_qual_sd5").value);}
+                if (document.getElementById("npc_qual_sr").checked) { qualityPoints += Number(document.getElementById("npc_qual_sr").value);}
+                if (document.getElementById("npc_qual_splds").checked) { qualityPoints += Number(document.getElementById("npc_qual_splds").value);}
+                if (document.getElementById("npc_qual_spldsi").checked) { qualityPoints += Number(document.getElementById("npc_qual_spldsi").value);}
+                if (document.getElementById("npc_qual_splks").checked) { qualityPoints += Number(document.getElementById("npc_qual_splks").value);}
+                if (document.getElementById("npc_qual_splksi").checked) { qualityPoints += Number(document.getElementById("npc_qual_splksi").value);}
+                if (document.getElementById("npc_qual_st").checked) { qualityPoints += Number(document.getElementById("npc_qual_st").value);}
+                if (document.getElementById("npc_qual_stern").checked) { qualityPoints += Number(document.getElementById("npc_qual_stern").value);}
+                if (document.getElementById("npc_qual_sc").checked) { qualityPoints += Number(document.getElementById("npc_qual_sc").value);}
+                if (document.getElementById("npc_qual_sucl").checked && document.getElementById("npc_qual_sucl1").selected) { qualityPoints += Number(document.getElementById("npc_qual_sucl1").value);}
+                if (document.getElementById("npc_qual_sucl").checked && document.getElementById("npc_qual_sucl2").selected) { qualityPoints += Number(document.getElementById("npc_qual_sucl2").value);}
+                if (document.getElementById("npc_qual_sucl").checked && document.getElementById("npc_qual_sucl3").selected) { qualityPoints += Number(document.getElementById("npc_qual_sucl3").value);}
+                if (document.getElementById("npc_qual_sucl").checked && document.getElementById("npc_qual_sucl4").selected) { qualityPoints += Number(document.getElementById("npc_qual_sucl4").value);}
+                if (document.getElementById("npc_qual_sucl").checked && document.getElementById("npc_qual_sucl5").selected) { qualityPoints += Number(document.getElementById("npc_qual_sucl5").value);}
+                if (document.getElementById("npc_qual_suju").checked && document.getElementById("npc_qual_suju1").selected) { qualityPoints += Number(document.getElementById("npc_qual_suju1").value);}
+                if (document.getElementById("npc_qual_suju").checked && document.getElementById("npc_qual_suju2").selected) { qualityPoints += Number(document.getElementById("npc_qual_suju2").value);}
+                if (document.getElementById("npc_qual_suju").checked && document.getElementById("npc_qual_suju3").selected) { qualityPoints += Number(document.getElementById("npc_qual_suju3").value);}
+                if (document.getElementById("npc_qual_suju").checked && document.getElementById("npc_qual_suju4").selected) { qualityPoints += Number(document.getElementById("npc_qual_suju4").value);}
+                if (document.getElementById("npc_qual_suju").checked && document.getElementById("npc_qual_suju5").selected) { qualityPoints += Number(document.getElementById("npc_qual_suju5").value);}
+                if (document.getElementById("npc_qual_suru").checked && document.getElementById("npc_qual_suru1").selected) { qualityPoints += Number(document.getElementById("npc_qual_suru1").value);}
+                if (document.getElementById("npc_qual_suru").checked && document.getElementById("npc_qual_suru2").selected) { qualityPoints += Number(document.getElementById("npc_qual_suru2").value);}
+                if (document.getElementById("npc_qual_suru").checked && document.getElementById("npc_qual_suru3").selected) { qualityPoints += Number(document.getElementById("npc_qual_suru3").value);}
+                if (document.getElementById("npc_qual_suru").checked && document.getElementById("npc_qual_suru4").selected) { qualityPoints += Number(document.getElementById("npc_qual_suru4").value);}
+                if (document.getElementById("npc_qual_suru").checked && document.getElementById("npc_qual_suru5").selected) { qualityPoints += Number(document.getElementById("npc_qual_suru5").value);}
+                if (document.getElementById("npc_qual_susw").checked && document.getElementById("npc_qual_susw1").selected) { qualityPoints += Number(document.getElementById("npc_qual_susw1").value);}
+                if (document.getElementById("npc_qual_susw").checked && document.getElementById("npc_qual_susw2").selected) { qualityPoints += Number(document.getElementById("npc_qual_susw2").value);}
+                if (document.getElementById("npc_qual_susw").checked && document.getElementById("npc_qual_susw3").selected) { qualityPoints += Number(document.getElementById("npc_qual_susw3").value);}
+                if (document.getElementById("npc_qual_susw").checked && document.getElementById("npc_qual_susw4").selected) { qualityPoints += Number(document.getElementById("npc_qual_susw4").value);}
+                if (document.getElementById("npc_qual_susw").checked && document.getElementById("npc_qual_susw5").selected) { qualityPoints += Number(document.getElementById("npc_qual_susw5").value);}
+                if (document.getElementById("npc_qual_sutr").checked && document.getElementById("npc_qual_sutr1").selected) { qualityPoints += Number(document.getElementById("npc_qual_sutr1").value);}
+                if (document.getElementById("npc_qual_sutr").checked && document.getElementById("npc_qual_sutr2").selected) { qualityPoints += Number(document.getElementById("npc_qual_sutr2").value);}
+                if (document.getElementById("npc_qual_sutr").checked && document.getElementById("npc_qual_sutr3").selected) { qualityPoints += Number(document.getElementById("npc_qual_sutr3").value);}
+                if (document.getElementById("npc_qual_sutr").checked && document.getElementById("npc_qual_sutr4").selected) { qualityPoints += Number(document.getElementById("npc_qual_sutr4").value);}
+                if (document.getElementById("npc_qual_sutr").checked && document.getElementById("npc_qual_sutr5").selected) { qualityPoints += Number(document.getElementById("npc_qual_sutr5").value);}
+                if (document.getElementById("npc_qual_swarm").checked) { qualityPoints += Number(document.getElementById("npc_qual_swarm").value);}
+                if (document.getElementById("npc_qual_swat").checked && document.getElementById("npc_qual_swat1").selected) { qualityPoints += Number(document.getElementById("npc_qual_swat1").value);}
+                if (document.getElementById("npc_qual_swat").checked && document.getElementById("npc_qual_swat2").selected) { qualityPoints += Number(document.getElementById("npc_qual_swat2").value);}
+                if (document.getElementById("npc_qual_swat").checked && document.getElementById("npc_qual_swat3").selected) { qualityPoints += Number(document.getElementById("npc_qual_swat3").value);}
+                if (document.getElementById("npc_qual_swat").checked && document.getElementById("npc_qual_swat4").selected) { qualityPoints += Number(document.getElementById("npc_qual_swat4").value);}
+                if (document.getElementById("npc_qual_swat").checked && document.getElementById("npc_qual_swat5").selected) { qualityPoints += Number(document.getElementById("npc_qual_swat5").value);}
+                if (document.getElementById("npc_qual_tel").checked) { qualityPoints += Number(document.getElementById("npc_qual_tel").value);}
+                if (document.getElementById("npc_qual_tou").checked && document.getElementById("npc_qual_tou1").selected) { qualityPoints += Number(document.getElementById("npc_qual_tou1").value);}
+                if (document.getElementById("npc_qual_tou").checked && document.getElementById("npc_qual_tou2").selected) { qualityPoints += Number(document.getElementById("npc_qual_tou2").value);}
+                if (document.getElementById("npc_qual_tou").checked && document.getElementById("npc_qual_tou3").selected) { qualityPoints += Number(document.getElementById("npc_qual_tou3").value);}
+                if (document.getElementById("npc_qual_tou").checked && document.getElementById("npc_qual_tou4").selected) { qualityPoints += Number(document.getElementById("npc_qual_tou4").value);}
+                if (document.getElementById("npc_qual_tou").checked && document.getElementById("npc_qual_tou5").selected) { qualityPoints += Number(document.getElementById("npc_qual_tou5").value);}
+                if (document.getElementById("npc_qual_trec").checked) { qualityPoints += Number(document.getElementById("npc_qual_trec").value);}
+                if (document.getElementById("npc_qual_tric").checked) { qualityPoints += Number(document.getElementById("npc_qual_tric").value);}
+                if (document.getElementById("npc_qual_turn").checked) { qualityPoints += Number(document.getElementById("npc_qual_turn").value);}
+                if (document.getElementById("npc_qual_ti").checked) { qualityPoints += Number(document.getElementById("npc_qual_ti").value);}
+                if (document.getElementById("npc_qual_usp").checked) { qualityPoints += Number(document.getElementById("npc_qual_usp").value);}
+                if (document.getElementById("npc_qual_unn").checked) { qualityPoints += Number(document.getElementById("npc_qual_unn").value);}
+                if (document.getElementById("npc_qual_vet").checked && document.getElementById("npc_qual_vet1").selected) { qualityPoints += Number(document.getElementById("npc_qual_vet1").value);}
+                if (document.getElementById("npc_qual_vet").checked && document.getElementById("npc_qual_vet2").selected) { qualityPoints += Number(document.getElementById("npc_qual_vet2").value);}
+                if (document.getElementById("npc_qual_vet").checked && document.getElementById("npc_qual_vet3").selected) { qualityPoints += Number(document.getElementById("npc_qual_vet3").value);}
+                if (document.getElementById("npc_qual_vet").checked && document.getElementById("npc_qual_vet4").selected) { qualityPoints += Number(document.getElementById("npc_qual_vet4").value);}
+                if (document.getElementById("npc_qual_vet").checked && document.getElementById("npc_qual_vet5").selected) { qualityPoints += Number(document.getElementById("npc_qual_vet5").value);}                
+
+                //Set qualityPoints
+                document.getElementById("qualitiesXP").innerHTML = qualityPoints;
+
+                //Return sum of scores
+                return qualityPoints;
+            }
+            
+            function cXP() {
+                //Calculate XP
+                //Type XP
+                    var ty = calcTypeXP();
+
+                //Mobility XP
+                    var mo = calcMobilityXP();
+
+                //Attribute XP
+                    var ab = calcAttributesXP();
+
+                //Trait XP
+                    var tr = calcTraitsXP();
+
+                //Health XP
+                    var he = calcHealthXP();
+
+                //Signature Skills XP
+                    var ss = calcSSXP();
+
+                //NPC Qualities XP
+                    var qt = calcQualitiesXP();
+
+                var s1 = Number(ty + mo + ab + tr + he + ss);
+                document.getElementById("statXPTotal").innerHTML = s1;
+                document.getElementById("xp_num").innerHTML = (s1 + qt);
+            }
+
+            function mobSelect() {
+                var sel = document.getElementById('mobi').value;
+                var mobXP = 0;
+                switch (sel) {
+                    case "walker":
+                    if (document.getElementById("burrower").style=="display:block") {
+                        document.getElementById("burrower").style="display:none"; 
+                    }
+                    if (document.getElementById("flyer").style=="display:block") {
+                        document.getElementById("flyer").style="display:none"; 
+                    }
+                    if (document.getElementById("swimmer").style=="display:block") {
+                        document.getElementById("swimmer").style="display:none"; 
+                    }
+                    if (document.getElementById("walker").style=="display:none") {
+                        document.getElementById("walker").style="display:block"; 
+                    }
+                    
+                    document.getElementById("burrower_spd").value = 0;                     
+                    document.getElementById("flyer_spd").value = 0;
+                    document.getElementById("walker_spd").value = 30;
+                    document.getElementById("swimmer_spd").value = 0;   
+                    break;
+
+                    case "burrower":
+                    if (document.getElementById("walker").style=="display:block") {
+                        document.getElementById("walker").style="display:none"; 
+                    }
+                    if (document.getElementById("flyer").style=="display:block") {
+                        document.getElementById("flyer").style="display:none"; 
+                    }
+                    if (document.getElementById("swimmer").style=="display:block") {
+                        document.getElementById("swimmer").style="display:none"; 
+                    }
+                    if (document.getElementById("burrower").style=="display:none") {
+                        document.getElementById("burrower").style="display:block"; 
+                    }
+                    
+                    document.getElementById("burrower_spd").value = 30;                     
+                    document.getElementById("flyer_spd").value = 0;
+                    document.getElementById("walker_spd").value = 0;
+                    document.getElementById("swimmer_spd").value = 0;
+                    break;
+
+                    case "flyer":
+                    if (document.getElementById("burrower").style=="display:block") {
+                        document.getElementById("burrower").style="display:none"; 
+                    }
+                    if (document.getElementById("walker").style=="display:block") {
+                        document.getElementById("walker").style="display:none"; 
+                    }
+                    if (document.getElementById("swimmer").style=="display:block") {
+                        document.getElementById("swimmer").style="display:none"; 
+                    }
+                    if (document.getElementById("flyer").style=="display:none") {
+                        document.getElementById("flyer").style="display:block"; 
+                    }
+
+                    document.getElementById("burrower_spd").value = 0;                     
+                    document.getElementById("flyer_spd").value = 30;
+                    document.getElementById("walker_spd").value = 0;
+                    document.getElementById("swimmer_spd").value = 0;   
+                    break;
+
+                    case "swimmer":
+                    if (document.getElementById("burrower").style=="display:block") {
+                        document.getElementById("burrower").style="display:none"; 
+                    }
+                    if (document.getElementById("flyer").style=="display:block") {
+                        document.getElementById("flyer").style="display:none"; 
+                    }
+                    if (document.getElementById("walker").style=="display:block") {
+                        document.getElementById("walker").style="display:none"; 
+                    }
+                    if (document.getElementById("swimmer").style=="display:none") {
+                        document.getElementById("swimmer").style="display:block"; 
+                    }
+
+                    document.getElementById("burrower_spd").value = 0;                     
+                    document.getElementById("flyer_spd").value = 0;
+                    document.getElementById("walker_spd").value = 0;
+                    document.getElementById("swimmer_spd").value = 30;   
+                    break;
+
+                    
+                }
+
+
+                document.getElementById("mobilityXP").innerHTML = mobXP;
+
+                cXP();
+            }
+
+            function mob(sel) {
+                if (sel == "immobile_sel") {
+                    document.getElementById("mobile").style="display:none";
+                    document.getElementById("mobilityXP").innerHTML = -5;
+                    immobility = 1;
+                }
+                if (sel == "mobile_sel") {
+                    document.getElementById("mobile").style="display:block";
+                    document.getElementById("mobilityXP").innerHTML = 0;
+                    immobility = 0;
+                    mobSelect();
+                }
+                cXP();
+            }
+
+            function szSelect(szpass) {
+                switch (szpass) {
+                    case "Large":
+                        document.getElementById("dimensions").style.display = "block";
+                        document.getElementById("fp").innerHTML = "Up to 3 x 3";
+                        document.getElementById("npc_fpw").max = 3;
+                        document.getElementById("npc_fpl").max = 3;
+                        document.getElementById("npc_fpw").value = 3;
+                        document.getElementById("npc_fpl").value = 3;
+                        break;
+                    case "Huge":
+                        document.getElementById("dimensions").style.display = "block";
+                        document.getElementById("fp").innerHTML = "Up to 6 x 6";
+                        document.getElementById("npc_fpw").max = 6;
+                        document.getElementById("npc_fpl").max = 6;
+                        document.getElementById("npc_fpw").value = 4;
+                        document.getElementById("npc_fpl").value = 4;
+                        break;
+                    case "Gargantuan":
+                        document.getElementById("dimensions").style.display = "block";
+                        document.getElementById("fp").innerHTML = "Up to 12 x 12";
+                        document.getElementById("npc_fpw").max = 12;
+                        document.getElementById("npc_fpl").max = 12;
+                        document.getElementById("npc_fpw").value = 7;
+                        document.getElementById("npc_fpl").value = 7;
+                        break;
+                    case "Colossal":
+                        document.getElementById("dimensions").style.display = "block";
+                        document.getElementById("fp").innerHTML = "Up to 25 x 25";
+                        document.getElementById("npc_fpw").max = 25;
+                        document.getElementById("npc_fpl").max = 25;
+                        document.getElementById("npc_fpw").value = 13;
+                        document.getElementById("npc_fpl").value = 13;
+                        break;
+                    case "Enormous":
+                        document.getElementById("dimensions").style.display = "block";
+                        document.getElementById("fp").innerHTML = "Up to 50 x 50";
+                        document.getElementById("npc_fpw").max = 50;
+                        document.getElementById("npc_fpl").max = 50;
+                        document.getElementById("npc_fpw").value = 26;
+                        document.getElementById("npc_fpl").value = 26;
+                        break;
+                    case "Vast":
+                        document.getElementById("dimensions").style.display = "block";
+                        document.getElementById("fp").innerHTML = "Greater than 50 x 50";
+                        document.getElementById("npc_fpw").max = 100;
+                        document.getElementById("npc_fpl").max = 100;
+                        document.getElementById("npc_fpw").value = 51;
+                        document.getElementById("npc_fpl").value = 51;
+                        break;
+                    default:
+                        document.getElementById("dimensions").style.display = "none";
+                        document.getElementById("fp").innerHTML = "Up to 1 x 1";
+                        document.getElementById("npc_fpw").max = 1;
+                        document.getElementById("npc_fpl").max = 1;
+                        document.getElementById("npc_fpw").value = 1;
+                        document.getElementById("npc_fpl").value = 1;
+                        break;
+                }
+            }
+
+            function addListItem_Feat() {
+                var f = "feat" + featIndex;
+                var f2 = "removeListItem_Feat(" + "'" + f + "'" + ")";
+                const listItem = document.createElement("li");
+                listItem.id = f;
+                const inText = document.createElement("input");
+                inText.type = "text";
+                const spn = document.createElement("span");
+                spn.setAttribute("onclick", f2);
+                spn.innerHTML= "X";
+                
+                listItem.appendChild(inText);
+                listItem.appendChild(spn);
+
+                document.getElementById("p_featList").appendChild(listItem);
+                
+                var feats = document.querySelectorAll("#p_featList li");
+                document.getElementById("featNum").innerHTML = feats.length;
+                featIndex += 1;
+                cXP();
+            }
+
+            function removeListItem_Feat(item) {                
+                document.getElementById(item).remove();
+                var feats = document.querySelectorAll("#p_featList li");
+                document.getElementById("featNum").innerHTML = feats.length;
+                cXP();
+            }
+
+            function addListItem_NS() {                
+                var s = "ns" + nsIndex;
+                var s2 = "removeListItem_NS(" + "'" + s + "'" + ");";
+                const listItem = document.createElement("li");
+                listItem.id = s;
+                const inText = document.createElement("input");
+                inText.type = "text";
+                const inText2 = document.createElement("input");
+                inText2.type = "number";
+                inText2.min = 0;
+                inText2.max = 9;
+                inText2.step = 1;
+                inText2.value = 0;
+                inText2.setAttribute("onchange", "calcNSXP()");
+                //Add other attributes here
+                const spn = document.createElement("span");
+                spn.setAttribute("onclick", s2);
+                spn.innerHTML= "X";
+                
+                listItem.appendChild(inText);
+                listItem.appendChild(inText2);
+                listItem.appendChild(spn);
+
+                document.getElementById("p_nsList").appendChild(listItem);
+                nsIndex += 1;
+                calcNSXP();
+                cXP();
+            }
+
+            function calcNSXP() {
+                var ns = document.querySelectorAll("#p_nsList li");
+                var nsxp = 0;
+                for (n = 0; n < ns.length; n++) {
+                    nsxp += Number(ns[n].childNodes[1].value);
+                }
+                document.getElementById("nsTotalLevels").innerHTML = nsxp;
+            }
+
+            function removeListItem_NS(item) {
+                document.getElementById(item).remove();
+                var ns = document.querySelectorAll("#p_nsList li");
+                calcNSXP();
+                cXP();
+            }
+        </script>
+    </head>
+    <body onload="cXP()">
+        <h1>NPC Dashboard</h1>
+        <p>Total XP: <span id="xp_num">0</span></p>
+        <form>
+            <input type="radio" id="edit" onclick="togglePlay()" name="playToggle" checked>
+            <label for="edit">Edit</label>
+            <input type="radio" id="play" onclick="togglePlay()" name="playToggle">
+            <label for="play">Play</label>
+        </form>
+        <div id="editSection">
+
+        <h2 onclick="toggleSection('step0')">Step 0: Concept</h2>
+        <div id="step0" style="display:none">
+        <input type="text" />
+        </div>
+        <h2 onclick="toggleSection('step1')">Step 1: Statistics (<span id="statXPTotal">0</span>)</h2>
+            <div id="step1" style="display:none">
+        <h3 onclick="toggleSection('statSize')">Size</h3>
+        <div id="statSize" style="display:none">
+        <select id="sizeList" onchange="szSelect(this.value); cXP()">
+            <option id="sz_nuissance" name="NPC_size" value="Nuissance">Nuissance</option>
+            <option id="sz_fine" name="NPC_size" value="Fine">Fine</option>
+            <option id="sz_diminuitive" name="NPC_size" value="Diminuitive">Diminuitive</option>
+            <option id="sz_tiny" name="NPC_size" value="Tiny">Tiny</option>
+            <option id="sz_small" name="NPC_size" value="Small">Small</option>
+            <option id="sz_medium" name="NPC_size" value="Medium" selected>Medium</option>
+            <option id="sz_large" name="NPC_size" value="Large">Large</option>
+            <option id="sz_huge" name="NPC_size" value="Huge">Huge</option>
+            <option id="sz_gargantuan" name="NPC_size" value="Gargantuan">Gargantuan</option>
+            <option id="sz_colossal" name="NPC_size" value="Colossal">Colossal</option>
+            <option id="sz_enormous" name="NPC_size" value="Enormous">Enormous</option>
+            <option id="sz_vast" name="NPC_size" value="Vast">Vast</option>
+        </select>
+        <div id="dimensions" style="display:none">
+            <p>Footprint (<span id="fp">X x X</span>):<br>
+                Width: <input type="number" id="npc_fpw" min="1" max="5" step="1" value="2" onchange="cXP()"> x Length: <input type="number" id="npc_fpl" min="1" max="5" step="1" value="2" onchange="cXP()">
+            </p>
+        </div>
+        </div>
+        <h3 onclick="toggleSection('statType')">Type (<span id="typeXP">0</span>)</h3>
+        <div id="statType" style="display:none">
+        <form id="typeSelected">
+            <input type="checkbox" id="ty_animal" name="NPC_type" value=0 onchange="cXP()">
+            <label>Animal (+0)</label><br>
+            <input type="checkbox" id="ty_beast" name="NPC_type" value=0 onchange="cXP()">
+            <label>Beast (+0)</label><br>
+            <input type="checkbox" id="ty_construct" name="NPC_type" value=5 onchange="cXP()">
+            <label>Construct (+5)</label><br>
+            <input type="checkbox" id="ty_elemental" name="NPC_type" value=5 onchange="cXP()">
+            <label>Elemental (+5)</label><br>
+            <input type="checkbox" id="ty_fey" name="NPC_type" value="0" onchange="cXP()">
+            <label>Fey (+0)</label><br>
+            <input type="checkbox" id="ty_folk" name="NPC_type" value="0" onchange="cXP()" checked>
+            <label>Folk (+0)</label><br>
+            <input type="checkbox" id="ty_horror" name="NPC_type" value="5" onchange="cXP()">
+            <label>Horror (+5)</label><br>
+            <input type="checkbox" id="ty_ooze" name="NPC_type" value="5" onchange="cXP()">
+            <label>Ooze (+0)</label><br>
+            <input type="checkbox" id="ty_outsider" name="NPC_type" value="0" onchange="cXP()">
+            <label>Outsider (+0)</label><br>
+            <input type="checkbox" id="ty_plant" name="NPC_type" value="5" onchange="cXP()">
+            <label>Plant (+5)</label><br>
+            <input type="checkbox" id="ty_spirit" name="NPC_type" value="5" onchange="cXP()">
+            <label>Spirit (+5)</label><br>
+            <input type="checkbox" id="ty_undead" name="NPC_type" value="5" onchange="cXP()">
+            <label>Undead (+0)</label><br>
+        </form>
+        </div>
+        <h3 onclick="toggleSection('statMobility')">Mobility (<span id="mobilityXP">0</span>)</h3>
+        <div id="statMobility" style="display:none">
+            <form>
+                <input type="radio" id="mobile_sel" name="mobility" value="mobile_sel" onclick="mob(this.value); cXP()" checked>
+                <label>Mobile (var)</label>
+                <input type="radio" id="immobile_sel" name="mobility" value="immobile_sel" onclick="mob(this.value); cXP()">
+                <label>Immobile (-5)</label>
+            </form>
+            <div id="mobile">
+            <select name="mobi" id="mobi" onchange="mobSelect(); cXP()">
+                <option value="walker" selected >Walker (+0)</option>
+                <option value="burrower">Burrower (+0)</option>
+                <option value="flyer">Flyer (+0)</option>
+                <option value="swimmer">Swimmer (+0)</option>
+            </select>
+        
+            <div id="walker" style="display:block">
+                <p>Walker</p>
+                <form>
+                    <input type="number" id="walker_spd" name="walker_spd" min="0" max="120" step="10" value="30" onchange="cXP()">
+                </form>
+            </div>
+            
+            <div id="burrower" style="display:block">
+                <p>Burrower</p>
+                <form>
+                    <input type="number" id="burrower_spd" min="0" max="120" step="10" value="0" onchange="cXP()">
+                </form>
+            </div>
+           
+            <div id="flyer" style="display:block">
+                <p>Flyer</p>
+                <form>
+                    <input type="number" id="flyer_spd" min="0" max="120" step="10" value="0" onchange="cXP()">
+                </form>
+            </div>
+            
+            <div id="swimmer" style="display:block">
+                <p>Swimmer</p>
+                <form>
+                    <input type="number" id="swimmer_spd" min="0" max="120" step="10" value="0" onchange="cXP()">
+                </form>
+            </div>
+            </div>
+        </form>
+        </div>
+        <h3 onclick="toggleSection('statAttributes')">Attributes (<span id="attributeXP">0</span>)</h3>
+        <div id="statAttributes" style="display:none">
+        <form>
+            <label for="str">Strength:</label>
+            <input type="number" id="npc_str" name="str" min="1" max="50" step="1" value="10" onchange="cXP()"><br>
+            <label for="dex">Dexterity:</label>
+            <input type="number" id="npc_dex" name="dex" min="1" max="50" step="1" value="10" onchange="cXP()"><br>
+            <label for="con">Constitution:</label>
+            <input type="number" id="npc_con" name="con" min="1" max="50" step="1" value="10" onchange="cXP()"><br>
+            <label for="int">Intelligence:</label>
+            <input type="number" id="npc_int" name="int" min="1" max="50" step="1" value="10" onchange="cXP()"><br>
+            <label for="wis">Wisdom:</label>
+            <input type="number" id="npc_wis" name="wis" min="1" max="50" step="1" value="10" onchange="cXP()"><br>
+            <label for="cha">Charisma:</label>
+            <input type="number" id="npc_cha" name="cha" min="1" max="50" step="1" value="10" onchange="cXP()">
+        </form>
+        </div>
+        <h3 onclick="toggleSection('statTraits')">Traits (<span id="traitsXP">5</span>)</h3>
+        <div id="statTraits" style="display:none">
+        <form>            
+            <label for="init">Initiative:</label>
+            <input type="number" id="npc_init" name="init" min="1" max="10" step="1" value="1" onchange="cXP()"><br>
+            <label for="atk">Attack:</label>
+            <input type="number" id="npc_atk" name="atk" min="1" max="10" step="1" value="1" onchange="cXP()"><br>
+            <label for="def">Defense:</label>
+            <input type="number" id="npc_def" name="def" min="1" max="10" step="1" value="1" onchange="cXP()"><br>
+            <label for="res">Resilience:</label>
+            <input type="number" id="npc_res" name="res" min="1" max="10" step="1" value="1" onchange="cXP()"><br>
+            <label for="comp">Competence:</label>
+            <input type="number" id="npc_comp" name="comp" min="1" max="10" step="1" value="1" onchange="cXP()"><br>
+        </form>
+        </div>
+        <h3 onclick="toggleSection('statHealth')">Health (<span id="healthXP">0</span>)</h3>
+        <div id="statHealth" style="display:none">
+        <form>
+            <label for="hg">Health Grade:</label>
+            <input type="number" id="npc_hg" name="hg" min="1" max="10" step="1" value="1" onchange="cXP()"><br>
+        </form>
+        </div>
+        <h3 onclick="toggleSection('statSigSkills')">Signature Skills (<span id="signatureSkillXP">0</span>)</h3>
+        <div id="statSigSkills" style="display:none">
+        <form>
+            <label for="ss_acr">Acrobatics:</label>
+            <input type="number" id="npc_ss_acr" name="ss_acr" min="0" max="10" step="1" value="0" onchange="cXP()"><br>
+            <label for="ss_ath">Athletics:</label>
+            <input type="number" id="npc_ss_ath" name="ss_ath" min="0" max="10" step="1" value="0" onchange="cXP()"><br>
+            <label for="ss_ble">Blend:</label>
+            <input type="number" id="npc_ss_ble" name="ss_ble" min="0" max="10" step="1" value="0" onchange="cXP()"><br>
+            <label for="ss_blu">Bluff:</label>
+            <input type="number" id="npc_ss_blu" name="ss_blu" min="0" max="10" step="1" value="0" onchange="cXP()"><br>
+            <label for="ss_cra">Crafting:</label>
+            <input type="number" id="npc_ss_cra" name="ss_cra" min="0" max="10" step="1" value="0" onchange="cXP()"><br>
+            <label for="ss_dis">Disguise:</label>
+            <input type="number" id="npc_ss_dis" name="ss_dis" min="0" max="10" step="1" value="0" onchange="cXP()"><br>
+            <label for="ss_hag">Haggle:</label>
+            <input type="number" id="npc_ss_hag" name="ss_hag" min="0" max="10" step="1" value="0" onchange="cXP()"><br>
+            <label for="ss_imp">Impress:</label>
+            <input type="number" id="npc_ss_imp" name="ss_imp" min="0" max="10" step="1" value="0" onchange="cXP()"><br>
+            <label for="ss_int">Intimidate:</label>
+            <input type="number" id="npc_ss_int" name="ss_int" min="0" max="10" step="1" value="0" onchange="cXP()"><br>
+            <label for="ss_inv">Investigate:</label>
+            <input type="number" id="npc_ss_inv" name="ss_inv" min="0" max="10" step="1" value="0" onchange="cXP()"><br>
+            <label for="ss_med">Medicine:</label>
+            <input type="number" id="npc_ss_med" name="ss_med" min="0" max="10" step="1" value="0" onchange="cXP()"><br>
+            <label for="ss_not">Notice:</label>
+            <input type="number" id="npc_ss_not" name="ss_not" min="0" max="10" step="1" value="0" onchange="cXP()"><br>
+            <label for="ss_pre">Prestidigitation:</label>
+            <input type="number" id="npc_ss_pre" name="ss_pre" min="0" max="10" step="1" value="0" onchange="cXP()"><br>
+            <label for="ss_res">Resolve:</label>
+            <input type="number" id="npc_ss_res" name="ss_res" min="0" max="10" step="1" value="0" onchange="cXP()"><br>
+            <label for="ss_rid">Ride:</label>
+            <input type="number" id="npc_ss_rid" name="ss_rid" min="0" max="10" step="1" value="0" onchange="cXP()"><br>
+            <label for="ss_sea">Search:</label>
+            <input type="number" id="npc_ss_sea" name="ss_sea" min="0" max="10" step="1" value="0" onchange="cXP()"><br>
+            <label for="ss_sen">Sense Motive:</label>
+            <input type="number" id="npc_ss_sen" name="ss_sen" min="0" max="10" step="1" value="0" onchange="cXP()"><br>
+            <label for="ss_sne">Sneak:</label>
+            <input type="number" id="npc_ss_sne" name="ss_sne" min="0" max="10" step="1" value="0" onchange="cXP()"><br>
+            <label for="ss_spe">Spellcasting:</label>
+            <input type="number" id="npc_ss_spe" name="ss_spe" min="0" max="10" step="1" value="0" onchange="cXP()"><br>
+            <label for="ss_sur">Survival:</label>
+            <input type="number" id="npc_ss_sur" name="ss_sur" min="0" max="10" step="1" value="0" onchange="cXP()"><br>
+            <label for="ss_tac">Tactics:</label>
+            <input type="number" id="npc_ss_tac" name="ss_tac" min="0" max="10" step="1" value="0" onchange="cXP()"><br>
+        </form>
+        </div>
+    </div>
+        <h2 onclick="toggleSection('step2')">Step 2: NPC Qualities (<span id="qualitiesXP">0</span>)</h2>
+            <div id="step2" style="display:none">
+        <form>
+            <input type="checkbox" id="npc_qual_ah" name="q_ah" value="2" onclick="cXP()"><label for="q_ah">Achilles Heel (+2)</label><br>
+            <input type="checkbox" id="npc_qual_ar" name="q_ar" value="2" onclick="cXP()"><label for="q_ar">Always Ready (+2)</label><br>
+            <input type="checkbox" id="npc_qual_aq" name="q_aq" value="0" onclick="cXP()">
+                
+                    <select onchange="cXP()">
+                <option id="npc_qual_aq1" name="q_aq1" value="1" selected>Aquatic I (+1)</option><br>
+                <option id="npc_qual_aq2" name="q_aq2" value="3">Aquatic II (+3)</option><br>
+            </select><br>
+            <input type="checkbox" id="npc_qual_at" name="q_at" value="0" onclick="cXP()">
+                
+                    <select onchange="cXP()">
+                <option id="npc_qual_at1" name="q_at1" value="1">Attractive I (+1)</option><br>
+                <option id="npc_qual_at2" name="q_at2" value="2">Attractive II (+2)</option><br>
+                <option id="npc_qual_at3" name="q_at3" value="3">Attractive III (+3)</option><br>
+                <option id="npc_qual_at4" name="q_at4" value="4">Attractive IV (+4)</option><br>
+                <option id="npc_qual_at5" name="q_at5" value="5">Attractive V (+5)</option><br>
+                <option id="npc_qual_at6" name="q_at6" value="6">Attractive VI (+6)</option><br>
+                <option id="npc_qual_at7" name="q_at7" value="7">Attractive VII (+7)</option><br>
+                <option id="npc_qual_at8" name="q_at8" value="8">Attractive VIII (+8)</option><br>
+                <option id="npc_qual_at9" name="q_at9" value="9">Attractive IX (+9)</option><br>
+                <option id="npc_qual_at10" name="q_at10" value="10">Attractive X (+10)</option><br>
+            </select><br>
+            <input type="checkbox" id="npc_qual_ba" name="q_at" value="0" onclick="cXP()"><label for="q_ba">Banned Action (+0)</label><br>
+            <input type="checkbox" id="npc_qual_bat" name="q_bat" value="2" onclick="cXP()"><label for="q_bat">Battering (+2)</label><br>
+            <input type="checkbox" id="npc_qual_be" name="q_be" value="2" onclick="cXP()"><label for="q_be">Beguiling (+2)</label><br>
+            <input type="checkbox" id="npc_qual_bl" name="q_bl" value="4" onclick="cXP()"><label for="q_bl">Blindsight (+4)</label><br>
+            <input type="checkbox" id="npc_qual_br" name="q_br" value="3" onclick="cXP()"><label for="q_br">Bright (+3)</label><br>
+            <input type="checkbox" id="npc_qual_boa" name="q_boa" value="-4" onclick="cXP()"><label for="q_boa">Burden of Ages (-4)</label><br>
+            <input type="checkbox" id="npc_qual_ca" name="q_ca" value="0" onclick="cXP()">
+                <select onchange="cXP()">                
+                    <option id="npc_qual_ca1" name="q_ca1" value="1">Cagey I (+1)</option><br>
+                    <option id="npc_qual_ca2" name="q_ca2" value="2">Cagey II (+2)</option><br>
+                    <option id="npc_qual_ca3" name="q_ca3" value="3">Cagey III (+3)</option><br>
+                    <option id="npc_qual_ca4" name="q_ca4" value="4">Cagey IV (+4)</option><br>
+                    <option id="npc_qual_ca5" name="q_ca5" value="5">Cagey V (+5)</option><br>
+                    <option id="npc_qual_ca6" name="q_ca6" value="6">Cagey VI (+6)</option><br>
+                    <option id="npc_qual_ca7" name="q_ca7" value="7">Cagey VII (+7)</option><br>
+                    <option id="npc_qual_ca8" name="q_ca8" value="8">Cagey VIII (+8)</option><br>
+                    <option id="npc_qual_ca9" name="q_ca9" value="9">Cagey IX (+9)</option><br>
+                    <option id="npc_qual_ca10" name="q_ca10" value="10">Cagey X (+10)</option><br>
+                </select><br>
+            <input type="checkbox" id="npc_qual_ch1" name="q_ch1" value="0" onclick="toggleSection('ch1_list'); cXP()"><label for="q_ch1">Chameleon I (+2/Terrain)</label><br>
+            <div id="ch1_list" style="display:none">
+            <span id="ch_terrains1">
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ch1_aq" name="q_ch1_aq" value="2" onclick="cXP()"><label for="q_ch1_aq">Aquatic (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ch1_ar" name="q_ch1_ar" value="2" onclick="cXP()"><label for="q_ch1_ar">Arctic (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ch1_cm" name="q_ch1_cm" value="2" onclick="cXP()"><label for="q_ch1_cm">Caverns/Mountains (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ch1_de" name="q_ch1_de" value="2" onclick="cXP()"><label for="q_ch1_de">Desert (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ch1_fj" name="q_ch1_fj" value="2" onclick="cXP()"><label for="q_ch1_fj">Forest/Jungle (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ch1_is" name="q_ch1_is" value="2" onclick="cXP()"><label for="q_ch1_is">Indoors/Settled (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ch1_pl" name="q_ch1_pl" value="2" onclick="cXP()"><label for="q_ch1_pl">Plains (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ch1_sw" name="q_ch1_sw" value="2" onclick="cXP()"><label for="q_ch1_sw">Swamp (+2)</label><br>
+            </span>
+            </div>
+            <input type="checkbox" id="npc_qual_ch2" name="q_ch2" value="0" onclick="toggleSection('ch2_list'); cXP()"><label for="q_ch2">Chameleon II (+4/Terrain)</label><br>
+            <div id="ch2_list" style="display:none">
+            <span id="ch_terrains2">
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ch2_aq" name="q_ch2_aq" value="4" onclick="cXP()"><label for="q_ch2_aq">Aquatic (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ch2_ar" name="q_ch2_ar" value="4" onclick="cXP()"><label for="q_ch2_ar">Arctic (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ch2_cm" name="q_ch2_cm" value="4" onclick="cXP()"><label for="q_ch2_cm">Caverns/Mountains (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ch2_de" name="q_ch2_de" value="4" onclick="cXP()"><label for="q_ch2_de">Desert (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ch2_fj" name="q_ch2_fj" value="4" onclick="cXP()"><label for="q_ch2_fj">Forest/Jungle (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ch2_is" name="q_ch2_is" value="4" onclick="cXP()"><label for="q_ch2_is">Indoors/Settled (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ch2_pl" name="q_ch2_pl" value="4" onclick="cXP()"><label for="q_ch2_pl">Plains (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ch2_sw" name="q_ch2_sw" value="4" onclick="cXP()"><label for="q_ch2_sw">Swamp (+4)</label><br>
+            </span>
+            </div>
+            <input type="checkbox" id="npc_qual_chat" name="q_chat" value="2" onclick="cXP()"><label for="q_chat">Charge Attack (+2)</label><br>
+            <input type="checkbox" id="npc_qual_clab" name="q_clab" value="0" onclick="toggleSection('clab_list'); cXP()"><label for="q_clab">Class Abilities (varies)</label><br>
+            <span id="clab_list" style="display:none">
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_clab_cl_ab" name="ab" value="0" onclick="cXP()"><label for="ab">Ability (+x)</label><br>
+            </span>
+            <input type="checkbox" id="npc_qual_cl" name="q_cl" value="-2" onclick="cXP()"><label for="q_cl">Clumsy (-2)</label><br>
+            <input type="checkbox" id="npc_qual_cb" name="q_cb" value="-2" onclick="cXP()"><label for="q_cb">Cold-Blooded (-2)</label><br>
+            <input type="checkbox" id="npc_qual_ci" name="q_ci" value="0" onclick="toggleSection('ci_list'); cXP()"><label for="q_ci">Condition Immunity (+4/Condition)</label><br>
+            <div id="ci_list" style="display:none">
+            <span id="ci_conditions">
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_baf" name="q_ci_baf" value="4" onclick="cXP()"><label for="q_ci_baf">Baffled (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_ble" name="q_ci_ble" value="4" onclick="cXP()"><label for="q_ci_ble">Bleeding (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_bli" name="q_ci_bli" value="4" onclick="cXP()"><label for="q_ci_bli">Blinded (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_dea" name="q_ci_dea" value="4" onclick="cXP()"><label for="q_ci_dea">Deafened (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_enr" name="q_ci_enr" value="4" onclick="cXP()"><label for="q_ci_enr">Enraged (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_ent" name="q_ci_ent" value="4" onclick="cXP()"><label for="q_ci_ent">Entangled (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_fat" name="q_ci_fat" value="4" onclick="cXP()"><label for="q_ci_fat">Fatigued (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_fix" name="q_ci_fix" value="4" onclick="cXP()"><label for="q_ci_fix">Fixated (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_fla" name="q_ci_fla" value="4" onclick="cXP()"><label for="q_ci_fla">Flanked (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_ffo" name="q_ci_ffo" value="4" onclick="cXP()"><label for="q_ci_ffo">Flat-Footed (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_fri" name="q_ci_fri" value="4" onclick="cXP()"><label for="q_ci_fri">Frightened (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_hel" name="q_ci_hel" value="4" onclick="cXP()"><label for="q_ci_hel">Held (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_hlp" name="q_ci_hlp" value="4" onclick="cXP()"><label for="q_ci_hlp">Helpless (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_hid" name="q_ci_hid" value="4" onclick="cXP()"><label for="q_ci_hid">Hidden (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_inc" name="q_ci_inc" value="4" onclick="cXP()"><label for="q_ci_inc">Incorporeal (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_inv" name="q_ci_inv" value="4" onclick="cXP()"><label for="q_ci_inv">Invisible (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_par" name="q_ci_par" value="4" onclick="cXP()"><label for="q_ci_par">Paralyzed (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_pin" name="q_ci_pin" value="4" onclick="cXP()"><label for="q_ci_pin">Pinned (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_pro" name="q_ci_pro" value="4" onclick="cXP()"><label for="q_ci_pro">Prone (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_sha" name="q_ci_sha" value="4" onclick="cXP()"><label for="q_ci_sha">Shaken (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_sic" name="q_ci_sic" value="4" onclick="cXP()"><label for="q_ci_sic">Sickened (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_slo" name="q_ci_slo" value="4" onclick="cXP()"><label for="q_ci_slo">Slowed (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_spr" name="q_ci_spr" value="4" onclick="cXP()"><label for="q_ci_spr">Sprawled (+4)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_ci_stu" name="q_ci_stu" value="4" onclick="cXP()"><label for="q_ci_stu">Stunned (+4)</label><br>
+            </span>
+            </div>
+            <input type="checkbox" id="npc_qual_conim" name="q_conim" value="4" onclick="cXP()"><label for="q_conim">Contagion Immunity (+4)</label><br>
+            <input type="checkbox" id="npc_qual_conv" name="q_conv" value="5" onclick="cXP()"><label for="q_conv">Conversion (+5)</label><br>
+            <input type="checkbox" id="npc_qual_crithes" name="q_crithes" value="-2" onclick="cXP()"><label for="q_crithes">Critical Hesitation (-2)</label><br>
+            <input type="checkbox" id="npc_qual_critsur" name="q_critsur" value="2" onclick="cXP()"><label for="q_critsur">Critical Surge (+2)</label><br>
+            <input type="checkbox" id="npc_qual_damdef" name="q_damdef" value="0" onclick="toggleSection('dd_list'); cXP()"><label for="q_damdef">Damage Defiance (+2/Damage Type)</label><br>
+            <div id="dd_list" style="display:none">
+            <span id="dd_damageTypes">
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_dd_le" name="q_dd_le" value="2" onclick="cXP()"><label for="q_dd_le">Lethal (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_dd_ac" name="q_dd_ac" value="2" onclick="cXP()"><label for="q_dd_ac">Acid (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_dd_ba" name="q_dd_ba" value="2" onclick="cXP()"><label for="q_dd_ba">Bang (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_dd_co" name="q_dd_co" value="2" onclick="cXP()"><label for="q_dd_co">Cold (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_dd_di" name="q_dd_di" value="2" onclick="cXP()"><label for="q_dd_di">Divine (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_dd_el" name="q_dd_el" value="2" onclick="cXP()"><label for="q_dd_el">Electrical (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_dd_ex" name="q_dd_ex" value="2" onclick="cXP()"><label for="q_dd_ex">Explosive (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_dd_fi" name="q_dd_fi" value="2" onclick="cXP()"><label for="q_dd_fi">Fire (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_dd_fl" name="q_dd_fl" value="2" onclick="cXP()"><label for="q_dd_fl">Flash (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_dd_fo" name="q_dd_fo" value="2" onclick="cXP()"><label for="q_dd_fo">Force (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_dd_he" name="q_dd_he" value="2" onclick="cXP()"><label for="q_dd_he">Heat (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_dd_sa" name="q_dd_sa" value="2" onclick="cXP()"><label for="q_dd_sa">Sneak Attack (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_dd_so" name="q_dd_so" value="2" onclick="cXP()"><label for="q_dd_so">Sonic (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_dd_st" name="q_dd_st" value="2" onclick="cXP()"><label for="q_dd_st">Stress (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_dd_su" name="q_dd_su" value="2" onclick="cXP()"><label for="q_dd_su">Subdual (+2)</label><br>                
+            </span>
+            </div>
+            <input type="checkbox" id="npc_qual_damim" name="q_damim" value="0" onclick="toggleSection('di_list'); cXP()"><label for="q_damim">Damage Immunity (+5/Damage Type)</label><br>
+            <div id="di_list" style="display:none">
+            <span id="di_damageTypes">
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_di_le" name="q_di_le" value="5" onclick="cXP()"><label for="q_di_le">Lethal (+5)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_di_ac" name="q_di_ac" value="5" onclick="cXP()"><label for="q_di_ac">Acid (+5)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_di_ba" name="q_di_ba" value="5" onclick="cXP()"><label for="q_di_ba">Bang (+5)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_di_co" name="q_di_co" value="5" onclick="cXP()"><label for="q_di_co">Cold (+5)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_di_di" name="q_di_di" value="5" onclick="cXP()"><label for="q_di_di">Divine (+5)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_di_el" name="q_di_el" value="5" onclick="cXP()"><label for="q_di_el">Electrical (+5)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_di_ex" name="q_di_ex" value="5" onclick="cXP()"><label for="q_di_ex">Explosive (+5)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_di_fi" name="q_di_fi" value="5" onclick="cXP()"><label for="q_di_fi">Fire (+5)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_di_fl" name="q_di_fl" value="5" onclick="cXP()"><label for="q_di_fl">Flash (+5)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_di_fo" name="q_di_fo" value="5" onclick="cXP()"><label for="q_di_fo">Force (+5)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_di_he" name="q_di_he" value="5" onclick="cXP()"><label for="q_di_he">Heat (+5)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_di_sa" name="q_di_sa" value="5" onclick="cXP()"><label for="q_di_sa">Sneak Attack (+5)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_di_so" name="q_di_so" value="5" onclick="cXP()"><label for="q_di_so">Sonic (+5)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_di_st" name="q_di_st" value="5" onclick="cXP()"><label for="q_di_st">Stress (+5)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_di_su" name="q_di_su" value="5" onclick="cXP()"><label for="q_di_su">Subdual (+5)</label><br>                
+            </span>
+            </div>
+            <input type="checkbox" id="npc_qual_dv" name="q_dv" value="0" onclick="cXP()">
+                
+                    <select onchange="cXP()">
+                <option id="npc_qual_dv1" name="q_dv1" value="1" selected>Darkvision I (+1)</option><br>
+                <option id="npc_qual_dv2" name="q_dv2" value="3">Darkvision II (+3)</option><br>
+            </select><br>
+            <input type="checkbox" id="npc_qual_dt" name="q_dt" value="0" onclick="cXP()">
+                
+                    <select onchange="cXP()">
+                        <option id="npc_qual_dt_le" name="q_dt_le" value="5" onclick="cXP()" selected>Death Throes - Lethal (+5)</option><br>
+                        <option id="npc_qual_dt_ac" name="q_dt_ac" value="7" onclick="cXP()">Death Throes - Acid (+7)</option><br>
+                        <option id="npc_qual_dt_ba" name="q_dt_ba" value="7" onclick="cXP()">Death Throes - Bang (+7)</option><br>
+                        <option id="npc_qual_dt_co" name="q_dt_co" value="7" onclick="cXP()">Death Throes - Cold (+7)</option><br>
+                        <option id="npc_qual_dt_di" name="q_dt_di" value="7" onclick="cXP()">Death Throes - Divine (+7)</option><br>
+                        <option id="npc_qual_dt_el" name="q_dt_el" value="7" onclick="cXP()">Death Throes - Electrical (+7)</option><br>
+                        <option id="npc_qual_dt_ex" name="q_dt_ex" value="7" onclick="cXP()">Death Throes - Explosive (+7)</option><br>
+                        <option id="npc_qual_dt_fi" name="q_dt_fi" value="7" onclick="cXP()">Death Throes - Fire (+7)</option><br>
+                        <option id="npc_qual_dt_fl" name="q_dt_fl" value="7" onclick="cXP()">Death Throes - Flash (+7)</option><br>
+                        <option id="npc_qual_dt_fo" name="q_dt_fo" value="7" onclick="cXP()">Death Throes - Force (+7)</option><br>
+                        <option id="npc_qual_dt_he" name="q_dt_he" value="7" onclick="cXP()">Death Throes - Heat (+7)</option><br>
+                        <option id="npc_qual_dt_sa" name="q_dt_sa" value="7" onclick="cXP()">Death Throes - Sneak Attack (+7)</option><br>
+                        <option id="npc_qual_dt_so" name="q_dt_so" value="7" onclick="cXP()">Death Throes - Sonic (+7)</option><br>
+                        <option id="npc_qual_dt_st" name="q_dt_st" value="7" onclick="cXP()">Death Throes - Stress (+7)</option><br>
+                        <option id="npc_qual_dt_su" name="q_dt_su" value="7" onclick="cXP()">Death Throes - Subdual (+7)</option><br>              
+                
+                    </select><br>
+            <input type="checkbox" id="npc_qual_dev" name="q_dev" value="0" onclick="cXP()">
+                <select onchange="cXP()">                
+                    <option id="npc_qual_dev1" name="q_dev1" value="2">Devoted I (+2)</option><br>
+                    <option id="npc_qual_dev2" name="q_dev2" value="4">Devoted II (+4)</option><br>
+                    <option id="npc_qual_dev3" name="q_dev3" value="6">Devoted III (+6)</option><br>
+                    <option id="npc_qual_dev4" name="q_dev4" value="8">Devoted IV (+8)</option><br>
+                    <option id="npc_qual_dev5" name="q_dev5" value="10">Devoted V (+10)</option><br>
+                </select><br>
+            <input type="checkbox" id="npc_qual_dvr" name="q_dvr" value="3" onclick="cXP()"><label for="q_dvr">Devour (+3)</label><br>
+            <input type="checkbox" id="npc_qual_diu" name="q_diu" value="-1" onclick="cXP()"><label for="q_diu">Diurnal (-1)</label><br>
+            <input type="checkbox" id="npc_qual_dra" name="q_dra" value="8" onclick="cXP()"><label for="q_dra">Dramatic Entrance (+8)</label><br>
+            <input type="checkbox" id="npc_qual_dre" name="q_dre" value="2" onclick="cXP()"><label for="q_dre">Dread (+2)</label><br>
+            <input type="checkbox" id="npc_qual_evr" name="q_evr" value="0" onclick="cXP()"><label for="q_evr">Everlasting (+0)</label><br>
+            <input type="checkbox" id="npc_qual_esb" name="q_esb" value="1" onclick="cXP()"><label for="q_dvr">Expanded Spellbook (+1/spell)</label><br>
+            <input type="checkbox" id="npc_qual_exp" name="q_exp" value="0" onclick="toggleSection('exp_list'); cXP()"><label for="q_exp">Expertise (+2/Skill)</label><br>
+            <div id="exp_list" style="display:none">
+            <span id="exp_skills">
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_exp_acr" name="q_exp_acr" value="2" onclick="cXP()"><label for="q_exp_ath">Acrobatics (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_exp_ath" name="q_exp_ath" value="2" onclick="cXP()"><label for="q_exp_ath">Athletics (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_exp_ble" name="q_exp_ble" value="2" onclick="cXP()"><label for="q_exp_ble">Blend (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_exp_blu" name="q_exp_blu" value="2" onclick="cXP()"><label for="q_exp_blu">Bluff (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_exp_cra" name="q_exp_cra" value="2" onclick="cXP()"><label for="q_exp_cra">Craft (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_exp_dis" name="q_exp_dis" value="2" onclick="cXP()"><label for="q_exp_dis">Disguise (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_exp_hag" name="q_exp_hag" value="2" onclick="cXP()"><label for="q_exp_hag">Haggle (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_exp_imp" name="q_exp_imp" value="2" onclick="cXP()"><label for="q_exp_imp">Impress (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_exp_int" name="q_exp_int" value="2" onclick="cXP()"><label for="q_exp_int">Intimidate (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_exp_inv" name="q_exp_inv" value="2" onclick="cXP()"><label for="q_exp_inv">Investigate (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_exp_med" name="q_exp_med" value="2" onclick="cXP()"><label for="q_exp_med">Medicine (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_exp_not" name="q_exp_not" value="2" onclick="cXP()"><label for="q_exp_not">Notice (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_exp_pre" name="q_exp_pre" value="2" onclick="cXP()"><label for="q_exp_pre">Prestidigitation (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_exp_res" name="q_exp_res" value="2" onclick="cXP()"><label for="q_exp_res">Resolve (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_exp_rid" name="q_exp_rid" value="2" onclick="cXP()"><label for="q_exp_rid">Ride (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_exp_sea" name="q_exp_sea" value="2" onclick="cXP()"><label for="q_exp_sea">Search (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_exp_sen" name="q_exp_sen" value="2" onclick="cXP()"><label for="q_exp_sen">Sense Motive (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_exp_sne" name="q_exp_sne" value="2" onclick="cXP()"><label for="q_exp_sne">Sneak (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_exp_spe" name="q_exp_spe" value="2" onclick="cXP()"><label for="q_exp_spe">Spellcasting (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_exp_sur" name="q_exp_sur" value="2" onclick="cXP()"><label for="q_exp_sur">Survival (+2)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_exp_tac" name="q_exp_tac" value="2" onclick="cXP()"><label for="q_exp_tac">Tactics (+2)</label><br>
+            </span>
+            </div>
+            <input type="checkbox" id="npc_qual_fh" name="q_fh" value="1" onclick="cXP()"><label for="q_fh">Fast Healing (+1)</label><br>
+            <input type="checkbox" id="npc_qual_ff" name="q_ffl" value="-1" onclick="cXP()"><label for="q_ffl">Fatal Falls (-1)</label><br>
+            <input type="checkbox" id="npc_qual_faf" name="q_faf" value="0" onclick="toggleSection('foe_list'); cXP()"><label for="q_exp">Favored Foes (+1/Type)</label><br>
+            <div id="foe_list" style="display:none">
+            <span id="foe_types">
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_faf_an" name="q_faf_an" value="1" onclick="cXP()"><label for="q_faf_an">Animal (+1)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_faf_be" name="q_faf_be" value="1" onclick="cXP()"><label for="q_faf_be">Beast (+1)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_faf_co" name="q_faf_co" value="1" onclick="cXP()"><label for="q_faf_co">Construct (+1)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_faf_el" name="q_faf_el" value="1" onclick="cXP()"><label for="q_faf_el">Elemental (+1)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_faf_fe" name="q_faf_fe" value="1" onclick="cXP()"><label for="q_faf_fe">Fey (+1)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_faf_fo" name="q_faf_fo" value="1" onclick="cXP()" selected><label for="q_faf_fo">Folk (+1)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_faf_ho" name="q_faf_ho" value="1" onclick="cXP()"><label for="q_faf_ho">Horror (+1)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_faf_oo" name="q_faf_oo" value="1" onclick="cXP()"><label for="q_faf_oo">Ooze (+1)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_faf_ou" name="q_faf_ou" value="1" onclick="cXP()"><label for="q_faf_ou">Outsider (+1)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_faf_pl" name="q_faf_pl" value="1" onclick="cXP()"><label for="q_faf_pl">Plant (+1)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_faf_sp" name="q_faf_sp" value="1" onclick="cXP()"><label for="q_faf_sp">Spirit (+1)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_faf_un" name="q_faf_un" value="1" onclick="cXP()"><label for="q_faf_un">Undead (+1)</label><br>
+            </span>
+            </div>
+            <input type="checkbox" id="npc_qual_fl" name="q_fl" value="0" onclick="cXP()">
+                
+                    <select onchange="cXP()">
+                <option id="npc_qual_fl1" name="q_fl1" value="2" selected>Fearless I (+2)</option><br>
+                <option id="npc_qual_fl2" name="q_fl2" value="4">Fearless II (+4)</option><br>
+            </select><br>
+            <input type="checkbox" id="npc_qual_feat" name="q_feat" value="2" onclick="toggleSection('f_list'); cXP()"><label for="q_feat">Feats (+2/feat)</label>            
+            <div id="f_list" style="display:none">
+                <p>Number of feats: <span id="featNum">0</span></p>
+                <input type="button" value="Add Feat" onclick="addListItem_Feat(); cXP()" />
+                <ul id="p_featList">
+                </ul>
+                
+            </div><br>
+            <input type="checkbox" id="npc_qual_fera" name="q_fera" value="1" onclick="cXP()"><label for="q_fera">Feral (+1)</label><br>
+            <input type="checkbox" id="npc_qual_fero" name="q_fero" value="3" onclick="cXP()"><label for="q_fero">Ferocity (+3)</label><br>
+            <input type="checkbox" id="npc_qual_fz" name="q_fz" value="0" onclick="cXP()">
+                
+                    <select onchange="cXP()">
+                <option id="npc_qual_fz1" name="q_fz1" value="4" selected>Frenzy I (+4)</option><br>
+                <option id="npc_qual_fz2" name="q_fz2" value="8">Frenzy II (+8)</option><br>
+                <option id="npc_qual_fz3" name="q_fz3" value="12">Frenzy III (+12)</option><br>
+            </select><br>
+            <input type="checkbox" id="npc_qual_grap" name="q_grap" value="2" onclick="cXP()"><label for="q_grap">Grappler (+2)</label><br>
+            <input type="checkbox" id="npc_qual_gru" name="q_gru" value="2" onclick="cXP()"><label for="q_gru">Grueling Combatant (+2)</label><br>
+            <input type="checkbox" id="npc_qual_hm" name="q_hm" value="2" onclick="cXP()"><label for="q_hm">Hive Mind (+2)</label><br>
+            <input type="checkbox" id="npc_qual_ho" name="q_ho" value="2" onclick="cXP()"><label for="q_ho">Honorable (+3)</label><br>
+            <input type="checkbox" id="npc_qual_is" name="q_is" value="0" onclick="toggleSection('imi_list'); cXP()"><label for="q_exp">Impaired Sense (-1/Sense)</label><br>
+            <div id="imi_list" style="display:none">
+            <span id="impaired_senses">
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_is_vi" name="q_is_vi" value="-1" onclick="cXP()"><label for="q_is_vi">Visual (-1)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_is_he" name="q_is_he" value="-1" onclick="cXP()"><label for="q_is_he">Hearing (-1)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_is_sc" name="q_is_sc" value="-1" onclick="cXP()"><label for="q_is_sc">Scent (-1)</label><br>
+            </span>
+            </div>
+            <input type="checkbox" id="npc_qual_icc" name="q_icc" value="0" onclick="cXP()"><label for="q_icc">Improved Carrying Capacity (+0)</label><br>
+            <input type="checkbox" id="npc_qual_irs" name="q_irs" value="0" onclick="toggleSection('imv_list'); cXP()"><label for="q_irs">Improved Sense (+1/Sense)</label><br>
+            <div id="imv_list" style="display:none">
+            <span id="improved_senses">
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_irs_vi" name="q_irs_vi" value="1" onclick="cXP()"><label for="q_irs_vi">Visual (+1)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_irs_he" name="q_irs_he" value="1" onclick="cXP()"><label for="q_irs_he">Hearing (+1)</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_qual_irs_sc" name="q_irs_sc" value="1" onclick="cXP()"><label for="q_irs_sc">Scent (+1)</label><br>
+            </span>
+            </div>
+            <input type="checkbox" id="npc_qual_imp_stab" name="q_imp_stab" value="2" onclick="cXP()"><label for="q_imp_stab">Improved Stability (+2)</label><br>
+            <input type="checkbox" id="npc_qual_int" name="q_int" value="0" onclick="cXP()"><label for="q_int">Interests (+0)</label><br>
+            <input type="checkbox" id="npc_qual_inv" name="q_inv" value="8" onclick="cXP()"><label for="q_inv">Invisibility (+8)</label><br>
+            <input type="checkbox" id="npc_qual_kb" name="q_kb" value="2" onclick="cXP()"><label for="q_kb">Knockback (+2)</label><br>
+            <input type="checkbox" id="npc_qual_lse" name="q_lse" value="-2" onclick="cXP()"><label for="q_lse">Light-Sensitive (-2)</label><br>
+            <input type="checkbox" id="npc_qual_lsl" name="q_lsl" value="1" onclick="cXP()"><label for="q_lsl">Light Sleeper (+1)</label><br>
+            <input type="checkbox" id="npc_qual_lum" name="q_lum" value="-2" onclick="cXP()"><label for="q_lum">Lumbering (-2)</label><br>
+            <input type="checkbox" id="npc_qual_me" name="q_me" value="-2" onclick="cXP()"><label for="q_me">Meek (-2)</label><br>
+            <input type="checkbox" id="npc_qual_men" name="q_men" value="2" onclick="cXP()"><label for="q_men">Menacing Threat (+2)</label><br>
+            <input type="checkbox" id="npc_qual_moo" name="q_moo" value="-4" onclick="cXP()"><label for="q_moo">Mook (-4)</label><br>
+            <input type="checkbox" id="npc_qual_ma" name="q_ma" value="0" onclick="cXP()">
+            <select onchange="cXP()">                
+                <option id="npc_qual_ma1" name="q_ma1" value="3">Monstrous Attack I (+3)</option><br>
+                <option id="npc_qual_ma2" name="q_ma2" value="6">Monstrous Attack II (+6)</option><br>
+                <option id="npc_qual_ma3" name="q_ma3" value="9">Monstrous Attack III (+9)</option><br>
+                <option id="npc_qual_ma4" name="q_ma4" value="12">Monstrous Attack IV (+12)</option><br>
+                <option id="npc_qual_ma5" name="q_ma5" value="15">Monstrous Attack V (+15)</option><br>
+            </select><br>
+            <input type="checkbox" id="npc_qual_nd" name="q_nd" value="0" onclick="cXP()">                
+                <select onchange="cXP()">
+                    <option id="npc_qual_nd_le" name="q_nd_le" value="5" onclick="cXP()" selected>Natural Defense - Lethal (+5)</option><br>
+                    <option id="npc_qual_nd_ac" name="q_nd_ac" value="7" onclick="cXP()">Natural Defense - Acid (+7)</option><br>
+                    <option id="npc_qual_nd_ba" name="q_nd_ba" value="7" onclick="cXP()">Natural Defense - Bang (+7)</option><br>
+                    <option id="npc_qual_nd_co" name="q_nd_co" value="7" onclick="cXP()">Natural Defense - Cold (+7)</option><br>
+                    <option id="npc_qual_nd_di" name="q_nd_di" value="7" onclick="cXP()">Natural Defense - Divine (+7)</option><br>
+                    <option id="npc_qual_nd_el" name="q_nd_el" value="7" onclick="cXP()">Natural Defense - Electrical (+7)</option><br>
+                    <option id="npc_qual_nd_ex" name="q_nd_ex" value="7" onclick="cXP()">Natural Defense - Explosive (+7)</option><br>
+                    <option id="npc_qual_nd_fi" name="q_nd_fi" value="7" onclick="cXP()">Natural Defense - Fire (+7)</option><br>
+                    <option id="npc_qual_nd_fl" name="q_nd_fl" value="7" onclick="cXP()">Natural Defense - Flash (+7)</option><br>
+                    <option id="npc_qual_nd_fo" name="q_nd_fo" value="7" onclick="cXP()">Natural Defense - Force (+7)</option><br>
+                    <option id="npc_qual_nd_he" name="q_nd_he" value="7" onclick="cXP()">Natural Defense - Heat (+7)</option><br>
+                    <option id="npc_qual_nd_sa" name="q_nd_sa" value="7" onclick="cXP()">Natural Defense - Sneak Attack (+7)</option><br>
+                    <option id="npc_qual_nd_so" name="q_nd_so" value="7" onclick="cXP()">Natural Defense - Sonic (+7)</option><br>
+                    <option id="npc_qual_nd_st" name="q_nd_st" value="7" onclick="cXP()">Natural Defense - Stress (+7)</option><br>
+                    <option id="npc_qual_nd_su" name="q_nd_su" value="7" onclick="cXP()">Natural Defense - Subdual (+7)</option><br>           
+                </select><br>
+                <input type="checkbox" id="npc_qual_ns" name="q_ns" value="0" onclick="toggleSection('ns_list'); cXP()"><label for="q_ns">Natural Spells (+1/spell level)</label>            
+                <div id="ns_list" style="display:none">
+            <p>Natural Spell Levels Total: <span id="nsTotalLevels">0</span></p>
+            <ul id="p_nsList">
+            </ul>
+            <input type="button" value="Add Natural Spell" onclick="addListItem_NS()" />
+        </div><br>
+            <input type="checkbox" id="npc_qual_no" name="q_no" value="2" onclick="cXP()"><label for="q_no">Never Outnumbered (+2)</label><br>
+            <input type="checkbox" id="npc_qual_nb" name="q_nb" value="0" onclick="cXP()"><label for="q_nb">Night-Blind (+0)</label><br>
+            <input type="checkbox" id="npc_qual_noc" name="q_noc" value="-1" onclick="cXP()"><label for="q_noc">Nocturnal (-1)</label><br>
+            <input type="checkbox" id="npc_qual_re" name="q_re" value="0" onclick="cXP()">
+                <select onchange="cXP()">                
+                    <option id="npc_qual_re1" name="q_re1" value="3">Regeneration I (+3)</option><br>
+                    <option id="npc_qual_re2" name="q_re2" value="6">Regeneration II (+6)</option><br>
+                    <option id="npc_qual_re3" name="q_re3" value="9">Regeneration III (+9)</option><br>
+                    <option id="npc_qual_re4" name="q_re4" value="12">Regeneration IV (+12)</option><br>
+                    <option id="npc_qual_re5" name="q_re5" value="15">Regeneration V (+15)</option><br>
+                </select><br>
+            <input type="checkbox" id="npc_qual_rend" name="q_rend" value="3" onclick="cXP()"><label for="q_rend">Rend (+3)</label><br>
+            <input type="checkbox" id="npc_qual_rep" name="q_rep" value="0" onclick="cXP()">
+                <select onchange="cXP()">                
+                    <option id="npc_qual_rep1" name="q_rep1" value="-1">Repulsive I (-1)</option><br>
+                    <option id="npc_qual_rep2" name="q_rep2" value="-2">Repulsive II (-2)</option><br>
+                    <option id="npc_qual_rep3" name="q_rep3" value="-3">Repulsive III (-3)</option><br>
+                    <option id="npc_qual_rep4" name="q_rep4" value="-4">Repulsive IV (-4)</option><br>
+                    <option id="npc_qual_rep5" name="q_rep5" value="-5">Repulsive V (-5)</option><br>
+                </select><br>
+            <input type="checkbox" id="npc_qual_sha" name="q_sha" value="-4" onclick="cXP()"><label for="q_sha">Shambling (-4)</label><br>
+            <input type="checkbox" id="npc_qual_shsh" name="q_shsh" value="0" onclick="cXP()">
+                <select onchange="cXP()">
+                    <option id="npc_qual_shsh1" name="q_shsh1" value="4" selected>Shapeshifter I (+4)</option><br>
+                    <option id="npc_qual_shsh2" name="q_shsh2" value="8">Shapeshifter II (+8)</option><br>
+                    <option id="npc_qual_shsh3" name="q_shsh3" value="12">Shapeshifter III (+12)</option><br>
+                </select><br>
+            <input type="checkbox" id="npc_qual_sd" name="q_sd" value="0" onclick="cXP()">
+                <select onchange="cXP()">                
+                    <option id="npc_qual_sd1" name="q_sd1" value="2">Spell Defense I (+2)</option><br>
+                    <option id="npc_qual_sd2" name="q_sd2" value="4">Spell Defense II (+4)</option><br>
+                    <option id="npc_qual_sd3" name="q_sd3" value="6">Spell Defense III (+6)</option><br>
+                    <option id="npc_qual_sd4" name="q_sd4" value="8">Spell Defense IV (+8)</option><br>
+                    <option id="npc_qual_sd5" name="q_sd5" value="10">Spell Defense V (+10)</option><br>
+                </select><br>
+            <input type="checkbox" id="npc_qual_sr" name="q_sr" value="3" onclick="cXP()"><label for="q_sr">Spell Reflection (+3)</label><br>
+            <input type="checkbox" id="npc_qual_spl" name="q_spl" value="0" onclick="cXP()">
+                <select onchange="cXP()">                
+                    <option id="npc_qual_splds" name="q_splds" value="0">Damage Splitter (+0)</option><br>
+                    <option id="npc_qual_spldsi" name="q_spldsi" value="5">Instant Damage Splitter (+5)</option><br>
+                    <option id="npc_qual_splks" name="q_splks" value="0">Kill Splitter (+0)</option><br>
+                    <option id="npc_qual_splksi" name="q_splksi" value="5">Instant Kill Splitter (+5)</option><br>
+                </select><br>
+            <input type="checkbox" id="npc_qual_st" name="q_st" value="2" onclick="cXP()"><label for="q_st">Stench (+2)</label><br>
+            <input type="checkbox" id="npc_qual_stern" name="q_stern" value="1" onclick="cXP()"><label for="q_stern">Sterner Stuff (+1)</label><br>
+            <input type="checkbox" id="npc_qual_sc" name="q_sc" value="0" onclick="cXP()"><label for="q_sc">Story-Critical (+0)</label><br>
+            <input type="checkbox" id="npc_qual_sucl" name="q_sucl" value="0" onclick="cXP()">
+                <select onchange="cXP()">                
+                    <option id="npc_qual_sucl1" name="q_sucl1" value="1">Superior Climber I (+1)</option><br>
+                    <option id="npc_qual_sucl2" name="q_sucl2" value="2">Superior Climber II (+2)</option><br>
+                    <option id="npc_qual_sucl3" name="q_sucl3" value="3">Superior Climber III (+3)</option><br>
+                    <option id="npc_qual_sucl4" name="q_sucl4" value="4">Superior Climber IV (+4)</option><br>
+                    <option id="npc_qual_sucl5" name="q_sucl5" value="5">Superior Climber V (+5)</option><br>
+                </select><br>
+            <input type="checkbox" id="npc_qual_suju" name="q_suju" value="0" onclick="cXP()">
+                <select onchange="cXP()">                
+                    <option id="npc_qual_suju1" name="q_suju1" value="1">Superior Jumper I (+1)</option><br>
+                    <option id="npc_qual_suju2" name="q_suju2" value="2">Superior Jumper II (+2)</option><br>
+                    <option id="npc_qual_suju3" name="q_suju3" value="3">Superior Jumper III (+3)</option><br>
+                    <option id="npc_qual_suju4" name="q_suju4" value="4">Superior Jumper IV (+4)</option><br>
+                    <option id="npc_qual_suju5" name="q_suju5" value="5">Superior Jumper V (+5)</option><br>
+                </select><br>
+            <input type="checkbox" id="npc_qual_suru" name="q_suru" value="0" onclick="cXP()">
+                <select onchange="cXP()">                
+                    <option id="npc_qual_suru1" name="q_suru1" value="1">Superior Runner I (+1)</option><br>
+                    <option id="npc_qual_suru2" name="q_suru2" value="2">Superior Runner II (+2)</option><br>
+                    <option id="npc_qual_suru3" name="q_suru3" value="3">Superior Runner III (+3)</option><br>
+                    <option id="npc_qual_suru4" name="q_suru4" value="4">Superior Runner IV (+4)</option><br>
+                    <option id="npc_qual_suru5" name="q_suru5" value="5">Superior Runner V (+5)</option><br>
+                </select><br>
+            <input type="checkbox" id="npc_qual_susw" name="q_susw" value="0" onclick="cXP()">
+                <select onchange="cXP()">                
+                    <option id="npc_qual_susw1" name="q_susw1" value="1">Superior Swimmer I (+1)</option><br>
+                    <option id="npc_qual_susw2" name="q_susw2" value="2">Superior Swimmer II (+2)</option><br>
+                    <option id="npc_qual_susw3" name="q_susw3" value="3">Superior Swimmer III (+3)</option><br>
+                    <option id="npc_qual_susw4" name="q_susw4" value="4">Superior Swimmer IV (+4)</option><br>
+                    <option id="npc_qual_susw5" name="q_susw5" value="5">Superior Swimmer V (+5)</option><br>
+                </select><br>
+            <input type="checkbox" id="npc_qual_sutr" name="q_sutr" value="0" onclick="cXP()">
+                <select onchange="cXP()">                
+                    <option id="npc_qual_sutr1" name="q_sutr1" value="1">Superior Traveler I (+1)</option><br>
+                    <option id="npc_qual_sutr2" name="q_sutr2" value="2">Superior Traveler II (+2)</option><br>
+                    <option id="npc_qual_sutr3" name="q_sutr3" value="3">Superior Traveler III (+3)</option><br>
+                    <option id="npc_qual_sutr4" name="q_sutr4" value="4">Superior Traveler IV (+4)</option><br>
+                    <option id="npc_qual_sutr5" name="q_sutr5" value="5">Superior Traveler V (+5)</option><br>
+                </select><br>
+            <input type="checkbox" id="npc_qual_swarm" name="q_swarm" value="2" onclick="cXP()"><label for="q_swarm">Swarm (+2)</label><br>
+            <input type="checkbox" id="npc_qual_swat" name="q_swat" value="0" onclick="cXP()">
+                <select onchange="cXP()">                
+                    <option id="npc_qual_swat1" name="q_swat1" value="3">Swift Attack - 1 extra attack (+3)</option><br>
+                    <option id="npc_qual_swat2" name="q_swat2" value="6">Swift Attack - 2 extra attacks (+6)</option><br>
+                    <option id="npc_qual_swat3" name="q_swat3" value="9">Swift Attack - 3 extra attacks (+9)</option><br>
+                    <option id="npc_qual_swat4" name="q_swat4" value="12">Swift Attack - 4 extra attacks (+12)</option><br>
+                    <option id="npc_qual_swat5" name="q_swat5" value="15">Swift Attack - 5 extra attacks (+15)</option><br>
+                </select><br>
+            <input type="checkbox" id="npc_qual_tel" name="q_tel" value="1" onclick="cXP()"><label for="q_tel">Telepathic (+1)</label><br>
+            <input type="checkbox" id="npc_qual_tou" name="q_tou" value="0" onclick="cXP()">
+                <select onchange="cXP()">                
+                    <option id="npc_qual_tou1" name="q_tou1" value="5">Tough I (+5)</option><br>
+                    <option id="npc_qual_tou2" name="q_tou2" value="10">Tough II (+10)</option><br>
+                    <option id="npc_qual_tou3" name="q_tou3" value="15">Tough III (+15)</option><br>
+                    <option id="npc_qual_tou4" name="q_tou4" value="20">Tough IV (+20)</option><br>
+                    <option id="npc_qual_tou5" name="q_tou5" value="25">Tough V (+25)</option><br>
+                </select><br>
+            <input type="checkbox" id="npc_qual_trec" name="q_trec" value="5" onclick="cXP()"><label for="q_trec">Treacherous (+5)</label><br>
+            <input type="checkbox" id="npc_qual_tric" name="q_tric" value="2" onclick="cXP()"><label for="q_tric">Tricksy (+2)/trick</label><br>
+            <input type="checkbox" id="npc_qual_turn" name="q_turn" value="4" onclick="cXP()"><label for="q_tric">Turn </label>
+            <select id="turn_options" onchange="cXP()">
+                <option id="npc_qual_turn_an" name="q_turn_an" value="4" onclick="cXP()"><label for="q_turn_an">Animal (+4)</label><br>
+                <option id="npc_qual_turn_be" name="q_turn_be" value="4" onclick="cXP()"><label for="q_turn_be">Beast (+4)</label><br>
+                <option id="npc_qual_turn_co" name="q_turn_co" value="4" onclick="cXP()"><label for="q_turn_co">Construct (+4)</label><br>
+                <option id="npc_qual_turn_el" name="q_turn_el" value="4" onclick="cXP()"><label for="q_turn_el">Elemental (+4)</label><br>
+                <option id="npc_qual_turn_fe" name="q_turn_fe" value="4" onclick="cXP()"><label for="q_turn_fe">Fey (+4)</label><br>
+                <option id="npc_qual_turn_fo" name="q_turn_fo" value="4" onclick="cXP()"><label for="q_turn_fo">Folk (+4)</label><br>
+                <option id="npc_qual_turn_ho" name="q_turn_ho" value="4" onclick="cXP()"><label for="q_turn_ho">Horror (+4)</label><br>
+                <option id="npc_qual_turn_oo" name="q_turn_oo" value="4" onclick="cXP()"><label for="q_turn_oo">Ooze (+4)</label><br>
+                <option id="npc_qual_turn_ou" name="q_turn_ou" value="4" onclick="cXP()"><label for="q_turn_ou">Outsider (+4)</label><br>
+                <option id="npc_qual_turn_pl" name="q_turn_pl" value="4" onclick="cXP()"><label for="q_turn_pl">Plant (+4)</label><br>
+                <option id="npc_qual_turn_sp" name="q_turn_sp" value="4" onclick="cXP()"><label for="q_turn_sp">Spirit (+4)</label><br>
+                <option id="npc_qual_turn_un" name="q_turn_un" value="4" onclick="cXP()" selected><label for="q_turn_un">Undead (+4)</label><br>
+            </select><br >
+            <input type="checkbox" id="npc_qual_ti" name="q_ti" value="2" onclick="cXP()"><label for="q_ti">Turn Immunity (+2)</label><br>
+            <input type="checkbox" id="npc_qual_usp" name="q_usp" value="5" onclick="cXP()"><label for="q_usp">Unlimited Spell Points (+5)</label><br>
+            <input type="checkbox" id="npc_qual_unn" name="q_unn" value="2" onclick="cXP()"><label for="q_unn">Unnerving (+2)</label><br>
+            <input type="checkbox" id="npc_qual_vet" name="q_vet" value="0" onclick="cXP()">
+                <select onchange="cXP()">                
+                    <option id="npc_qual_vet1" name="q_vet1" value="2">Veteran I (+2)</option><br>
+                    <option id="npc_qual_vet2" name="q_vet2" value="4">Veteran II (+4)</option><br>
+                    <option id="npc_qual_vet3" name="q_vet3" value="6">Veteran III (+6)</option><br>
+                    <option id="npc_qual_vet4" name="q_vet4" value="8">Veteran IV (+8)</option><br>
+                    <option id="npc_qual_vet5" name="q_vet5" value="10">Veteran V (+10)</option><br>
+                </select>
+
+        </form>
+            </div>
+        <h2 onclick="toggleSection('step3')">Step 3: Attacks (<span id="attackXPTotal">0</span>)</h2>
+            <div id="step3" style="display:none">
+        <h3>Weapons</h3>
+
+        <h3>Natural Attacks</h3>
+
+        <h3>Extraordinary Attacks</h3>
+            </div>
+        <h2 onclick="toggleSection('step4')">Step 4: Gear and Treasure (<span id="gearXPTotal">0</span>)</h2>
+            <div id="step4" style="display:none">
+            </div>
+        </div>
+        <div id="playSection" style="display:none">
+            <h2 id="p_name">NPC Name</h2>
+            <p>(<span id="p_size">Large</span> <span id="p_type">Construct</span> <span id="p_mobility">Walker</span> - <span id="p_XPTotal">78</span>)</p>
+
+            <form>
+                <select id="p_threat_level" onchange="translateNPCTraitsTables()">
+                    <option id="tl01" name="tl01" value="1" selected>Threat Level 01</option>
+                    <option id="tl02" name="tl02" value="2">Threat Level 02</option>
+                    <option id="tl03" name="tl03" value="3">Threat Level 03</option>
+                    <option id="tl04" name="tl04" value="4">Threat Level 04</option>
+                    <option id="tl05" name="tl05" value="5">Threat Level 05</option>
+                    <option id="tl06" name="tl06" value="6">Threat Level 06</option>
+                    <option id="tl07" name="tl07" value="7">Threat Level 07</option>
+                    <option id="tl08" name="tl08" value="8">Threat Level 08</option>
+                    <option id="tl09" name="tl09" value="9">Threat Level 09</option>
+                    <option id="tl10" name="tl10" value="10">Threat Level 10</option>
+                    <option id="tl11" name="tl11" value="11">Threat Level 11</option>
+                    <option id="tl12" name="tl12" value="12">Threat Level 12</option>
+                    <option id="tl13" name="tl13" value="13">Threat Level 13</option>
+                    <option id="tl14" name="tl14" value="14">Threat Level 14</option>
+                    <option id="tl15" name="tl15" value="15">Threat Level 15</option>
+                    <option id="tl16" name="tl16" value="16">Threat Level 16</option>
+                    <option id="tl17" name="tl17" value="17">Threat Level 17</option>
+                    <option id="tl18" name="tl18" value="18">Threat Level 18</option>
+                    <option id="tl19" name="tl19" value="19">Threat Level 19</option>
+                    <option id="tl20" name="tl20" value="20">Threat Level 20</option>
+                </select>
+            </form>
+            <form>
+                <input type="radio" id="t_standard" onclick="setStandard()" name="toggleStandard" checked>
+                <label for="edit">Standard</label>
+                <input type="radio" id="t_special" onclick="setSpecial()" name="toggleStandard">
+                <label for="play">Special</label>
+            </form>
+
+            <h3>Attributes</h3>
+            <p> Str: <span id="p_str">18</span><br>
+                Dex: <span id="p_dex">9</span><br>
+                Con: <span id="p_con">10</span><br>
+                Int: <span id="p_int">8</span><br>
+                Wis: <span id="p_wis">10</span><br>
+                Cha: <span id="p_cha">1</span>
+            </p>
+            <h3>Size</h3>
+            <p><span id="p_sz">L<span id="p_dim">2x2</span> Reach <span id="p_reach">2</span></p>
+
+            <h3>Traits</h3>
+            <p>Initiative bonus: <span id="p_init">0</span></p>
+            <p>Attack bonus: <span id="p_atk">0</span></p>
+            <p>Defense score: <span id="p_def">0</span></p>
+            <p>Fortitude Save bonus: <span id="p_fort">0</span></p>
+            <p>Reflex Save bonus: <span id="p_ref">0</span></p>
+            <p>Will Save bonus: <span id="p_wil">0</span></p>
+
+            <h3>Health</h3>
+            <div id="p_std_health">
+                <p>Damage Save bonus: <span id="p_dam_save_mod">0</span></p>
+            </div>
+            <div id="p_spc_health">
+                <p>Vitality: <span id="p_vitality">0</span></p>
+                <p>Wounds: <span id="p_wounds">0</span></p>
+            </div>
+
+        </div>        
+        
+        </body>
+</html>

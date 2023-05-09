@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script>
             var NPC_special = 0;
+            var spellIndex = 0;
             var featIndex = 0;
             var nsIndex = 0;
             var immobility = 0;
@@ -419,6 +420,7 @@
                 if (document.getElementById("npc_qual_dev").checked && document.getElementById("npc_qual_dev3").selected) { qualityPoints += Number(document.getElementById("npc_qual_dev3").value);}
                 if (document.getElementById("npc_qual_dev").checked && document.getElementById("npc_qual_dev4").selected) { qualityPoints += Number(document.getElementById("npc_qual_dev4").value);}
                 if (document.getElementById("npc_qual_dev").checked && document.getElementById("npc_qual_dev5").selected) { qualityPoints += Number(document.getElementById("npc_qual_dev5").value);}
+                if (document.getElementById("npc_qual_esb").checked) { qualityPoints += Number(document.getElementById("spellNum").innerHTML);}
                 if (document.getElementById("npc_qual_exp_acr").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_acr").value);}
                 if (document.getElementById("npc_qual_exp_ath").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_ath").value);}
                 if (document.getElementById("npc_qual_exp_ble").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_ble").value);}
@@ -788,6 +790,35 @@
                 }
             }
 
+            function addListItem_Spell() {
+                var s = "spell" + spellIndex;
+                var s2 = "removeListItem_Spell(" + "'" + s + "'" + ")";
+                const listItem = document.createElement("li");
+                listItem.id = s;
+                const inText = document.createElement("input");
+                inText.type = "text";
+                const spn = document.createElement("span");
+                spn.setAttribute("onclick", s2);
+                spn.innerHTML= "X";
+                
+                listItem.appendChild(inText);
+                listItem.appendChild(spn);
+
+                document.getElementById("p_spellList").appendChild(listItem);
+                
+                var spells = document.querySelectorAll("#p_spellList li");
+                document.getElementById("spellNum").innerHTML = spells.length;
+                spellIndex += 1;
+                cXP();
+            }
+
+            function removeListItem_Spell(item) {                
+                document.getElementById(item).remove();
+                var spells = document.querySelectorAll("#p_spellList li");
+                document.getElementById("spellNum").innerHTML = spells.length;
+                cXP();
+            }
+
             function addListItem_Feat() {
                 var f = "feat" + featIndex;
                 var f2 = "removeListItem_Feat(" + "'" + f + "'" + ")";
@@ -1136,9 +1167,9 @@
             </div>
             <input type="checkbox" id="npc_qual_chat" name="q_chat" value="2" onclick="cXP()"><label for="q_chat">Charge Attack (+2)</label><br>
             <input type="checkbox" id="npc_qual_clab" name="q_clab" value="0" onclick="toggleSection('clab_list'); cXP()"><label for="q_clab">Class Abilities (varies)</label><br>
-            <span id="clab_list" style="display:none">
+            <div id="clab_list" style="display:none">
                 &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_clab_cl_ab" name="ab" value="0" onclick="cXP()"><label for="ab">Ability (+x)</label><br>
-            </span>
+            </div>
             <input type="checkbox" id="npc_qual_cl" name="q_cl" value="-2" onclick="cXP()"><label for="q_cl">Clumsy (-2)</label><br>
             <input type="checkbox" id="npc_qual_cb" name="q_cb" value="-2" onclick="cXP()"><label for="q_cb">Cold-Blooded (-2)</label><br>
             <input type="checkbox" id="npc_qual_ci" name="q_ci" value="0" onclick="toggleSection('ci_list'); cXP()"><label for="q_ci">Condition Immunity (+4/Condition)</label><br>
@@ -1253,7 +1284,14 @@
             <input type="checkbox" id="npc_qual_dra" name="q_dra" value="8" onclick="cXP()"><label for="q_dra">Dramatic Entrance (+8)</label><br>
             <input type="checkbox" id="npc_qual_dre" name="q_dre" value="2" onclick="cXP()"><label for="q_dre">Dread (+2)</label><br>
             <input type="checkbox" id="npc_qual_evr" name="q_evr" value="0" onclick="cXP()"><label for="q_evr">Everlasting (+0)</label><br>
-            <input type="checkbox" id="npc_qual_esb" name="q_esb" value="1" onclick="cXP()"><label for="q_dvr">Expanded Spellbook (+1/spell)</label><br>
+            <input type="checkbox" id="npc_qual_esb" name="q_esb" value="0" onclick="toggleSection('s_list'); cXP()"><label for="q_esb">Expanded Spellbook (+1/spell)</label>            
+            <div id="s_list" style="display:none">
+                <p>Number of spells: <span id="spellNum">0</span></p>
+                <input type="button" value="Add Spell" onclick="addListItem_Spell(); cXP()" />
+                <ul id="p_spellList">
+                </ul>
+                
+            </div><br>
             <input type="checkbox" id="npc_qual_exp" name="q_exp" value="0" onclick="toggleSection('exp_list'); cXP()"><label for="q_exp">Expertise (+2/Skill)</label><br>
             <div id="exp_list" style="display:none">
             <span id="exp_skills">

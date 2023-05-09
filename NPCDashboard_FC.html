@@ -163,9 +163,28 @@
                 var bSpd = (Number(document.getElementById("burrower_spd").value)) / 10;
                 var fSpd = (Number(document.getElementById("flyer_spd").value)) / 10;
                 var sSpd = (Number(document.getElementById("swimmer_spd").value)) / 10;
+
+                if (document.getElementById("mobi").value == "walker") {
+                    wSpd = (wSpd > 3) ? (wSpd - 3):0;
+                }
+
+                if (document.getElementById("mobi").value == "burrower") {
+                    bSpd = (bSpd > 3) ? (bSpd - 3):0;
+                }
+
+                if (document.getElementById("mobi").value == "flyer") {
+                    fSpd = (fSpd > 3) ? (fSpd - 3):0;
+                }
+
+                if (document.getElementById("mobi").value == "swimmer") {
+                    sSpd = (sSpd > 3) ? (sSpd - 3):0;
+                }
                 
                 if (immobility == 1) {
                     mobilityPoints = -5;
+                }
+                else if (immobility == 0) {
+                    mobilityPoints = wSpd + bSpd + fSpd + sSpd;
                 }
 
                 document.getElementById("mobilityXP").innerHTML = mobilityPoints;

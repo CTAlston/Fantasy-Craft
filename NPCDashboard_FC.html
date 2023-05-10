@@ -4,6 +4,16 @@
         <title>NPC Dashboard</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script>
+            const _$ = {
+                get: (id) => document.getElementById(id), // Get the element by id and return it
+                val: (id) => _$.get(id).value, // Gets the element by id and returns its value
+                num: (id) => Number(_$.val(id)), // Gets the value and converts to a Number
+                checked: (id) => _$.get(id).checked === true, // Returns true if the element is checked
+                selected: (id) => _$.get(id).selected, // Returns true if the element is selected
+                set: (id, value) => _$.get(id).innerHTML = value, // Sets the innerHTML of the given id
+                setVal: (id, value) => _$.get(id).value = value, // Sets the value of the item with id
+            }
+
             var NPC_special = 0;
             var caIndex = 0;
             var eaIndex = 0;
@@ -12,7 +22,10 @@
             var featIndex = 0;
             var nsIndex = 0;
             var immobility = 0;
+
+            // Grade increases Y, and Threat Level increases X
             const NPC_Traits_Tables = [
+                // Initiative and Defense
                 [
                     [0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6],
                     [0, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 8, 9, 9],
@@ -25,6 +38,7 @@
                     [4, 5, 6, 8, 9, 10, 12, 13, 15, 16, 18, 19, 20, 22, 23, 25, 26, 28, 29, 30],
                     [4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28, 30, 31, 33]
                 ],
+                // Attack
                 [
                     [0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10],
                     [0, 1, 1, 2, 3, 3, 4, 5, 5, 6, 7, 7, 8, 9, 9, 10, 11, 11, 12, 12],
@@ -37,6 +51,7 @@
                     [2, 3, 5, 6, 8, 9, 11, 12, 14, 16, 17, 18, 20, 21, 23, 24, 26, 27, 29, 30],
                     [3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20, 21, 23, 24, 26, 27, 29, 30, 32]
                 ],
+                // Resilience, Competence, and Health
                 [
                     [0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6],
                     [0, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 7, 7, 7, 8],
@@ -49,6 +64,7 @@
                     [4, 5, 6, 6, 7, 8, 9, 9, 10, 11, 12, 12, 13, 14, 15, 15, 16, 17, 18, 18],
                     [4, 5, 6, 7, 8, 8, 9, 10, 11, 12, 12, 13, 14, 15, 16, 16, 17, 18, 19, 20]
                 ],
+                // Signature Skills
                 [
                     [2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12],
                     [3, 3, 4, 5, 5, 6, 7, 7, 8, 9, 9, 10, 11, 11, 12, 13, 13, 14, 15, 15],
@@ -68,12 +84,12 @@
             }
 
             function translateNPCTraitsTables() {
-                    document.getElementById("p_init").innerHTML = lookupTrait(0, (Number(document.getElementById("npc_init").value) -1), (Number(document.getElementById("p_threat_level").value) -1));
-                    document.getElementById("p_atk").innerHTML = lookupTrait(1, (Number(document.getElementById("npc_atk").value) -1), (Number(document.getElementById("p_threat_level").value) -1));
-                    document.getElementById("p_def").innerHTML = lookupTrait(0, (Number(document.getElementById("npc_def").value) -1), (Number(document.getElementById("p_threat_level").value) -1));
-                    document.getElementById("p_fort").innerHTML = lookupTrait(2, (Number(document.getElementById("npc_res").value) -1), (Number(document.getElementById("p_threat_level").value) -1));
-                    document.getElementById("p_ref").innerHTML = lookupTrait(2, (Number(document.getElementById("npc_res").value) -1), (Number(document.getElementById("p_threat_level").value) -1));
-                    document.getElementById("p_wil").innerHTML = lookupTrait(2, (Number(document.getElementById("npc_res").value) -1), (Number(document.getElementById("p_threat_level").value) -1));
+                _$.set("p_init", lookupTrait(0, _$.val("npc_init") - 1, _$.val("p_threat_level") - 1));
+                _$.set("p_atk", lookupTrait(1, _$.val("npc_atk") - 1, _$.val("p_threat_level") - 1));
+                _$.set("p_def", lookupTrait(0, _$.val("npc_def") - 1, _$.val("p_threat_level") - 1));
+                _$.set("p_fort", lookupTrait(2, _$.val("npc_res") - 1, _$.val("p_threat_level") - 1));
+                _$.set("p_ref", lookupTrait(2, _$.val("npc_res") - 1, _$.val("p_threat_level") - 1));
+                _$.set("p_wil", lookupTrait(2, _$.val("npc_res") - 1, _$.val("p_threat_level") - 1));
             }
 
             function setStandard() {
@@ -85,113 +101,113 @@
             }
 
             function toggleSection(sectionName) { 
-                if (document.getElementById(sectionName).style.display=="none") {
-                    document.getElementById(sectionName).style.display="block";
+                if (_$.get(sectionName).style.display === "none") {
+                    _$.get(sectionName).style.display="block";
                 }
-                else document.getElementById(sectionName).style.display="none";
+                else _$.get(sectionName).style.display="none";
             }
 
             function togglePlay() { 
-                if (document.getElementById("edit").checked==true) {
-                    document.getElementById("editSection").style.display="block";
-                    document.getElementById("playSection").style.display="none";
+                if (_$.checked("edit")) {
+                    _$.get("editSection").style.display="block";
+                    _$.get("playSection").style.display="none";
                 }
-                else if (document.getElementById("play").checked==true) {
-                    document.getElementById("playSection").style.display="block";
-                    document.getElementById("editSection").style.display="none";
+                else if (_$.checked("play")) {
+                    _$.get("playSection").style.display="block";
+                    _$.get("editSection").style.display="none";
 
                     //Set size
-                    document.getElementById("p_size").innerHTML = document.getElementById("sizeList").value;
+                    _$.set("p_size", _$.val("sizeList"));
 
                     //Assemble type definition
                     var play_type = '|';
-                    if (document.getElementById("ty_animal").checked) { play_type += "Animal|";}
-                    if (document.getElementById("ty_beast").checked) { play_type += "Beast|";}
-                    if (document.getElementById("ty_construct").checked) { play_type += "Construct|";}
-                    if (document.getElementById("ty_elemental").checked) { play_type += "Elemental|";}
-                    if (document.getElementById("ty_fey").checked) { play_type += "Fey|";}
-                    if (document.getElementById("ty_folk").checked) { play_type += "Folk|";}
-                    if (document.getElementById("ty_horror").checked) { play_type += "Horror|";}
-                    if (document.getElementById("ty_ooze").checked) { play_type += "Ooze|";}
-                    if (document.getElementById("ty_outsider").checked) { play_type += "Outsider|";}
-                    if (document.getElementById("ty_plant").checked) { play_type += "Plant|";}
-                    if (document.getElementById("ty_spirit").checked) { play_type += "Spirit|";}
-                    if (document.getElementById("ty_undead").checked) { play_type += "Undead|";}
+                    if (_$.checked("ty_animal")) { play_type += "Animal|";}
+                    if (_$.checked("ty_beast")) { play_type += "Beast|";}
+                    if (_$.checked("ty_construct")) { play_type += "Construct|";}
+                    if (_$.checked("ty_elemental")) { play_type += "Elemental|";}
+                    if (_$.checked("ty_fey")) { play_type += "Fey|";}
+                    if (_$.checked("ty_folk")) { play_type += "Folk|";}
+                    if (_$.checked("ty_horror")) { play_type += "Horror|";}
+                    if (_$.checked("ty_ooze")) { play_type += "Ooze|";}
+                    if (_$.checked("ty_outsider")) { play_type += "Outsider|";}
+                    if (_$.checked("ty_plant")) { play_type += "Plant|";}
+                    if (_$.checked("ty_spirit")) { play_type += "Spirit|";}
+                    if (_$.checked("ty_undead")) { play_type += "Undead|";}
 
                     //Set type definition
-                    document.getElementById("p_type").innerHTML = play_type;
+                    _$.set("p_type", play_type);
 
                     //Set XP value
-                    document.getElementById("p_XPTotal").innerHTML = Number(document.getElementById("xp_num").innerHTML) * Number(document.getElementById("p_threat_level").value);
+                    _$.set("p_XPTotal", Number(_$.get("xp_num").innerHTML) * _$.num("p_threat_level"));
 
                     //Set attributes
-                    document.getElementById("p_str").innerHTML = Number(document.getElementById("npc_str").value);
-                    document.getElementById("p_dex").innerHTML = Number(document.getElementById("npc_dex").value);
-                    document.getElementById("p_con").innerHTML = Number(document.getElementById("npc_con").value);
-                    document.getElementById("p_int").innerHTML = Number(document.getElementById("npc_int").value);
-                    document.getElementById("p_wis").innerHTML = Number(document.getElementById("npc_wis").value);
-                    document.getElementById("p_cha").innerHTML = Number(document.getElementById("npc_cha").value);
+                    _$.set("p_str", _$.num("npc_str"));
+                    _$.set("p_dex", _$.num("npc_dex"));
+                    _$.set("p_con", _$.num("npc_con"));
+                    _$.set("p_int", _$.num("npc_int"));
+                    _$.set("p_wis", _$.num("npc_wis"));
+                    _$.set("p_cha", _$.num("npc_cha"));
 
                     //Set traits
                     translateNPCTraitsTables();
 
                     //Set health
-                    if (NPC_special == 0) {
-                        document.getElementById("dam_save_mod").innerHTML = 0;
+                    if (NPC_special === 0) {
+                        _$.set("p_dam_save_mod", 0);
                     }
                 }
             }
             
             function calcTypeXP() {
                 var typePoints = 0;
-                if (document.getElementById("ty_animal").checked) { typePoints += Number(document.getElementById("ty_animal").value);}
-                if (document.getElementById("ty_beast").checked) { typePoints += Number(document.getElementById("ty_beast").value);}
-                if (document.getElementById("ty_construct").checked) { typePoints += Number(document.getElementById("ty_construct").value);}
-                if (document.getElementById("ty_elemental").checked) { typePoints += Number(document.getElementById("ty_elemental").value);}
-                if (document.getElementById("ty_fey").checked) { typePoints += Number(document.getElementById("ty_fey").value);}
-                if (document.getElementById("ty_folk").checked) { typePoints += Number(document.getElementById("ty_folk").value);}
-                if (document.getElementById("ty_horror").checked) { typePoints += Number(document.getElementById("ty_horror").value);}
-                if (document.getElementById("ty_ooze").checked) { typePoints += Number(document.getElementById("ty_ooze").value);}
-                if (document.getElementById("ty_outsider").checked) { typePoints += Number(document.getElementById("ty_outsider").value);}
-                if (document.getElementById("ty_plant").checked) { typePoints += Number(document.getElementById("ty_plant").value);}
-                if (document.getElementById("ty_spirit").checked) { typePoints += Number(document.getElementById("ty_spirit").value);}
-                if (document.getElementById("ty_undead").checked) { typePoints += Number(document.getElementById("ty_undead").value);}
-                document.getElementById("typeXP").innerHTML = typePoints;
+                if (_$.checked("ty_animal")) { typePoints += _$.num("ty_animal");}
+                if (_$.checked("ty_beast")) { typePoints += _$.num("ty_beast");}
+                if (_$.checked("ty_construct")) { typePoints += _$.num("ty_construct");}
+                if (_$.checked("ty_elemental")) { typePoints += _$.num("ty_elemental");}
+                if (_$.checked("ty_fey")) { typePoints += _$.num("ty_fey");}
+                if (_$.checked("ty_folk")) { typePoints += _$.num("ty_folk");}
+                if (_$.checked("ty_horror")) { typePoints += _$.num("ty_horror");}
+                if (_$.checked("ty_ooze")) { typePoints += _$.num("ty_ooze");}
+                if (_$.checked("ty_outsider")) { typePoints += _$.num("ty_outsider");}
+                if (_$.checked("ty_plant")) { typePoints += _$.num("ty_plant");}
+                if (_$.checked("ty_spirit")) { typePoints += _$.num("ty_spirit");}
+                if (_$.checked("ty_undead")) { typePoints += _$.num("ty_undead");}
+                _$.set("typeXP", typePoints);
                 return typePoints;
             }
 
             function calcMobilityXP() {
                 var mobilityPoints = 0;                
                 
-                var wSpd = (Number(document.getElementById("walker_spd").value)) / 10;
-                var bSpd = (Number(document.getElementById("burrower_spd").value)) / 10;
-                var fSpd = (Number(document.getElementById("flyer_spd").value)) / 10;
-                var sSpd = (Number(document.getElementById("swimmer_spd").value)) / 10;
+                var wSpd = (_$.num("walker_spd")) / 10;
+                var bSpd = (_$.num("burrower_spd")) / 10;
+                var fSpd = (_$.num("flyer_spd")) / 10;
+                var sSpd = (_$.num("swimmer_spd")) / 10;
 
-                if (document.getElementById("mobi").value == "walker") {
+                if (_$.val("mobi") ==="walker") {
                     wSpd = (wSpd > 3) ? (wSpd - 3):0;
                 }
 
-                if (document.getElementById("mobi").value == "burrower") {
+                if (_$.val("mobi") === "burrower") {
                     bSpd = (bSpd > 3) ? (bSpd - 3):0;
                 }
 
-                if (document.getElementById("mobi").value == "flyer") {
+                if (_$.val("mobi") === "flyer") {
                     fSpd = (fSpd > 3) ? (fSpd - 3):0;
                 }
 
-                if (document.getElementById("mobi").value == "swimmer") {
+                if (_$.val("mobi") === "swimmer") {
                     sSpd = (sSpd > 3) ? (sSpd - 3):0;
                 }
                 
-                if (immobility == 1) {
+                if (immobility === 1) {
                     mobilityPoints = -5;
                 }
-                else if (immobility == 0) {
+                else if (immobility === 0) {
                     mobilityPoints = wSpd + bSpd + fSpd + sSpd;
                 }
 
-                document.getElementById("mobilityXP").innerHTML = mobilityPoints;
+                _$.set("mobilityXP", mobilityPoints);
 
                 return mobilityPoints;
             }
@@ -200,12 +216,12 @@
                 //Reset points
                 var attributesPoints = 0;
                 //Get scores
-                var nStr = Number(document.getElementById("npc_str").value);
-                var nDex = Number(document.getElementById("npc_dex").value);
-                var nCon = Number(document.getElementById("npc_con").value);
-                var nInt = Number(document.getElementById("npc_int").value);
-                var nWis = Number(document.getElementById("npc_wis").value);
-                var nCha = Number(document.getElementById("npc_cha").value);
+                var nStr = _$.num("npc_str");
+                var nDex = _$.num("npc_dex");
+                var nCon = _$.num("npc_con");
+                var nInt = _$.num("npc_int");
+                var nWis = _$.num("npc_wis");
+                var nCha = _$.num("npc_cha");
 
                 //If scores are less than 10, XP value for the score is set to 0. Otherwise set points to score - 10.
                 nStr = (nStr < 11) ? 0 : (nStr - 10);
@@ -217,7 +233,7 @@
 
                 //Set AttributesPoints
                 attributesPoints = (nStr + nDex + nCon + nInt + nWis + nCha);
-                document.getElementById("attributeXP").innerHTML = attributesPoints;
+                _$.set("attributeXP", attributesPoints);
 
                 //Return sum of scores
                 return attributesPoints;
@@ -227,15 +243,15 @@
                 var traitsPoints = 5;
 
                 //Get trait scores
-                var i = Number(document.getElementById("npc_init").value);
-                var a = Number(document.getElementById("npc_atk").value);
-                var d = Number(document.getElementById("npc_def").value);
-                var r = Number(document.getElementById("npc_res").value);
-                var c = Number(document.getElementById("npc_comp").value);
+                var i = _$.num("npc_init");
+                var a = _$.num("npc_atk");
+                var d = _$.num("npc_def");
+                var r = _$.num("npc_res");
+                var c = _$.num("npc_comp");
 
                 //Set traitsPoints
                 traitsPoints = Number(i + a + d + r + c);
-                document.getElementById("traitsXP").innerHTML = traitsPoints;
+                _$.set("traitsXP", traitsPoints);
 
                 //Return sum of scores
                 return traitsPoints;
@@ -245,11 +261,11 @@
                 var healthPoints = 1; //default value
 
                 //Get health score
-                var h = Number(document.getElementById("npc_hg").value);
+                var h = _$.num("npc_hg");
 
                 //Set healthPoints
                 healthPoints = h;
-                document.getElementById("healthXP").innerHTML = healthPoints;
+                _$.set("healthXP", healthPoints);
 
                 //Return sum of scores
                 return healthPoints;
@@ -259,30 +275,30 @@
                 var ssPoints = 0; //default value
 
                 //Get signature skill scores and add them to ssPoints.
-                ssPoints = (Number(document.getElementById("npc_ss_acr").value) 
-                + Number(document.getElementById("npc_ss_ath").value) 
-                + Number(document.getElementById("npc_ss_ble").value) 
-                + Number(document.getElementById("npc_ss_blu").value) 
-                + Number(document.getElementById("npc_ss_cra").value)
-                + Number(document.getElementById("npc_ss_dis").value)
-                + Number(document.getElementById("npc_ss_hag").value)
-                + Number(document.getElementById("npc_ss_imp").value)
-                + Number(document.getElementById("npc_ss_int").value)
-                + Number(document.getElementById("npc_ss_inv").value)
-                + Number(document.getElementById("npc_ss_med").value)
-                + Number(document.getElementById("npc_ss_not").value)
-                + Number(document.getElementById("npc_ss_pre").value)
-                + Number(document.getElementById("npc_ss_res").value)
-                + Number(document.getElementById("npc_ss_rid").value)
-                + Number(document.getElementById("npc_ss_sea").value)
-                + Number(document.getElementById("npc_ss_sen").value)
-                + Number(document.getElementById("npc_ss_sne").value)
-                + Number(document.getElementById("npc_ss_spe").value)
-                + Number(document.getElementById("npc_ss_sur").value)
-                + Number(document.getElementById("npc_ss_tac").value));
+                ssPoints = (_$.num("npc_ss_acr")
+                + _$.num("npc_ss_ath")
+                + _$.num("npc_ss_ble")
+                + _$.num("npc_ss_blu")
+                + _$.num("npc_ss_cra")
+                + _$.num("npc_ss_dis")
+                + _$.num("npc_ss_hag")
+                + _$.num("npc_ss_imp")
+                + _$.num("npc_ss_int")
+                + _$.num("npc_ss_inv")
+                + _$.num("npc_ss_med")
+                + _$.num("npc_ss_not")
+                + _$.num("npc_ss_pre")
+                + _$.num("npc_ss_res")
+                + _$.num("npc_ss_rid")
+                + _$.num("npc_ss_sea")
+                + _$.num("npc_ss_sen")
+                + _$.num("npc_ss_sne")
+                + _$.num("npc_ss_spe")
+                + _$.num("npc_ss_sur")
+                + _$.num("npc_ss_tac"));
 
                 //Set healthPoints
-                document.getElementById("signatureSkillXP").innerHTML = ssPoints;
+                _$.set("signatureSkillXP", ssPoints);
 
                 //Return sum of scores
                 return ssPoints;
@@ -292,305 +308,305 @@
                 var qualityPoints = 0; //Default value
 
                 //Get quality scores
-                if (document.getElementById("npc_qual_ah").checked) { qualityPoints += Number(document.getElementById("npc_qual_ah").value);}
-                if (document.getElementById("npc_qual_ar").checked) { qualityPoints += Number(document.getElementById("npc_qual_ar").value);}
-                if (document.getElementById("npc_qual_aq").checked && document.getElementById("npc_qual_aq1").selected) { qualityPoints += Number(document.getElementById("npc_qual_aq1").value);}
-                if (document.getElementById("npc_qual_aq").checked && document.getElementById("npc_qual_aq2").selected) { qualityPoints += Number(document.getElementById("npc_qual_aq2").value);}
-                if (document.getElementById("npc_qual_at").checked && document.getElementById("npc_qual_at1").selected) { qualityPoints += Number(document.getElementById("npc_qual_at1").value);}
-                if (document.getElementById("npc_qual_at").checked && document.getElementById("npc_qual_at2").selected) { qualityPoints += Number(document.getElementById("npc_qual_at2").value);}
-                if (document.getElementById("npc_qual_at").checked && document.getElementById("npc_qual_at3").selected) { qualityPoints += Number(document.getElementById("npc_qual_at3").value);}
-                if (document.getElementById("npc_qual_at").checked && document.getElementById("npc_qual_at4").selected) { qualityPoints += Number(document.getElementById("npc_qual_at4").value);}
-                if (document.getElementById("npc_qual_at").checked && document.getElementById("npc_qual_at5").selected) { qualityPoints += Number(document.getElementById("npc_qual_at5").value);}
-                if (document.getElementById("npc_qual_at").checked && document.getElementById("npc_qual_at6").selected) { qualityPoints += Number(document.getElementById("npc_qual_at6").value);}
-                if (document.getElementById("npc_qual_at").checked && document.getElementById("npc_qual_at7").selected) { qualityPoints += Number(document.getElementById("npc_qual_at7").value);}
-                if (document.getElementById("npc_qual_at").checked && document.getElementById("npc_qual_at8").selected) { qualityPoints += Number(document.getElementById("npc_qual_at8").value);}
-                if (document.getElementById("npc_qual_at").checked && document.getElementById("npc_qual_at9").selected) { qualityPoints += Number(document.getElementById("npc_qual_at9").value);}
-                if (document.getElementById("npc_qual_at").checked && document.getElementById("npc_qual_at10").selected) { qualityPoints += Number(document.getElementById("npc_qual_at10").value);}
-                if (document.getElementById("npc_qual_ba").checked) { qualityPoints += Number(document.getElementById("npc_qual_ba").value);}
-                if (document.getElementById("npc_qual_bat").checked) { qualityPoints += Number(document.getElementById("npc_qual_bat").value);}
-                if (document.getElementById("npc_qual_be").checked) { qualityPoints += Number(document.getElementById("npc_qual_be").value);}
-                if (document.getElementById("npc_qual_bl").checked) { qualityPoints += Number(document.getElementById("npc_qual_bl").value);}
-                if (document.getElementById("npc_qual_br").checked) { qualityPoints += Number(document.getElementById("npc_qual_br").value);}
-                if (document.getElementById("npc_qual_boa").checked) { qualityPoints += Number(document.getElementById("npc_qual_boa").value);}
-                if (document.getElementById("npc_qual_ca").checked && document.getElementById("npc_qual_ca1").selected) { qualityPoints += Number(document.getElementById("npc_qual_ca1").value);}
-                if (document.getElementById("npc_qual_ca").checked && document.getElementById("npc_qual_ca2").selected) { qualityPoints += Number(document.getElementById("npc_qual_ca2").value);}
-                if (document.getElementById("npc_qual_ca").checked && document.getElementById("npc_qual_ca3").selected) { qualityPoints += Number(document.getElementById("npc_qual_ca3").value);}
-                if (document.getElementById("npc_qual_ca").checked && document.getElementById("npc_qual_ca4").selected) { qualityPoints += Number(document.getElementById("npc_qual_ca4").value);}
-                if (document.getElementById("npc_qual_ca").checked && document.getElementById("npc_qual_ca5").selected) { qualityPoints += Number(document.getElementById("npc_qual_ca5").value);}
-                if (document.getElementById("npc_qual_ca").checked && document.getElementById("npc_qual_ca6").selected) { qualityPoints += Number(document.getElementById("npc_qual_ca6").value);}
-                if (document.getElementById("npc_qual_ca").checked && document.getElementById("npc_qual_ca7").selected) { qualityPoints += Number(document.getElementById("npc_qual_ca7").value);}
-                if (document.getElementById("npc_qual_ca").checked && document.getElementById("npc_qual_ca8").selected) { qualityPoints += Number(document.getElementById("npc_qual_ca8").value);}
-                if (document.getElementById("npc_qual_ca").checked && document.getElementById("npc_qual_ca9").selected) { qualityPoints += Number(document.getElementById("npc_qual_ca9").value);}
-                if (document.getElementById("npc_qual_ca").checked && document.getElementById("npc_qual_ca10").selected) { qualityPoints += Number(document.getElementById("npc_qual_ca10").value);}
-                if (document.getElementById("npc_qual_ch1_aq").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch1_aq").value);}
-                if (document.getElementById("npc_qual_ch1_ar").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch1_ar").value);}
-                if (document.getElementById("npc_qual_ch1_cm").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch1_cm").value);}
-                if (document.getElementById("npc_qual_ch1_de").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch1_de").value);}
-                if (document.getElementById("npc_qual_ch1_fj").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch1_fj").value);}
-                if (document.getElementById("npc_qual_ch1_is").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch1_is").value);}
-                if (document.getElementById("npc_qual_ch1_pl").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch1_pl").value);}
-                if (document.getElementById("npc_qual_ch1_sw").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch1_sw").value);}
-                if (document.getElementById("npc_qual_ch2_aq").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch2_aq").value);}
-                if (document.getElementById("npc_qual_ch2_ar").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch2_ar").value);}
-                if (document.getElementById("npc_qual_ch2_cm").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch2_cm").value);}
-                if (document.getElementById("npc_qual_ch2_de").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch2_de").value);}
-                if (document.getElementById("npc_qual_ch2_fj").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch2_fj").value);}
-                if (document.getElementById("npc_qual_ch2_is").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch2_is").value);}
-                if (document.getElementById("npc_qual_ch2_pl").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch2_pl").value);}
-                if (document.getElementById("npc_qual_ch2_sw").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch2_sw").value);}
-                if (document.getElementById("npc_qual_chat").checked) { qualityPoints += Number(document.getElementById("npc_qual_chat").value);}
-                if (document.getElementById("npc_qual_clab").checked) { qualityPoints += Number(document.getElementById("caTotalXP").innerHTML);}
-                if (document.getElementById("npc_qual_cl").checked) { qualityPoints += Number(document.getElementById("npc_qual_cl").value);}
-                if (document.getElementById("npc_qual_cb").checked) { qualityPoints += Number(document.getElementById("npc_qual_cb").value);}
-                if (document.getElementById("npc_qual_ci").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci").value);}
-                if (document.getElementById("npc_qual_ci_baf").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_baf").value);}
-                if (document.getElementById("npc_qual_ci_ble").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_ble").value);}
-                if (document.getElementById("npc_qual_ci_bli").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_bli").value);}
-                if (document.getElementById("npc_qual_ci_dea").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_dea").value);}
-                if (document.getElementById("npc_qual_ci_enr").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_enr").value);}
-                if (document.getElementById("npc_qual_ci_ent").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_ent").value);}
-                if (document.getElementById("npc_qual_ci_fat").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_fat").value);}
-                if (document.getElementById("npc_qual_ci_fix").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_fix").value);}
-                if (document.getElementById("npc_qual_ci_fla").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_fla").value);}
-                if (document.getElementById("npc_qual_ci_ffo").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_ffo").value);}
-                if (document.getElementById("npc_qual_ci_fri").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_fri").value);}
-                if (document.getElementById("npc_qual_ci_hel").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_hel").value);}
-                if (document.getElementById("npc_qual_ci_hlp").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_hlp").value);}
-                if (document.getElementById("npc_qual_ci_hid").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_hid").value);}
-                if (document.getElementById("npc_qual_ci_inc").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_inc").value);}
-                if (document.getElementById("npc_qual_ci_inv").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_inv").value);}
-                if (document.getElementById("npc_qual_ci_par").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_par").value);}
-                if (document.getElementById("npc_qual_ci_pin").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_pin").value);}
-                if (document.getElementById("npc_qual_ci_pro").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_pro").value);}
-                if (document.getElementById("npc_qual_ci_sha").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_sha").value);}
-                if (document.getElementById("npc_qual_ci_sic").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_sic").value);}
-                if (document.getElementById("npc_qual_ci_slo").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_slo").value);}
-                if (document.getElementById("npc_qual_ci_spr").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_spr").value);}
-                if (document.getElementById("npc_qual_ci_stu").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci_stu").value);}
-                if (document.getElementById("npc_qual_conim").checked) { qualityPoints += Number(document.getElementById("npc_qual_conim").value);}
-                if (document.getElementById("npc_qual_conv").checked) { qualityPoints += Number(document.getElementById("npc_qual_conv").value);}
-                if (document.getElementById("npc_qual_crithes").checked) { qualityPoints += Number(document.getElementById("npc_qual_crithes").value);}
-                if (document.getElementById("npc_qual_critsur").checked) { qualityPoints += Number(document.getElementById("npc_qual_critsur").value);}
-                if (document.getElementById("npc_qual_dd_ac").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_ac").value);}
-                if (document.getElementById("npc_qual_dd_ba").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_ba").value);}
-                if (document.getElementById("npc_qual_dd_co").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_co").value);}
-                if (document.getElementById("npc_qual_dd_di").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_di").value);}
-                if (document.getElementById("npc_qual_dd_el").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_el").value);}
-                if (document.getElementById("npc_qual_dd_ex").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_ex").value);}
-                if (document.getElementById("npc_qual_dd_fi").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_fi").value);}
-                if (document.getElementById("npc_qual_dd_fl").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_fl").value);}
-                if (document.getElementById("npc_qual_dd_fo").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_fo").value);}
-                if (document.getElementById("npc_qual_dd_he").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_he").value);}
-                if (document.getElementById("npc_qual_dd_sa").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_sa").value);}
-                if (document.getElementById("npc_qual_dd_so").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_so").value);}
-                if (document.getElementById("npc_qual_dd_st").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_st").value);}
-                if (document.getElementById("npc_qual_dd_su").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_su").value);}
-                if (document.getElementById("npc_qual_dd_le").checked) { qualityPoints += Number(document.getElementById("npc_qual_dd_le").value);}
-                if (document.getElementById("npc_qual_di_ac").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_ac").value);}
-                if (document.getElementById("npc_qual_di_ba").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_ba").value);}
-                if (document.getElementById("npc_qual_di_co").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_co").value);}
-                if (document.getElementById("npc_qual_di_di").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_di").value);}
-                if (document.getElementById("npc_qual_di_el").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_el").value);}
-                if (document.getElementById("npc_qual_di_ex").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_ex").value);}
-                if (document.getElementById("npc_qual_di_fi").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_fi").value);}
-                if (document.getElementById("npc_qual_di_fl").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_fl").value);}
-                if (document.getElementById("npc_qual_di_fo").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_fo").value);}
-                if (document.getElementById("npc_qual_di_he").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_he").value);}
-                if (document.getElementById("npc_qual_di_sa").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_sa").value);}
-                if (document.getElementById("npc_qual_di_so").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_so").value);}
-                if (document.getElementById("npc_qual_di_st").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_st").value);}
-                if (document.getElementById("npc_qual_di_su").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_su").value);}
-                if (document.getElementById("npc_qual_di_le").checked) { qualityPoints += Number(document.getElementById("npc_qual_di_le").value);}
-                if (document.getElementById("npc_qual_dv").checked && document.getElementById("npc_qual_dv1").selected) { qualityPoints += Number(document.getElementById("npc_qual_dv1").value);}
-                if (document.getElementById("npc_qual_dv").checked && document.getElementById("npc_qual_dv2").selected) { qualityPoints += Number(document.getElementById("npc_qual_dv2").value);}
-                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_le").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_le").value);}
-                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_ac").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_ac").value);}
-                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_ba").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_ba").value);}
-                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_co").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_co").value);}
-                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_di").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_di").value);}
-                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_el").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_el").value);}
-                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_ex").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_ex").value);}
-                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_fi").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_fi").value);}
-                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_fl").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_fl").value);}
-                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_fo").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_fo").value);}
-                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_he").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_he").value);}
-                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_sa").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_sa").value);}
-                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_so").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_so").value);}
-                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_st").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_st").value);}
-                if (document.getElementById("npc_qual_dt").checked && document.getElementById("npc_qual_dt_su").selected) { qualityPoints += Number(document.getElementById("npc_qual_dt_su").value);}
-                if (document.getElementById("npc_qual_dev").checked && document.getElementById("npc_qual_dev1").selected) { qualityPoints += Number(document.getElementById("npc_qual_dev1").value);}
-                if (document.getElementById("npc_qual_dev").checked && document.getElementById("npc_qual_dev2").selected) { qualityPoints += Number(document.getElementById("npc_qual_dev2").value);}
-                if (document.getElementById("npc_qual_dev").checked && document.getElementById("npc_qual_dev3").selected) { qualityPoints += Number(document.getElementById("npc_qual_dev3").value);}
-                if (document.getElementById("npc_qual_dev").checked && document.getElementById("npc_qual_dev4").selected) { qualityPoints += Number(document.getElementById("npc_qual_dev4").value);}
-                if (document.getElementById("npc_qual_dev").checked && document.getElementById("npc_qual_dev5").selected) { qualityPoints += Number(document.getElementById("npc_qual_dev5").value);}
-                if (document.getElementById("npc_qual_esb").checked) { qualityPoints += Number(document.getElementById("spellNum").innerHTML);}
-                if (document.getElementById("npc_qual_exp_acr").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_acr").value);}
-                if (document.getElementById("npc_qual_exp_ath").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_ath").value);}
-                if (document.getElementById("npc_qual_exp_ble").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_ble").value);}
-                if (document.getElementById("npc_qual_exp_blu").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_blu").value);}
-                if (document.getElementById("npc_qual_exp_cra").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_cra").value);}
-                if (document.getElementById("npc_qual_exp_dis").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_dis").value);}
-                if (document.getElementById("npc_qual_exp_hag").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_hag").value);}
-                if (document.getElementById("npc_qual_exp_imp").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_imp").value);}
-                if (document.getElementById("npc_qual_exp_int").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_int").value);}
-                if (document.getElementById("npc_qual_exp_inv").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_inv").value);}
-                if (document.getElementById("npc_qual_exp_med").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_med").value);}
-                if (document.getElementById("npc_qual_exp_not").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_not").value);}
-                if (document.getElementById("npc_qual_exp_pre").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_pre").value);}
-                if (document.getElementById("npc_qual_exp_res").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_res").value);}
-                if (document.getElementById("npc_qual_exp_rid").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_rid").value);}
-                if (document.getElementById("npc_qual_exp_sea").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_sea").value);}
-                if (document.getElementById("npc_qual_exp_sen").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_sen").value);}
-                if (document.getElementById("npc_qual_exp_sne").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_sne").value);}
-                if (document.getElementById("npc_qual_exp_spe").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_spe").value);}
-                if (document.getElementById("npc_qual_exp_sur").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_sur").value);}
-                if (document.getElementById("npc_qual_exp_tac").checked) { qualityPoints += Number(document.getElementById("npc_qual_exp_tac").value);}
-                if (document.getElementById("npc_qual_fh").checked) { qualityPoints += Number(document.getElementById("npc_qual_fh").value);}
-                if (document.getElementById("npc_qual_ff").checked) { qualityPoints += Number(document.getElementById("npc_qual_ff").value);}
-                if (document.getElementById("npc_qual_faf_an").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_an").value);}
-                if (document.getElementById("npc_qual_faf_be").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_be").value);}
-                if (document.getElementById("npc_qual_faf_co").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_co").value);}
-                if (document.getElementById("npc_qual_faf_el").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_el").value);}
-                if (document.getElementById("npc_qual_faf_fe").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_fe").value);}
-                if (document.getElementById("npc_qual_faf_fo").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_fo").value);}
-                if (document.getElementById("npc_qual_faf_ho").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_ho").value);}
-                if (document.getElementById("npc_qual_faf_oo").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_oo").value);}
-                if (document.getElementById("npc_qual_faf_ou").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_ou").value);}
-                if (document.getElementById("npc_qual_faf_pl").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_pl").value);}
-                if (document.getElementById("npc_qual_faf_sp").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_sp").value);}
-                if (document.getElementById("npc_qual_faf_un").checked) { qualityPoints += Number(document.getElementById("npc_qual_faf_un").value);}
-                if (document.getElementById("npc_qual_fl").checked && document.getElementById("npc_qual_fl1").selected) { qualityPoints += Number(document.getElementById("npc_qual_fl1").value);}
-                if (document.getElementById("npc_qual_fl").checked && document.getElementById("npc_qual_fl2").selected) { qualityPoints += Number(document.getElementById("npc_qual_fl2").value);}
-                if (document.getElementById("npc_qual_feat").checked) { qualityPoints += Number(document.getElementById("featNum").innerHTML) * 2;}                
-                if (document.getElementById("npc_qual_fera").checked) { qualityPoints += Number(document.getElementById("npc_qual_fera").value);}
-                if (document.getElementById("npc_qual_fero").checked) { qualityPoints += Number(document.getElementById("npc_qual_fero").value);}
-                if (document.getElementById("npc_qual_fz").checked && document.getElementById("npc_qual_fz1").selected) { qualityPoints += Number(document.getElementById("npc_qual_fz1").value);}
-                if (document.getElementById("npc_qual_fz").checked && document.getElementById("npc_qual_fz2").selected) { qualityPoints += Number(document.getElementById("npc_qual_fz2").value);}
-                if (document.getElementById("npc_qual_fz").checked && document.getElementById("npc_qual_fz3").selected) { qualityPoints += Number(document.getElementById("npc_qual_fz3").value);}
-                if (document.getElementById("npc_qual_grap").checked) { qualityPoints += Number(document.getElementById("npc_qual_grap").value);}
-                if (document.getElementById("npc_qual_gru").checked) { qualityPoints += Number(document.getElementById("npc_qual_gru").value);}
-                if (document.getElementById("npc_qual_hm").checked) { qualityPoints += Number(document.getElementById("npc_qual_hm").value);}
-                if (document.getElementById("npc_qual_ho").checked) { qualityPoints += Number(document.getElementById("npc_qual_ho").value);}
-                if (document.getElementById("npc_qual_is_vi").checked) { qualityPoints += Number(document.getElementById("npc_qual_is_vi").value);}
-                if (document.getElementById("npc_qual_is_he").checked) { qualityPoints += Number(document.getElementById("npc_qual_is_he").value);}
-                if (document.getElementById("npc_qual_is_sc").checked) { qualityPoints += Number(document.getElementById("npc_qual_is_sc").value);}
-                if (document.getElementById("npc_qual_icc").checked) { qualityPoints += Number(document.getElementById("npc_qual_icc").value);}
-                if (document.getElementById("npc_qual_irs_vi").checked) { qualityPoints += Number(document.getElementById("npc_qual_irs_vi").value);}
-                if (document.getElementById("npc_qual_irs_he").checked) { qualityPoints += Number(document.getElementById("npc_qual_irs_he").value);}
-                if (document.getElementById("npc_qual_irs_sc").checked) { qualityPoints += Number(document.getElementById("npc_qual_irs_sc").value);}
-                if (document.getElementById("npc_qual_imp_stab").checked) { qualityPoints += Number(document.getElementById("npc_qual_imp_stab").value);}
-                if (document.getElementById("npc_qual_int").checked) { qualityPoints += Number(document.getElementById("npc_qual_int").value);}
-                if (document.getElementById("npc_qual_inv").checked) { qualityPoints += Number(document.getElementById("npc_qual_inv").value);}
-                if (document.getElementById("npc_qual_kb").checked) { qualityPoints += Number(document.getElementById("npc_qual_kb").value);}
-                if (document.getElementById("npc_qual_lse").checked) { qualityPoints += Number(document.getElementById("npc_qual_lse").value);}
-                if (document.getElementById("npc_qual_lsl").checked) { qualityPoints += Number(document.getElementById("npc_qual_lsl").value);}
-                if (document.getElementById("npc_qual_lum").checked) { qualityPoints += Number(document.getElementById("npc_qual_lum").value);}
-                if (document.getElementById("npc_qual_me").checked) { qualityPoints += Number(document.getElementById("npc_qual_me").value);}
-                if (document.getElementById("npc_qual_men").checked) { qualityPoints += Number(document.getElementById("npc_qual_men").value);}
-                if (document.getElementById("npc_qual_moo").checked) { qualityPoints += Number(document.getElementById("npc_qual_moo").value);}
-                if (document.getElementById("npc_qual_ma").checked && document.getElementById("npc_qual_ma1").selected) { qualityPoints += Number(document.getElementById("npc_qual_ma1").value);}
-                if (document.getElementById("npc_qual_ma").checked && document.getElementById("npc_qual_ma2").selected) { qualityPoints += Number(document.getElementById("npc_qual_ma2").value);}
-                if (document.getElementById("npc_qual_ma").checked && document.getElementById("npc_qual_ma3").selected) { qualityPoints += Number(document.getElementById("npc_qual_ma3").value);}
-                if (document.getElementById("npc_qual_ma").checked && document.getElementById("npc_qual_ma4").selected) { qualityPoints += Number(document.getElementById("npc_qual_ma4").value);}
-                if (document.getElementById("npc_qual_ma").checked && document.getElementById("npc_qual_ma5").selected) { qualityPoints += Number(document.getElementById("npc_qual_ma5").value);}
-                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_le").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_le").value);}
-                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_ac").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_ac").value);}
-                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_ba").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_ba").value);}
-                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_co").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_co").value);}
-                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_di").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_di").value);}
-                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_el").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_el").value);}
-                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_ex").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_ex").value);}
-                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_fi").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_fi").value);}
-                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_fl").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_fl").value);}
-                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_fo").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_fo").value);}
-                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_he").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_he").value);}
-                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_sa").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_sa").value);}
-                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_so").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_so").value);}
-                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_st").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_st").value);}
-                if (document.getElementById("npc_qual_nd").checked && document.getElementById("npc_qual_nd_su").selected) { qualityPoints += Number(document.getElementById("npc_qual_nd_su").value);}
-                if (document.getElementById("npc_qual_ns").checked) { qualityPoints += Number(document.getElementById("nsTotalLevels").innerHTML);}
-                if (document.getElementById("npc_qual_no").checked) { qualityPoints += Number(document.getElementById("npc_qual_no").value);}
-                if (document.getElementById("npc_qual_nb").checked) { qualityPoints += Number(document.getElementById("npc_qual_nb").value);}
-                if (document.getElementById("npc_qual_noc").checked) { qualityPoints += Number(document.getElementById("npc_qual_noc").value);}
-                if (document.getElementById("npc_qual_re").checked && document.getElementById("npc_qual_re1").selected) { qualityPoints += Number(document.getElementById("npc_qual_re1").value);}
-                if (document.getElementById("npc_qual_re").checked && document.getElementById("npc_qual_re2").selected) { qualityPoints += Number(document.getElementById("npc_qual_re2").value);}
-                if (document.getElementById("npc_qual_re").checked && document.getElementById("npc_qual_re3").selected) { qualityPoints += Number(document.getElementById("npc_qual_re3").value);}
-                if (document.getElementById("npc_qual_re").checked && document.getElementById("npc_qual_re4").selected) { qualityPoints += Number(document.getElementById("npc_qual_re4").value);}
-                if (document.getElementById("npc_qual_re").checked && document.getElementById("npc_qual_re5").selected) { qualityPoints += Number(document.getElementById("npc_qual_re5").value);}
-                if (document.getElementById("npc_qual_rend").checked) { qualityPoints += Number(document.getElementById("npc_qual_rend").value);}
-                if (document.getElementById("npc_qual_rep").checked && document.getElementById("npc_qual_rep1").selected) { qualityPoints += Number(document.getElementById("npc_qual_rep1").value);}
-                if (document.getElementById("npc_qual_rep").checked && document.getElementById("npc_qual_rep2").selected) { qualityPoints += Number(document.getElementById("npc_qual_rep2").value);}
-                if (document.getElementById("npc_qual_rep").checked && document.getElementById("npc_qual_rep3").selected) { qualityPoints += Number(document.getElementById("npc_qual_rep3").value);}
-                if (document.getElementById("npc_qual_rep").checked && document.getElementById("npc_qual_rep4").selected) { qualityPoints += Number(document.getElementById("npc_qual_rep4").value);}
-                if (document.getElementById("npc_qual_rep").checked && document.getElementById("npc_qual_rep5").selected) { qualityPoints += Number(document.getElementById("npc_qual_rep5").value);}
-                if (document.getElementById("npc_qual_sha").checked) { qualityPoints += Number(document.getElementById("npc_qual_sha").value);}
-                if (document.getElementById("npc_qual_shsh").checked && document.getElementById("npc_qual_shsh1").selected) { qualityPoints += Number(document.getElementById("npc_qual_shsh1").value);}
-                if (document.getElementById("npc_qual_shsh").checked && document.getElementById("npc_qual_shsh2").selected) { qualityPoints += Number(document.getElementById("npc_qual_shsh2").value);}
-                if (document.getElementById("npc_qual_shsh").checked && document.getElementById("npc_qual_shsh3").selected) { qualityPoints += Number(document.getElementById("npc_qual_shsh3").value);}
-                if (document.getElementById("npc_qual_sd").checked && document.getElementById("npc_qual_sd1").selected) { qualityPoints += Number(document.getElementById("npc_qual_sd1").value);}
-                if (document.getElementById("npc_qual_sd").checked && document.getElementById("npc_qual_sd2").selected) { qualityPoints += Number(document.getElementById("npc_qual_sd2").value);}
-                if (document.getElementById("npc_qual_sd").checked && document.getElementById("npc_qual_sd3").selected) { qualityPoints += Number(document.getElementById("npc_qual_sd3").value);}
-                if (document.getElementById("npc_qual_sd").checked && document.getElementById("npc_qual_sd4").selected) { qualityPoints += Number(document.getElementById("npc_qual_sd4").value);}
-                if (document.getElementById("npc_qual_sd").checked && document.getElementById("npc_qual_sd5").selected) { qualityPoints += Number(document.getElementById("npc_qual_sd5").value);}
-                if (document.getElementById("npc_qual_sr").checked) { qualityPoints += Number(document.getElementById("npc_qual_sr").value);}
-                if (document.getElementById("npc_qual_splds").checked) { qualityPoints += Number(document.getElementById("npc_qual_splds").value);}
-                if (document.getElementById("npc_qual_spldsi").checked) { qualityPoints += Number(document.getElementById("npc_qual_spldsi").value);}
-                if (document.getElementById("npc_qual_splks").checked) { qualityPoints += Number(document.getElementById("npc_qual_splks").value);}
-                if (document.getElementById("npc_qual_splksi").checked) { qualityPoints += Number(document.getElementById("npc_qual_splksi").value);}
-                if (document.getElementById("npc_qual_st").checked) { qualityPoints += Number(document.getElementById("npc_qual_st").value);}
-                if (document.getElementById("npc_qual_stern").checked) { qualityPoints += Number(document.getElementById("npc_qual_stern").value);}
-                if (document.getElementById("npc_qual_sc").checked) { qualityPoints += Number(document.getElementById("npc_qual_sc").value);}
-                if (document.getElementById("npc_qual_sucl").checked && document.getElementById("npc_qual_sucl1").selected) { qualityPoints += Number(document.getElementById("npc_qual_sucl1").value);}
-                if (document.getElementById("npc_qual_sucl").checked && document.getElementById("npc_qual_sucl2").selected) { qualityPoints += Number(document.getElementById("npc_qual_sucl2").value);}
-                if (document.getElementById("npc_qual_sucl").checked && document.getElementById("npc_qual_sucl3").selected) { qualityPoints += Number(document.getElementById("npc_qual_sucl3").value);}
-                if (document.getElementById("npc_qual_sucl").checked && document.getElementById("npc_qual_sucl4").selected) { qualityPoints += Number(document.getElementById("npc_qual_sucl4").value);}
-                if (document.getElementById("npc_qual_sucl").checked && document.getElementById("npc_qual_sucl5").selected) { qualityPoints += Number(document.getElementById("npc_qual_sucl5").value);}
-                if (document.getElementById("npc_qual_suju").checked && document.getElementById("npc_qual_suju1").selected) { qualityPoints += Number(document.getElementById("npc_qual_suju1").value);}
-                if (document.getElementById("npc_qual_suju").checked && document.getElementById("npc_qual_suju2").selected) { qualityPoints += Number(document.getElementById("npc_qual_suju2").value);}
-                if (document.getElementById("npc_qual_suju").checked && document.getElementById("npc_qual_suju3").selected) { qualityPoints += Number(document.getElementById("npc_qual_suju3").value);}
-                if (document.getElementById("npc_qual_suju").checked && document.getElementById("npc_qual_suju4").selected) { qualityPoints += Number(document.getElementById("npc_qual_suju4").value);}
-                if (document.getElementById("npc_qual_suju").checked && document.getElementById("npc_qual_suju5").selected) { qualityPoints += Number(document.getElementById("npc_qual_suju5").value);}
-                if (document.getElementById("npc_qual_suru").checked && document.getElementById("npc_qual_suru1").selected) { qualityPoints += Number(document.getElementById("npc_qual_suru1").value);}
-                if (document.getElementById("npc_qual_suru").checked && document.getElementById("npc_qual_suru2").selected) { qualityPoints += Number(document.getElementById("npc_qual_suru2").value);}
-                if (document.getElementById("npc_qual_suru").checked && document.getElementById("npc_qual_suru3").selected) { qualityPoints += Number(document.getElementById("npc_qual_suru3").value);}
-                if (document.getElementById("npc_qual_suru").checked && document.getElementById("npc_qual_suru4").selected) { qualityPoints += Number(document.getElementById("npc_qual_suru4").value);}
-                if (document.getElementById("npc_qual_suru").checked && document.getElementById("npc_qual_suru5").selected) { qualityPoints += Number(document.getElementById("npc_qual_suru5").value);}
-                if (document.getElementById("npc_qual_susw").checked && document.getElementById("npc_qual_susw1").selected) { qualityPoints += Number(document.getElementById("npc_qual_susw1").value);}
-                if (document.getElementById("npc_qual_susw").checked && document.getElementById("npc_qual_susw2").selected) { qualityPoints += Number(document.getElementById("npc_qual_susw2").value);}
-                if (document.getElementById("npc_qual_susw").checked && document.getElementById("npc_qual_susw3").selected) { qualityPoints += Number(document.getElementById("npc_qual_susw3").value);}
-                if (document.getElementById("npc_qual_susw").checked && document.getElementById("npc_qual_susw4").selected) { qualityPoints += Number(document.getElementById("npc_qual_susw4").value);}
-                if (document.getElementById("npc_qual_susw").checked && document.getElementById("npc_qual_susw5").selected) { qualityPoints += Number(document.getElementById("npc_qual_susw5").value);}
-                if (document.getElementById("npc_qual_sutr").checked && document.getElementById("npc_qual_sutr1").selected) { qualityPoints += Number(document.getElementById("npc_qual_sutr1").value);}
-                if (document.getElementById("npc_qual_sutr").checked && document.getElementById("npc_qual_sutr2").selected) { qualityPoints += Number(document.getElementById("npc_qual_sutr2").value);}
-                if (document.getElementById("npc_qual_sutr").checked && document.getElementById("npc_qual_sutr3").selected) { qualityPoints += Number(document.getElementById("npc_qual_sutr3").value);}
-                if (document.getElementById("npc_qual_sutr").checked && document.getElementById("npc_qual_sutr4").selected) { qualityPoints += Number(document.getElementById("npc_qual_sutr4").value);}
-                if (document.getElementById("npc_qual_sutr").checked && document.getElementById("npc_qual_sutr5").selected) { qualityPoints += Number(document.getElementById("npc_qual_sutr5").value);}
-                if (document.getElementById("npc_qual_swarm").checked) { qualityPoints += Number(document.getElementById("npc_qual_swarm").value);}
-                if (document.getElementById("npc_qual_swat").checked && document.getElementById("npc_qual_swat1").selected) { qualityPoints += Number(document.getElementById("npc_qual_swat1").value);}
-                if (document.getElementById("npc_qual_swat").checked && document.getElementById("npc_qual_swat2").selected) { qualityPoints += Number(document.getElementById("npc_qual_swat2").value);}
-                if (document.getElementById("npc_qual_swat").checked && document.getElementById("npc_qual_swat3").selected) { qualityPoints += Number(document.getElementById("npc_qual_swat3").value);}
-                if (document.getElementById("npc_qual_swat").checked && document.getElementById("npc_qual_swat4").selected) { qualityPoints += Number(document.getElementById("npc_qual_swat4").value);}
-                if (document.getElementById("npc_qual_swat").checked && document.getElementById("npc_qual_swat5").selected) { qualityPoints += Number(document.getElementById("npc_qual_swat5").value);}
-                if (document.getElementById("npc_qual_tel").checked) { qualityPoints += Number(document.getElementById("npc_qual_tel").value);}
-                if (document.getElementById("npc_qual_tou").checked && document.getElementById("npc_qual_tou1").selected) { qualityPoints += Number(document.getElementById("npc_qual_tou1").value);}
-                if (document.getElementById("npc_qual_tou").checked && document.getElementById("npc_qual_tou2").selected) { qualityPoints += Number(document.getElementById("npc_qual_tou2").value);}
-                if (document.getElementById("npc_qual_tou").checked && document.getElementById("npc_qual_tou3").selected) { qualityPoints += Number(document.getElementById("npc_qual_tou3").value);}
-                if (document.getElementById("npc_qual_tou").checked && document.getElementById("npc_qual_tou4").selected) { qualityPoints += Number(document.getElementById("npc_qual_tou4").value);}
-                if (document.getElementById("npc_qual_tou").checked && document.getElementById("npc_qual_tou5").selected) { qualityPoints += Number(document.getElementById("npc_qual_tou5").value);}
-                if (document.getElementById("npc_qual_trec").checked) { qualityPoints += Number(document.getElementById("npc_qual_trec").value);}
-                if (document.getElementById("npc_qual_tric").checked) { qualityPoints += Number(document.getElementById("npc_qual_tric").value);}
-                if (document.getElementById("npc_qual_turn").checked) { qualityPoints += Number(document.getElementById("npc_qual_turn").value);}
-                if (document.getElementById("npc_qual_ti").checked) { qualityPoints += Number(document.getElementById("npc_qual_ti").value);}
-                if (document.getElementById("npc_qual_usp").checked) { qualityPoints += Number(document.getElementById("npc_qual_usp").value);}
-                if (document.getElementById("npc_qual_unn").checked) { qualityPoints += Number(document.getElementById("npc_qual_unn").value);}
-                if (document.getElementById("npc_qual_vet").checked && document.getElementById("npc_qual_vet1").selected) { qualityPoints += Number(document.getElementById("npc_qual_vet1").value);}
-                if (document.getElementById("npc_qual_vet").checked && document.getElementById("npc_qual_vet2").selected) { qualityPoints += Number(document.getElementById("npc_qual_vet2").value);}
-                if (document.getElementById("npc_qual_vet").checked && document.getElementById("npc_qual_vet3").selected) { qualityPoints += Number(document.getElementById("npc_qual_vet3").value);}
-                if (document.getElementById("npc_qual_vet").checked && document.getElementById("npc_qual_vet4").selected) { qualityPoints += Number(document.getElementById("npc_qual_vet4").value);}
-                if (document.getElementById("npc_qual_vet").checked && document.getElementById("npc_qual_vet5").selected) { qualityPoints += Number(document.getElementById("npc_qual_vet5").value);}                
+                if (_$.checked("npc_qual_ah")) { qualityPoints += _$.num("npc_qual_ah");}
+                if (_$.checked("npc_qual_ar")) { qualityPoints += _$.num("npc_qual_ar");}
+                if (_$.checked("npc_qual_aq") && _$.selected("npc_qual_aq1")) { qualityPoints += _$.num("npc_qual_aq1");}
+                if (_$.checked("npc_qual_aq") && _$.selected("npc_qual_aq2")) { qualityPoints += _$.num("npc_qual_aq2");}
+                if (_$.checked("npc_qual_at") && _$.selected("npc_qual_at1")) { qualityPoints += _$.num("npc_qual_at1");}
+                if (_$.checked("npc_qual_at") && _$.selected("npc_qual_at2")) { qualityPoints += _$.num("npc_qual_at2");}
+                if (_$.checked("npc_qual_at") && _$.selected("npc_qual_at3")) { qualityPoints += _$.num("npc_qual_at3");}
+                if (_$.checked("npc_qual_at") && _$.selected("npc_qual_at4")) { qualityPoints += _$.num("npc_qual_at4");}
+                if (_$.checked("npc_qual_at") && _$.selected("npc_qual_at5")) { qualityPoints += _$.num("npc_qual_at5");}
+                if (_$.checked("npc_qual_at") && _$.selected("npc_qual_at6")) { qualityPoints += _$.num("npc_qual_at6");}
+                if (_$.checked("npc_qual_at") && _$.selected("npc_qual_at7")) { qualityPoints += _$.num("npc_qual_at7");}
+                if (_$.checked("npc_qual_at") && _$.selected("npc_qual_at8")) { qualityPoints += _$.num("npc_qual_at8");}
+                if (_$.checked("npc_qual_at") && _$.selected("npc_qual_at9")) { qualityPoints += _$.num("npc_qual_at9");}
+                if (_$.checked("npc_qual_at") && _$.selected("npc_qual_at10")) { qualityPoints += _$.num("npc_qual_at10");}
+                if (_$.checked("npc_qual_ba")) { qualityPoints += _$.num("npc_qual_ba");}
+                if (_$.checked("npc_qual_bat")) { qualityPoints += _$.num("npc_qual_bat");}
+                if (_$.checked("npc_qual_be")) { qualityPoints += _$.num("npc_qual_be");}
+                if (_$.checked("npc_qual_bl")) { qualityPoints += _$.num("npc_qual_bl");}
+                if (_$.checked("npc_qual_br")) { qualityPoints += _$.num("npc_qual_br");}
+                if (_$.checked("npc_qual_boa")) { qualityPoints += _$.num("npc_qual_boa");}
+                if (_$.checked("npc_qual_ca") && _$.selected("npc_qual_ca1")) { qualityPoints += _$.num("npc_qual_ca1");}
+                if (_$.checked("npc_qual_ca") && _$.selected("npc_qual_ca2")) { qualityPoints += _$.num("npc_qual_ca2");}
+                if (_$.checked("npc_qual_ca") && _$.selected("npc_qual_ca3")) { qualityPoints += _$.num("npc_qual_ca3");}
+                if (_$.checked("npc_qual_ca") && _$.selected("npc_qual_ca4")) { qualityPoints += _$.num("npc_qual_ca4");}
+                if (_$.checked("npc_qual_ca") && _$.selected("npc_qual_ca5")) { qualityPoints += _$.num("npc_qual_ca5");}
+                if (_$.checked("npc_qual_ca") && _$.selected("npc_qual_ca6")) { qualityPoints += _$.num("npc_qual_ca6");}
+                if (_$.checked("npc_qual_ca") && _$.selected("npc_qual_ca7")) { qualityPoints += _$.num("npc_qual_ca7");}
+                if (_$.checked("npc_qual_ca") && _$.selected("npc_qual_ca8")) { qualityPoints += _$.num("npc_qual_ca8");}
+                if (_$.checked("npc_qual_ca") && _$.selected("npc_qual_ca9")) { qualityPoints += _$.num("npc_qual_ca9");}
+                if (_$.checked("npc_qual_ca") && _$.selected("npc_qual_ca10")) { qualityPoints += _$.num("npc_qual_ca10");}
+                if (_$.checked("npc_qual_ch1_aq")) { qualityPoints += _$.num("npc_qual_ch1_aq");}
+                if (_$.checked("npc_qual_ch1_ar")) { qualityPoints += _$.num("npc_qual_ch1_ar");}
+                if (_$.checked("npc_qual_ch1_cm")) { qualityPoints += _$.num("npc_qual_ch1_cm");}
+                if (_$.checked("npc_qual_ch1_de")) { qualityPoints += _$.num("npc_qual_ch1_de");}
+                if (_$.checked("npc_qual_ch1_fj")) { qualityPoints += _$.num("npc_qual_ch1_fj");}
+                if (_$.checked("npc_qual_ch1_is")) { qualityPoints += _$.num("npc_qual_ch1_is");}
+                if (_$.checked("npc_qual_ch1_pl")) { qualityPoints += _$.num("npc_qual_ch1_pl");}
+                if (_$.checked("npc_qual_ch1_sw")) { qualityPoints += _$.num("npc_qual_ch1_sw");}
+                if (_$.checked("npc_qual_ch2_aq")) { qualityPoints += _$.num("npc_qual_ch2_aq");}
+                if (_$.checked("npc_qual_ch2_ar")) { qualityPoints += _$.num("npc_qual_ch2_ar");}
+                if (_$.checked("npc_qual_ch2_cm")) { qualityPoints += _$.num("npc_qual_ch2_cm");}
+                if (_$.checked("npc_qual_ch2_de")) { qualityPoints += _$.num("npc_qual_ch2_de");}
+                if (_$.checked("npc_qual_ch2_fj")) { qualityPoints += _$.num("npc_qual_ch2_fj");}
+                if (_$.checked("npc_qual_ch2_is")) { qualityPoints += _$.num("npc_qual_ch2_is");}
+                if (_$.checked("npc_qual_ch2_pl")) { qualityPoints += _$.num("npc_qual_ch2_pl");}
+                if (_$.checked("npc_qual_ch2_sw")) { qualityPoints += _$.num("npc_qual_ch2_sw");}
+                if (_$.checked("npc_qual_chat")) { qualityPoints += _$.num("npc_qual_chat");}
+                if (_$.checked("npc_qual_clab")) { qualityPoints += Number(_$.get("caTotalXP").innerHTML);}
+                if (_$.checked("npc_qual_cl")) { qualityPoints += _$.num("npc_qual_cl");}
+                if (_$.checked("npc_qual_cb")) { qualityPoints += _$.num("npc_qual_cb");}
+                if (_$.checked("npc_qual_ci")) { qualityPoints += _$.num("npc_qual_ci");}
+                if (_$.checked("npc_qual_ci_baf")) { qualityPoints += _$.num("npc_qual_ci_baf");}
+                if (_$.checked("npc_qual_ci_ble")) { qualityPoints += _$.num("npc_qual_ci_ble");}
+                if (_$.checked("npc_qual_ci_bli")) { qualityPoints += _$.num("npc_qual_ci_bli");}
+                if (_$.checked("npc_qual_ci_dea")) { qualityPoints += _$.num("npc_qual_ci_dea");}
+                if (_$.checked("npc_qual_ci_enr")) { qualityPoints += _$.num("npc_qual_ci_enr");}
+                if (_$.checked("npc_qual_ci_ent")) { qualityPoints += _$.num("npc_qual_ci_ent");}
+                if (_$.checked("npc_qual_ci_fat")) { qualityPoints += _$.num("npc_qual_ci_fat");}
+                if (_$.checked("npc_qual_ci_fix")) { qualityPoints += _$.num("npc_qual_ci_fix");}
+                if (_$.checked("npc_qual_ci_fla")) { qualityPoints += _$.num("npc_qual_ci_fla");}
+                if (_$.checked("npc_qual_ci_ffo")) { qualityPoints += _$.num("npc_qual_ci_ffo");}
+                if (_$.checked("npc_qual_ci_fri")) { qualityPoints += _$.num("npc_qual_ci_fri");}
+                if (_$.checked("npc_qual_ci_hel")) { qualityPoints += _$.num("npc_qual_ci_hel");}
+                if (_$.checked("npc_qual_ci_hlp")) { qualityPoints += _$.num("npc_qual_ci_hlp");}
+                if (_$.checked("npc_qual_ci_hid")) { qualityPoints += _$.num("npc_qual_ci_hid");}
+                if (_$.checked("npc_qual_ci_inc")) { qualityPoints += _$.num("npc_qual_ci_inc");}
+                if (_$.checked("npc_qual_ci_inv")) { qualityPoints += _$.num("npc_qual_ci_inv");}
+                if (_$.checked("npc_qual_ci_par")) { qualityPoints += _$.num("npc_qual_ci_par");}
+                if (_$.checked("npc_qual_ci_pin")) { qualityPoints += _$.num("npc_qual_ci_pin");}
+                if (_$.checked("npc_qual_ci_pro")) { qualityPoints += _$.num("npc_qual_ci_pro");}
+                if (_$.checked("npc_qual_ci_sha")) { qualityPoints += _$.num("npc_qual_ci_sha");}
+                if (_$.checked("npc_qual_ci_sic")) { qualityPoints += _$.num("npc_qual_ci_sic");}
+                if (_$.checked("npc_qual_ci_slo")) { qualityPoints += _$.num("npc_qual_ci_slo");}
+                if (_$.checked("npc_qual_ci_spr")) { qualityPoints += _$.num("npc_qual_ci_spr");}
+                if (_$.checked("npc_qual_ci_stu")) { qualityPoints += _$.num("npc_qual_ci_stu");}
+                if (_$.checked("npc_qual_conim")) { qualityPoints += _$.num("npc_qual_conim");}
+                if (_$.checked("npc_qual_conv")) { qualityPoints += _$.num("npc_qual_conv");}
+                if (_$.checked("npc_qual_crithes")) { qualityPoints += _$.num("npc_qual_crithes");}
+                if (_$.checked("npc_qual_critsur")) { qualityPoints += _$.num("npc_qual_critsur");}
+                if (_$.checked("npc_qual_dd_ac")) { qualityPoints += _$.num("npc_qual_dd_ac");}
+                if (_$.checked("npc_qual_dd_ba")) { qualityPoints += _$.num("npc_qual_dd_ba");}
+                if (_$.checked("npc_qual_dd_co")) { qualityPoints += _$.num("npc_qual_dd_co");}
+                if (_$.checked("npc_qual_dd_di")) { qualityPoints += _$.num("npc_qual_dd_di");}
+                if (_$.checked("npc_qual_dd_el")) { qualityPoints += _$.num("npc_qual_dd_el");}
+                if (_$.checked("npc_qual_dd_ex")) { qualityPoints += _$.num("npc_qual_dd_ex");}
+                if (_$.checked("npc_qual_dd_fi")) { qualityPoints += _$.num("npc_qual_dd_fi");}
+                if (_$.checked("npc_qual_dd_fl")) { qualityPoints += _$.num("npc_qual_dd_fl");}
+                if (_$.checked("npc_qual_dd_fo")) { qualityPoints += _$.num("npc_qual_dd_fo");}
+                if (_$.checked("npc_qual_dd_he")) { qualityPoints += _$.num("npc_qual_dd_he");}
+                if (_$.checked("npc_qual_dd_sa")) { qualityPoints += _$.num("npc_qual_dd_sa");}
+                if (_$.checked("npc_qual_dd_so")) { qualityPoints += _$.num("npc_qual_dd_so");}
+                if (_$.checked("npc_qual_dd_st")) { qualityPoints += _$.num("npc_qual_dd_st");}
+                if (_$.checked("npc_qual_dd_su")) { qualityPoints += _$.num("npc_qual_dd_su");}
+                if (_$.checked("npc_qual_dd_le")) { qualityPoints += _$.num("npc_qual_dd_le");}
+                if (_$.checked("npc_qual_di_ac")) { qualityPoints += _$.num("npc_qual_di_ac");}
+                if (_$.checked("npc_qual_di_ba")) { qualityPoints += _$.num("npc_qual_di_ba");}
+                if (_$.checked("npc_qual_di_co")) { qualityPoints += _$.num("npc_qual_di_co");}
+                if (_$.checked("npc_qual_di_di")) { qualityPoints += _$.num("npc_qual_di_di");}
+                if (_$.checked("npc_qual_di_el")) { qualityPoints += _$.num("npc_qual_di_el");}
+                if (_$.checked("npc_qual_di_ex")) { qualityPoints += _$.num("npc_qual_di_ex");}
+                if (_$.checked("npc_qual_di_fi")) { qualityPoints += _$.num("npc_qual_di_fi");}
+                if (_$.checked("npc_qual_di_fl")) { qualityPoints += _$.num("npc_qual_di_fl");}
+                if (_$.checked("npc_qual_di_fo")) { qualityPoints += _$.num("npc_qual_di_fo");}
+                if (_$.checked("npc_qual_di_he")) { qualityPoints += _$.num("npc_qual_di_he");}
+                if (_$.checked("npc_qual_di_sa")) { qualityPoints += _$.num("npc_qual_di_sa");}
+                if (_$.checked("npc_qual_di_so")) { qualityPoints += _$.num("npc_qual_di_so");}
+                if (_$.checked("npc_qual_di_st")) { qualityPoints += _$.num("npc_qual_di_st");}
+                if (_$.checked("npc_qual_di_su")) { qualityPoints += _$.num("npc_qual_di_su");}
+                if (_$.checked("npc_qual_di_le")) { qualityPoints += _$.num("npc_qual_di_le");}
+                if (_$.checked("npc_qual_dv") && _$.selected("npc_qual_dv1")) { qualityPoints += _$.num("npc_qual_dv1");}
+                if (_$.checked("npc_qual_dv") && _$.selected("npc_qual_dv2")) { qualityPoints += _$.num("npc_qual_dv2");}
+                if (_$.checked("npc_qual_dt") && _$.selected("npc_qual_dt_le")) { qualityPoints += _$.num("npc_qual_dt_le");}
+                if (_$.checked("npc_qual_dt") && _$.selected("npc_qual_dt_ac")) { qualityPoints += _$.num("npc_qual_dt_ac");}
+                if (_$.checked("npc_qual_dt") && _$.selected("npc_qual_dt_ba")) { qualityPoints += _$.num("npc_qual_dt_ba");}
+                if (_$.checked("npc_qual_dt") && _$.selected("npc_qual_dt_co")) { qualityPoints += _$.num("npc_qual_dt_co");}
+                if (_$.checked("npc_qual_dt") && _$.selected("npc_qual_dt_di")) { qualityPoints += _$.num("npc_qual_dt_di");}
+                if (_$.checked("npc_qual_dt") && _$.selected("npc_qual_dt_el")) { qualityPoints += _$.num("npc_qual_dt_el");}
+                if (_$.checked("npc_qual_dt") && _$.selected("npc_qual_dt_ex")) { qualityPoints += _$.num("npc_qual_dt_ex");}
+                if (_$.checked("npc_qual_dt") && _$.selected("npc_qual_dt_fi")) { qualityPoints += _$.num("npc_qual_dt_fi");}
+                if (_$.checked("npc_qual_dt") && _$.selected("npc_qual_dt_fl")) { qualityPoints += _$.num("npc_qual_dt_fl");}
+                if (_$.checked("npc_qual_dt") && _$.selected("npc_qual_dt_fo")) { qualityPoints += _$.num("npc_qual_dt_fo");}
+                if (_$.checked("npc_qual_dt") && _$.selected("npc_qual_dt_he")) { qualityPoints += _$.num("npc_qual_dt_he");}
+                if (_$.checked("npc_qual_dt") && _$.selected("npc_qual_dt_sa")) { qualityPoints += _$.num("npc_qual_dt_sa");}
+                if (_$.checked("npc_qual_dt") && _$.selected("npc_qual_dt_so")) { qualityPoints += _$.num("npc_qual_dt_so");}
+                if (_$.checked("npc_qual_dt") && _$.selected("npc_qual_dt_st")) { qualityPoints += _$.num("npc_qual_dt_st");}
+                if (_$.checked("npc_qual_dt") && _$.selected("npc_qual_dt_su")) { qualityPoints += _$.num("npc_qual_dt_su");}
+                if (_$.checked("npc_qual_dev") && _$.selected("npc_qual_dev1")) { qualityPoints += _$.num("npc_qual_dev1");}
+                if (_$.checked("npc_qual_dev") && _$.selected("npc_qual_dev2")) { qualityPoints += _$.num("npc_qual_dev2");}
+                if (_$.checked("npc_qual_dev") && _$.selected("npc_qual_dev3")) { qualityPoints += _$.num("npc_qual_dev3");}
+                if (_$.checked("npc_qual_dev") && _$.selected("npc_qual_dev4")) { qualityPoints += _$.num("npc_qual_dev4");}
+                if (_$.checked("npc_qual_dev") && _$.selected("npc_qual_dev5")) { qualityPoints += _$.num("npc_qual_dev5");}
+                if (_$.checked("npc_qual_esb")) { qualityPoints += Number($.get("spellNum").innerHTML);}
+                if (_$.checked("npc_qual_exp_acr")) { qualityPoints += _$.num("npc_qual_exp_acr");}
+                if (_$.checked("npc_qual_exp_ath")) { qualityPoints += _$.num("npc_qual_exp_ath");}
+                if (_$.checked("npc_qual_exp_ble")) { qualityPoints += _$.num("npc_qual_exp_ble");}
+                if (_$.checked("npc_qual_exp_blu")) { qualityPoints += _$.num("npc_qual_exp_blu");}
+                if (_$.checked("npc_qual_exp_cra")) { qualityPoints += _$.num("npc_qual_exp_cra");}
+                if (_$.checked("npc_qual_exp_dis")) { qualityPoints += _$.num("npc_qual_exp_dis");}
+                if (_$.checked("npc_qual_exp_hag")) { qualityPoints += _$.num("npc_qual_exp_hag");}
+                if (_$.checked("npc_qual_exp_imp")) { qualityPoints += _$.num("npc_qual_exp_imp");}
+                if (_$.checked("npc_qual_exp_int")) { qualityPoints += _$.num("npc_qual_exp_int");}
+                if (_$.checked("npc_qual_exp_inv")) { qualityPoints += _$.num("npc_qual_exp_inv");}
+                if (_$.checked("npc_qual_exp_med")) { qualityPoints += _$.num("npc_qual_exp_med");}
+                if (_$.checked("npc_qual_exp_not")) { qualityPoints += _$.num("npc_qual_exp_not");}
+                if (_$.checked("npc_qual_exp_pre")) { qualityPoints += _$.num("npc_qual_exp_pre");}
+                if (_$.checked("npc_qual_exp_res")) { qualityPoints += _$.num("npc_qual_exp_res");}
+                if (_$.checked("npc_qual_exp_rid")) { qualityPoints += _$.num("npc_qual_exp_rid");}
+                if (_$.checked("npc_qual_exp_sea")) { qualityPoints += _$.num("npc_qual_exp_sea");}
+                if (_$.checked("npc_qual_exp_sen")) { qualityPoints += _$.num("npc_qual_exp_sen");}
+                if (_$.checked("npc_qual_exp_sne")) { qualityPoints += _$.num("npc_qual_exp_sne");}
+                if (_$.checked("npc_qual_exp_spe")) { qualityPoints += _$.num("npc_qual_exp_spe");}
+                if (_$.checked("npc_qual_exp_sur")) { qualityPoints += _$.num("npc_qual_exp_sur");}
+                if (_$.checked("npc_qual_exp_tac")) { qualityPoints += _$.num("npc_qual_exp_tac");}
+                if (_$.checked("npc_qual_fh")) { qualityPoints += _$.num("npc_qual_fh");}
+                if (_$.checked("npc_qual_ff")) { qualityPoints += _$.num("npc_qual_ff");}
+                if (_$.checked("npc_qual_faf_an")) { qualityPoints += _$.num("npc_qual_faf_an");}
+                if (_$.checked("npc_qual_faf_be")) { qualityPoints += _$.num("npc_qual_faf_be");}
+                if (_$.checked("npc_qual_faf_co")) { qualityPoints += _$.num("npc_qual_faf_co");}
+                if (_$.checked("npc_qual_faf_el")) { qualityPoints += _$.num("npc_qual_faf_el");}
+                if (_$.checked("npc_qual_faf_fe")) { qualityPoints += _$.num("npc_qual_faf_fe");}
+                if (_$.checked("npc_qual_faf_fo")) { qualityPoints += _$.num("npc_qual_faf_fo");}
+                if (_$.checked("npc_qual_faf_ho")) { qualityPoints += _$.num("npc_qual_faf_ho");}
+                if (_$.checked("npc_qual_faf_oo")) { qualityPoints += _$.num("npc_qual_faf_oo");}
+                if (_$.checked("npc_qual_faf_ou")) { qualityPoints += _$.num("npc_qual_faf_ou");}
+                if (_$.checked("npc_qual_faf_pl")) { qualityPoints += _$.num("npc_qual_faf_pl");}
+                if (_$.checked("npc_qual_faf_sp")) { qualityPoints += _$.num("npc_qual_faf_sp");}
+                if (_$.checked("npc_qual_faf_un")) { qualityPoints += _$.num("npc_qual_faf_un");}
+                if (_$.checked("npc_qual_fl") && _$.selected("npc_qual_fl1")) { qualityPoints += _$.num("npc_qual_fl1");}
+                if (_$.checked("npc_qual_fl") && _$.selected("npc_qual_fl2")) { qualityPoints += _$.num("npc_qual_fl2");}
+                if (_$.checked("npc_qual_feat")) { qualityPoints += Number($_.get("featNum").innerHTML) * 2;}
+                if (_$.checked("npc_qual_fera")) { qualityPoints += _$.num("npc_qual_fera");}
+                if (_$.checked("npc_qual_fero")) { qualityPoints += _$.num("npc_qual_fero");}
+                if (_$.checked("npc_qual_fz") && _$.selected("npc_qual_fz1")) { qualityPoints += _$.num("npc_qual_fz1");}
+                if (_$.checked("npc_qual_fz") && _$.selected("npc_qual_fz2")) { qualityPoints += _$.num("npc_qual_fz2");}
+                if (_$.checked("npc_qual_fz") && _$.selected("npc_qual_fz3")) { qualityPoints += _$.num("npc_qual_fz3");}
+                if (_$.checked("npc_qual_grap")) { qualityPoints += _$.num("npc_qual_grap");}
+                if (_$.checked("npc_qual_gru")) { qualityPoints += _$.num("npc_qual_gru");}
+                if (_$.checked("npc_qual_hm")) { qualityPoints += _$.num("npc_qual_hm");}
+                if (_$.checked("npc_qual_ho")) { qualityPoints += _$.num("npc_qual_ho");}
+                if (_$.checked("npc_qual_is_vi")) { qualityPoints += _$.num("npc_qual_is_vi");}
+                if (_$.checked("npc_qual_is_he")) { qualityPoints += _$.num("npc_qual_is_he");}
+                if (_$.checked("npc_qual_is_sc")) { qualityPoints += _$.num("npc_qual_is_sc");}
+                if (_$.checked("npc_qual_icc")) { qualityPoints += _$.num("npc_qual_icc");}
+                if (_$.checked("npc_qual_irs_vi")) { qualityPoints += _$.num("npc_qual_irs_vi");}
+                if (_$.checked("npc_qual_irs_he")) { qualityPoints += _$.num("npc_qual_irs_he");}
+                if (_$.checked("npc_qual_irs_sc")) { qualityPoints += _$.num("npc_qual_irs_sc");}
+                if (_$.checked("npc_qual_imp_stab")) { qualityPoints += _$.num("npc_qual_imp_stab");}
+                if (_$.checked("npc_qual_int")) { qualityPoints += _$.num("npc_qual_int");}
+                if (_$.checked("npc_qual_inv")) { qualityPoints += _$.num("npc_qual_inv");}
+                if (_$.checked("npc_qual_kb")) { qualityPoints += _$.num("npc_qual_kb");}
+                if (_$.checked("npc_qual_lse")) { qualityPoints += _$.num("npc_qual_lse");}
+                if (_$.checked("npc_qual_lsl")) { qualityPoints += _$.num("npc_qual_lsl");}
+                if (_$.checked("npc_qual_lum")) { qualityPoints += _$.num("npc_qual_lum");}
+                if (_$.checked("npc_qual_me")) { qualityPoints += _$.num("npc_qual_me");}
+                if (_$.checked("npc_qual_men")) { qualityPoints += _$.num("npc_qual_men");}
+                if (_$.checked("npc_qual_moo")) { qualityPoints += _$.num("npc_qual_moo");}
+                if (_$.checked("npc_qual_ma") && _$.selected("npc_qual_ma1")) { qualityPoints += _$.num("npc_qual_ma1");}
+                if (_$.checked("npc_qual_ma") && _$.selected("npc_qual_ma2")) { qualityPoints += _$.num("npc_qual_ma2");}
+                if (_$.checked("npc_qual_ma") && _$.selected("npc_qual_ma3")) { qualityPoints += _$.num("npc_qual_ma3");}
+                if (_$.checked("npc_qual_ma") && _$.selected("npc_qual_ma4")) { qualityPoints += _$.num("npc_qual_ma4");}
+                if (_$.checked("npc_qual_ma") && _$.selected("npc_qual_ma5")) { qualityPoints += _$.num("npc_qual_ma5");}
+                if (_$.checked("npc_qual_nd") && _$.selected("npc_qual_nd_le")) { qualityPoints += _$.num("npc_qual_nd_le");}
+                if (_$.checked("npc_qual_nd") && _$.selected("npc_qual_nd_ac")) { qualityPoints += _$.num("npc_qual_nd_ac");}
+                if (_$.checked("npc_qual_nd") && _$.selected("npc_qual_nd_ba")) { qualityPoints += _$.num("npc_qual_nd_ba");}
+                if (_$.checked("npc_qual_nd") && _$.selected("npc_qual_nd_co")) { qualityPoints += _$.num("npc_qual_nd_co");}
+                if (_$.checked("npc_qual_nd") && _$.selected("npc_qual_nd_di")) { qualityPoints += _$.num("npc_qual_nd_di");}
+                if (_$.checked("npc_qual_nd") && _$.selected("npc_qual_nd_el")) { qualityPoints += _$.num("npc_qual_nd_el");}
+                if (_$.checked("npc_qual_nd") && _$.selected("npc_qual_nd_ex")) { qualityPoints += _$.num("npc_qual_nd_ex");}
+                if (_$.checked("npc_qual_nd") && _$.selected("npc_qual_nd_fi")) { qualityPoints += _$.num("npc_qual_nd_fi");}
+                if (_$.checked("npc_qual_nd") && _$.selected("npc_qual_nd_fl")) { qualityPoints += _$.num("npc_qual_nd_fl");}
+                if (_$.checked("npc_qual_nd") && _$.selected("npc_qual_nd_fo")) { qualityPoints += _$.num("npc_qual_nd_fo");}
+                if (_$.checked("npc_qual_nd") && _$.selected("npc_qual_nd_he")) { qualityPoints += _$.num("npc_qual_nd_he");}
+                if (_$.checked("npc_qual_nd") && _$.selected("npc_qual_nd_sa")) { qualityPoints += _$.num("npc_qual_nd_sa");}
+                if (_$.checked("npc_qual_nd") && _$.selected("npc_qual_nd_so")) { qualityPoints += _$.num("npc_qual_nd_so");}
+                if (_$.checked("npc_qual_nd") && _$.selected("npc_qual_nd_st")) { qualityPoints += _$.num("npc_qual_nd_st");}
+                if (_$.checked("npc_qual_nd") && _$.selected("npc_qual_nd_su")) { qualityPoints += _$.num("npc_qual_nd_su");}
+                if (_$.checked("npc_qual_ns")) { qualityPoints += Number($.get("nsTotalLevels").innerHTML);}
+                if (_$.checked("npc_qual_no")) { qualityPoints += _$.num("npc_qual_no");}
+                if (_$.checked("npc_qual_nb")) { qualityPoints += _$.num("npc_qual_nb");}
+                if (_$.checked("npc_qual_noc")) { qualityPoints += _$.num("npc_qual_noc");}
+                if (_$.checked("npc_qual_re") && _$.selected("npc_qual_re1")) { qualityPoints += _$.num("npc_qual_re1");}
+                if (_$.checked("npc_qual_re") && _$.selected("npc_qual_re2")) { qualityPoints += _$.num("npc_qual_re2");}
+                if (_$.checked("npc_qual_re") && _$.selected("npc_qual_re3")) { qualityPoints += _$.num("npc_qual_re3");}
+                if (_$.checked("npc_qual_re") && _$.selected("npc_qual_re4")) { qualityPoints += _$.num("npc_qual_re4");}
+                if (_$.checked("npc_qual_re") && _$.selected("npc_qual_re5")) { qualityPoints += _$.num("npc_qual_re5");}
+                if (_$.checked("npc_qual_rend")) { qualityPoints += _$.num("npc_qual_rend");}
+                if (_$.checked("npc_qual_rep") && _$.selected("npc_qual_rep1")) { qualityPoints += _$.num("npc_qual_rep1");}
+                if (_$.checked("npc_qual_rep") && _$.selected("npc_qual_rep2")) { qualityPoints += _$.num("npc_qual_rep2");}
+                if (_$.checked("npc_qual_rep") && _$.selected("npc_qual_rep3")) { qualityPoints += _$.num("npc_qual_rep3");}
+                if (_$.checked("npc_qual_rep") && _$.selected("npc_qual_rep4")) { qualityPoints += _$.num("npc_qual_rep4");}
+                if (_$.checked("npc_qual_rep") && _$.selected("npc_qual_rep5")) { qualityPoints += _$.num("npc_qual_rep5");}
+                if (_$.checked("npc_qual_sha")) { qualityPoints += _$.num("npc_qual_sha");}
+                if (_$.checked("npc_qual_shsh") && _$.selected("npc_qual_shsh1")) { qualityPoints += _$.num("npc_qual_shsh1");}
+                if (_$.checked("npc_qual_shsh") && _$.selected("npc_qual_shsh2")) { qualityPoints += _$.num("npc_qual_shsh2");}
+                if (_$.checked("npc_qual_shsh") && _$.selected("npc_qual_shsh3")) { qualityPoints += _$.num("npc_qual_shsh3");}
+                if (_$.checked("npc_qual_sd") && _$.selected("npc_qual_sd1")) { qualityPoints += _$.num("npc_qual_sd1");}
+                if (_$.checked("npc_qual_sd") && _$.selected("npc_qual_sd2")) { qualityPoints += _$.num("npc_qual_sd2");}
+                if (_$.checked("npc_qual_sd") && _$.selected("npc_qual_sd3")) { qualityPoints += _$.num("npc_qual_sd3");}
+                if (_$.checked("npc_qual_sd") && _$.selected("npc_qual_sd4")) { qualityPoints += _$.num("npc_qual_sd4");}
+                if (_$.checked("npc_qual_sd") && _$.selected("npc_qual_sd5")) { qualityPoints += _$.num("npc_qual_sd5");}
+                if (_$.checked("npc_qual_sr")) { qualityPoints += _$.num("npc_qual_sr");}
+                if (_$.checked("npc_qual_splds")) { qualityPoints += _$.num("npc_qual_splds");}
+                if (_$.checked("npc_qual_spldsi")) { qualityPoints += _$.num("npc_qual_spldsi");}
+                if (_$.checked("npc_qual_splks")) { qualityPoints += _$.num("npc_qual_splks");}
+                if (_$.checked("npc_qual_splksi")) { qualityPoints += _$.num("npc_qual_splksi");}
+                if (_$.checked("npc_qual_st")) { qualityPoints += _$.num("npc_qual_st");}
+                if (_$.checked("npc_qual_stern")) { qualityPoints += _$.num("npc_qual_stern");}
+                if (_$.checked("npc_qual_sc")) { qualityPoints += _$.num("npc_qual_sc");}
+                if (_$.checked("npc_qual_sucl") && _$.selected("npc_qual_sucl1")) { qualityPoints += _$.num("npc_qual_sucl1");}
+                if (_$.checked("npc_qual_sucl") && _$.selected("npc_qual_sucl2")) { qualityPoints += _$.num("npc_qual_sucl2");}
+                if (_$.checked("npc_qual_sucl") && _$.selected("npc_qual_sucl3")) { qualityPoints += _$.num("npc_qual_sucl3");}
+                if (_$.checked("npc_qual_sucl") && _$.selected("npc_qual_sucl4")) { qualityPoints += _$.num("npc_qual_sucl4");}
+                if (_$.checked("npc_qual_sucl") && _$.selected("npc_qual_sucl5")) { qualityPoints += _$.num("npc_qual_sucl5");}
+                if (_$.checked("npc_qual_suju") && _$.selected("npc_qual_suju1")) { qualityPoints += _$.num("npc_qual_suju1");}
+                if (_$.checked("npc_qual_suju") && _$.selected("npc_qual_suju2")) { qualityPoints += _$.num("npc_qual_suju2");}
+                if (_$.checked("npc_qual_suju") && _$.selected("npc_qual_suju3")) { qualityPoints += _$.num("npc_qual_suju3");}
+                if (_$.checked("npc_qual_suju") && _$.selected("npc_qual_suju4")) { qualityPoints += _$.num("npc_qual_suju4");}
+                if (_$.checked("npc_qual_suju") && _$.selected("npc_qual_suju5")) { qualityPoints += _$.num("npc_qual_suju5");}
+                if (_$.checked("npc_qual_suru") && _$.selected("npc_qual_suru1")) { qualityPoints += _$.num("npc_qual_suru1");}
+                if (_$.checked("npc_qual_suru") && _$.selected("npc_qual_suru2")) { qualityPoints += _$.num("npc_qual_suru2");}
+                if (_$.checked("npc_qual_suru") && _$.selected("npc_qual_suru3")) { qualityPoints += _$.num("npc_qual_suru3");}
+                if (_$.checked("npc_qual_suru") && _$.selected("npc_qual_suru4")) { qualityPoints += _$.num("npc_qual_suru4");}
+                if (_$.checked("npc_qual_suru") && _$.selected("npc_qual_suru5")) { qualityPoints += _$.num("npc_qual_suru5");}
+                if (_$.checked("npc_qual_susw") && _$.selected("npc_qual_susw1")) { qualityPoints += _$.num("npc_qual_susw1");}
+                if (_$.checked("npc_qual_susw") && _$.selected("npc_qual_susw2")) { qualityPoints += _$.num("npc_qual_susw2");}
+                if (_$.checked("npc_qual_susw") && _$.selected("npc_qual_susw3")) { qualityPoints += _$.num("npc_qual_susw3");}
+                if (_$.checked("npc_qual_susw") && _$.selected("npc_qual_susw4")) { qualityPoints += _$.num("npc_qual_susw4");}
+                if (_$.checked("npc_qual_susw") && _$.selected("npc_qual_susw5")) { qualityPoints += _$.num("npc_qual_susw5");}
+                if (_$.checked("npc_qual_sutr") && _$.selected("npc_qual_sutr1")) { qualityPoints += _$.num("npc_qual_sutr1");}
+                if (_$.checked("npc_qual_sutr") && _$.selected("npc_qual_sutr2")) { qualityPoints += _$.num("npc_qual_sutr2");}
+                if (_$.checked("npc_qual_sutr") && _$.selected("npc_qual_sutr3")) { qualityPoints += _$.num("npc_qual_sutr3");}
+                if (_$.checked("npc_qual_sutr") && _$.selected("npc_qual_sutr4")) { qualityPoints += _$.num("npc_qual_sutr4");}
+                if (_$.checked("npc_qual_sutr") && _$.selected("npc_qual_sutr5")) { qualityPoints += _$.num("npc_qual_sutr5");}
+                if (_$.checked("npc_qual_swarm")) { qualityPoints += _$.num("npc_qual_swarm");}
+                if (_$.checked("npc_qual_swat") && _$.selected("npc_qual_swat1")) { qualityPoints += _$.num("npc_qual_swat1");}
+                if (_$.checked("npc_qual_swat") && _$.selected("npc_qual_swat2")) { qualityPoints += _$.num("npc_qual_swat2");}
+                if (_$.checked("npc_qual_swat") && _$.selected("npc_qual_swat3")) { qualityPoints += _$.num("npc_qual_swat3");}
+                if (_$.checked("npc_qual_swat") && _$.selected("npc_qual_swat4")) { qualityPoints += _$.num("npc_qual_swat4");}
+                if (_$.checked("npc_qual_swat") && _$.selected("npc_qual_swat5")) { qualityPoints += _$.num("npc_qual_swat5");}
+                if (_$.checked("npc_qual_tel")) { qualityPoints += _$.num("npc_qual_tel");}
+                if (_$.checked("npc_qual_tou") && _$.selected("npc_qual_tou1")) { qualityPoints += _$.num("npc_qual_tou1");}
+                if (_$.checked("npc_qual_tou") && _$.selected("npc_qual_tou2")) { qualityPoints += _$.num("npc_qual_tou2");}
+                if (_$.checked("npc_qual_tou") && _$.selected("npc_qual_tou3")) { qualityPoints += _$.num("npc_qual_tou3");}
+                if (_$.checked("npc_qual_tou") && _$.selected("npc_qual_tou4")) { qualityPoints += _$.num("npc_qual_tou4");}
+                if (_$.checked("npc_qual_tou") && _$.selected("npc_qual_tou5")) { qualityPoints += _$.num("npc_qual_tou5");}
+                if (_$.checked("npc_qual_trec")) { qualityPoints += _$.num("npc_qual_trec");}
+                if (_$.checked("npc_qual_tric")) { qualityPoints += _$.num("npc_qual_tric");}
+                if (_$.checked("npc_qual_turn")) { qualityPoints += _$.num("npc_qual_turn");}
+                if (_$.checked("npc_qual_ti")) { qualityPoints += _$.num("npc_qual_ti");}
+                if (_$.checked("npc_qual_usp")) { qualityPoints += _$.num("npc_qual_usp");}
+                if (_$.checked("npc_qual_unn")) { qualityPoints += _$.num("npc_qual_unn");}
+                if (_$.checked("npc_qual_vet") && _$.selected("npc_qual_vet1")) { qualityPoints += _$.num("npc_qual_vet1");}
+                if (_$.checked("npc_qual_vet") && _$.selected("npc_qual_vet2")) { qualityPoints += _$.num("npc_qual_vet2");}
+                if (_$.checked("npc_qual_vet") && _$.selected("npc_qual_vet3")) { qualityPoints += _$.num("npc_qual_vet3");}
+                if (_$.checked("npc_qual_vet") && _$.selected("npc_qual_vet4")) { qualityPoints += _$.num("npc_qual_vet4");}
+                if (_$.checked("npc_qual_vet") && _$.selected("npc_qual_vet5")) { qualityPoints += _$.num("npc_qual_vet5");}
 
                 //Set qualityPoints
-                document.getElementById("qualitiesXP").innerHTML = qualityPoints;
+                _$.set("qualitiesXP", qualityPoints);
 
                 //Return sum of scores
                 return qualityPoints;
@@ -599,133 +615,76 @@
             function cXP() {
                 //Calculate XP
                 //Type XP
-                    var ty = calcTypeXP();
+                var ty = calcTypeXP();
 
                 //Mobility XP
-                    var mo = calcMobilityXP();
+                var mo = calcMobilityXP();
 
                 //Attribute XP
-                    var ab = calcAttributesXP();
+                var ab = calcAttributesXP();
 
                 //Trait XP
-                    var tr = calcTraitsXP();
+                var tr = calcTraitsXP();
 
                 //Health XP
-                    var he = calcHealthXP();
+                var he = calcHealthXP();
 
                 //Signature Skills XP
-                    var ss = calcSSXP();
+                var ss = calcSSXP();
 
                 //NPC Qualities XP
-                    var qt = calcQualitiesXP();
+                var qt = calcQualitiesXP();
 
                 var s1 = Number(ty + mo + ab + tr + he + ss);
-                document.getElementById("statXPTotal").innerHTML = s1;
-                document.getElementById("xp_num").innerHTML = (s1 + qt);
+                _$.set("statXPTotal", s1);
+                _$.set("xp_num", (s1 + qt));
             }
 
             function mobSelect() {
-                var sel = document.getElementById('mobi').value;
+                var sel = _$.val('mobi');
                 var mobXP = 0;
                 switch (sel) {
                     case "walker":
-                    if (document.getElementById("burrower").style=="display:block") {
-                        document.getElementById("burrower").style="display:none"; 
-                    }
-                    if (document.getElementById("flyer").style=="display:block") {
-                        document.getElementById("flyer").style="display:none"; 
-                    }
-                    if (document.getElementById("swimmer").style=="display:block") {
-                        document.getElementById("swimmer").style="display:none"; 
-                    }
-                    if (document.getElementById("walker").style=="display:none") {
-                        document.getElementById("walker").style="display:block"; 
-                    }
-                    
-                    document.getElementById("burrower_spd").value = 0;                     
-                    document.getElementById("flyer_spd").value = 0;
-                    document.getElementById("walker_spd").value = 30;
-                    document.getElementById("swimmer_spd").value = 0;   
-                    break;
+                        _$.setVal("burrower_spd", 0);
+                        _$.setVal("flyer_spd", 0);
+                        _$.setVal("walker_spd", 30);
+                        _$.setVal("swimmer_spd", 0);
+                        break;
 
                     case "burrower":
-                    if (document.getElementById("walker").style=="display:block") {
-                        document.getElementById("walker").style="display:none"; 
-                    }
-                    if (document.getElementById("flyer").style=="display:block") {
-                        document.getElementById("flyer").style="display:none"; 
-                    }
-                    if (document.getElementById("swimmer").style=="display:block") {
-                        document.getElementById("swimmer").style="display:none"; 
-                    }
-                    if (document.getElementById("burrower").style=="display:none") {
-                        document.getElementById("burrower").style="display:block"; 
-                    }
-                    
-                    document.getElementById("burrower_spd").value = 30;                     
-                    document.getElementById("flyer_spd").value = 0;
-                    document.getElementById("walker_spd").value = 0;
-                    document.getElementById("swimmer_spd").value = 0;
-                    break;
+                        _$.setVal("burrower_spd", 30);
+                        _$.setVal("flyer_spd", 0);
+                        _$.setVal("walker_spd", 0);
+                        _$.setVal("swimmer_spd", 0);
+                        break;
 
                     case "flyer":
-                    if (document.getElementById("burrower").style=="display:block") {
-                        document.getElementById("burrower").style="display:none"; 
-                    }
-                    if (document.getElementById("walker").style=="display:block") {
-                        document.getElementById("walker").style="display:none"; 
-                    }
-                    if (document.getElementById("swimmer").style=="display:block") {
-                        document.getElementById("swimmer").style="display:none"; 
-                    }
-                    if (document.getElementById("flyer").style=="display:none") {
-                        document.getElementById("flyer").style="display:block"; 
-                    }
-
-                    document.getElementById("burrower_spd").value = 0;                     
-                    document.getElementById("flyer_spd").value = 30;
-                    document.getElementById("walker_spd").value = 0;
-                    document.getElementById("swimmer_spd").value = 0;   
+                        _$.setVal("burrower_spd", 0);
+                        _$.setVal("flyer_spd", 30);
+                        _$.setVal("walker_spd", 0);
+                        _$.setVal("swimmer_spd", 0);
                     break;
 
                     case "swimmer":
-                    if (document.getElementById("burrower").style=="display:block") {
-                        document.getElementById("burrower").style="display:none"; 
-                    }
-                    if (document.getElementById("flyer").style=="display:block") {
-                        document.getElementById("flyer").style="display:none"; 
-                    }
-                    if (document.getElementById("walker").style=="display:block") {
-                        document.getElementById("walker").style="display:none"; 
-                    }
-                    if (document.getElementById("swimmer").style=="display:none") {
-                        document.getElementById("swimmer").style="display:block"; 
-                    }
-
-                    document.getElementById("burrower_spd").value = 0;                     
-                    document.getElementById("flyer_spd").value = 0;
-                    document.getElementById("walker_spd").value = 0;
-                    document.getElementById("swimmer_spd").value = 30;   
-                    break;
-
-                    
+                        _$.setVal("burrower_spd", 0);
+                        _$.setVal("flyer_spd", 0);
+                        _$.setVal("walker_spd", 0);
+                        _$.setVal("swimmer_spd", 30);
+                        break;
                 }
-
-
-                document.getElementById("mobilityXP").innerHTML = mobXP;
-
+                _$.set("mobilityXP", mobXP);
                 cXP();
             }
 
             function mob(sel) {
-                if (sel == "immobile_sel") {
-                    document.getElementById("mobile").style="display:none";
-                    document.getElementById("mobilityXP").innerHTML = -5;
+                if (sel === "immobile_sel") {
+                    _$.get("mobile").style="display:none";
+                    _$.set("mobilityXP", -5);
                     immobility = 1;
                 }
-                if (sel == "mobile_sel") {
-                    document.getElementById("mobile").style="display:block";
-                    document.getElementById("mobilityXP").innerHTML = 0;
+                if (sel === "mobile_sel") {
+                    _$.get("mobile").style="display:block";
+                    _$.set("mobilityXP", 0);
                     immobility = 0;
                     mobSelect();
                 }
@@ -735,60 +694,60 @@
             function szSelect(szpass) {
                 switch (szpass) {
                     case "Large":
-                        document.getElementById("dimensions").style.display = "block";
-                        document.getElementById("fp").innerHTML = "Up to 3 x 3";
-                        document.getElementById("npc_fpw").max = 3;
-                        document.getElementById("npc_fpl").max = 3;
-                        document.getElementById("npc_fpw").value = 3;
-                        document.getElementById("npc_fpl").value = 3;
+                        _$.get("dimensions").style.display = "block";
+                        _$.set("fp", "Up to 3 x 3");
+                        _$.get("npc_fpw").max = 3;
+                        _$.get("npc_fpl").max = 3;
+                        _$.setVal("npc_fpw", 3);
+                        _$.setVal("npc_fpl", 3);
                         break;
                     case "Huge":
-                        document.getElementById("dimensions").style.display = "block";
-                        document.getElementById("fp").innerHTML = "Up to 6 x 6";
-                        document.getElementById("npc_fpw").max = 6;
-                        document.getElementById("npc_fpl").max = 6;
-                        document.getElementById("npc_fpw").value = 4;
-                        document.getElementById("npc_fpl").value = 4;
+                        _$.get("dimensions").style.display = "block";
+                        _$.set("fp", "Up to 6 x 6");
+                        _$.get("npc_fpw").max = 6;
+                        _$.get("npc_fpl").max = 6;
+                        _$.setVal("npc_fpw", 4);
+                        _$.setVal("npc_fpl", 4);
                         break;
                     case "Gargantuan":
-                        document.getElementById("dimensions").style.display = "block";
-                        document.getElementById("fp").innerHTML = "Up to 12 x 12";
-                        document.getElementById("npc_fpw").max = 12;
-                        document.getElementById("npc_fpl").max = 12;
-                        document.getElementById("npc_fpw").value = 7;
-                        document.getElementById("npc_fpl").value = 7;
+                        _$.get("dimensions").style.display = "block";
+                        _$.set("fp", "Up to 12 x 12");
+                        _$.get("npc_fpw").max = 12;
+                        _$.get("npc_fpl").max = 12;
+                        _$.setVal("npc_fpw", 7);
+                        _$.setVal("npc_fpl", 7);
                         break;
                     case "Colossal":
-                        document.getElementById("dimensions").style.display = "block";
-                        document.getElementById("fp").innerHTML = "Up to 25 x 25";
-                        document.getElementById("npc_fpw").max = 25;
-                        document.getElementById("npc_fpl").max = 25;
-                        document.getElementById("npc_fpw").value = 13;
-                        document.getElementById("npc_fpl").value = 13;
+                        _$.get("dimensions").style.display = "block";
+                        _$.set("fp", "Up to 25 x 25");
+                        _$.get("npc_fpw").max = 25;
+                        _$.get("npc_fpl").max = 25;
+                        _$.setVal("npc_fpw", 13);
+                        _$.setVal("npc_fpl", 13);
                         break;
                     case "Enormous":
-                        document.getElementById("dimensions").style.display = "block";
-                        document.getElementById("fp").innerHTML = "Up to 50 x 50";
-                        document.getElementById("npc_fpw").max = 50;
-                        document.getElementById("npc_fpl").max = 50;
-                        document.getElementById("npc_fpw").value = 26;
-                        document.getElementById("npc_fpl").value = 26;
+                        _$.get("dimensions").style.display = "block";
+                        _$.set("fp", "Up to 50 x 50");
+                        _$.get("npc_fpw").max = 50;
+                        _$.get("npc_fpl").max = 50;
+                        _$.setVal("npc_fpw", 26);
+                        _$.setVal("npc_fpl", 26);
                         break;
                     case "Vast":
-                        document.getElementById("dimensions").style.display = "block";
-                        document.getElementById("fp").innerHTML = "Greater than 50 x 50";
-                        document.getElementById("npc_fpw").max = 100;
-                        document.getElementById("npc_fpl").max = 100;
-                        document.getElementById("npc_fpw").value = 51;
-                        document.getElementById("npc_fpl").value = 51;
+                        _$.get("dimensions").style.display = "block";
+                        _$.set("fp", "Greater than 50 x 50");
+                        _$.get("npc_fpw").max = 100;
+                        _$.get("npc_fpl").max = 100;
+                        _$.setVal("npc_fpw", 51);
+                        _$.setVal("npc_fpl", 51);
                         break;
                     default:
-                        document.getElementById("dimensions").style.display = "none";
-                        document.getElementById("fp").innerHTML = "Up to 1 x 1";
-                        document.getElementById("npc_fpw").max = 1;
-                        document.getElementById("npc_fpl").max = 1;
-                        document.getElementById("npc_fpw").value = 1;
-                        document.getElementById("npc_fpl").value = 1;
+                        _$.get("dimensions").style.display = "none";
+                        _$.set("fp", "Up to 1 x 1");
+                        _$.get("npc_fpw").max = 1;
+                        _$.get("npc_fpl").max = 1;
+                        _$.setVal("npc_fpw", 1);
+                        _$.setVal("npc_fpl", 1);
                         break;
                 }
             }
@@ -807,18 +766,18 @@
                 listItem.appendChild(inText);
                 listItem.appendChild(spn);
 
-                document.getElementById("p_spellList").appendChild(listItem);
+                _$.get("p_spellList").appendChild(listItem);
                 
                 var spells = document.querySelectorAll("#p_spellList li");
-                document.getElementById("spellNum").innerHTML = spells.length;
+                _$.set("spellNum", spells.length);
                 spellIndex += 1;
                 cXP();
             }
 
             function removeListItem_Spell(item) {                
-                document.getElementById(item).remove();
+                _$.get(item).remove();
                 var spells = document.querySelectorAll("#p_spellList li");
-                document.getElementById("spellNum").innerHTML = spells.length;
+                _$.set("spellNum", spells.length);
                 cXP();
             }
 
@@ -836,18 +795,18 @@
                 listItem.appendChild(inText);
                 listItem.appendChild(spn);
 
-                document.getElementById("p_featList").appendChild(listItem);
+                _$.get("p_featList").appendChild(listItem);
                 
                 var feats = document.querySelectorAll("#p_featList li");
-                document.getElementById("featNum").innerHTML = feats.length;
+                _$.set("featNum", feats.length);
                 featIndex += 1;
                 cXP();
             }
 
             function removeListItem_Feat(item) {                
-                document.getElementById(item).remove();
+                _$.get(item).remove();
                 var feats = document.querySelectorAll("#p_featList li");
-                document.getElementById("featNum").innerHTML = feats.length;
+                _$.set("featNum", feats.length);
                 cXP();
             }
 
@@ -874,7 +833,7 @@
                 listItem.appendChild(inText2);
                 listItem.appendChild(spn);
 
-                document.getElementById("p_nsList").appendChild(listItem);
+                _$.get("p_nsList").appendChild(listItem);
                 nsIndex += 1;
                 calcNSXP();
                 cXP();
@@ -886,17 +845,17 @@
                 for (n = 0; n < ns.length; n++) {
                     nsxp += Number(ns[n].childNodes[1].value);
                 }
-                document.getElementById("nsTotalLevels").innerHTML = nsxp;
+                _$.set("nsTotalLevels", nsxp);
             }
 
             function removeListItem_NS(item) {
-                document.getElementById(item).remove();
+                _$.get(item).remove();
                 var ns = document.querySelectorAll("#p_nsList li");
                 calcNSXP();
                 cXP();
             }
 
-            function addListItem_CA() {                
+            function addListItem_CA() {
                 var c = "ca" + caIndex;
                 var c2 = "removeListItem_CA(" + "'" + c + "'" + ");";
                 const listItem = document.createElement("li");
@@ -914,7 +873,7 @@
                 const spn = document.createElement("span");
                 spn.setAttribute("onclick", c2);
                 spn.innerHTML= "X";
-                
+
                 listItem.appendChild(inText);
                 listItem.appendChild(inText2);
                 listItem.appendChild(spn);
@@ -922,7 +881,6 @@
                 document.getElementById("p_caList").appendChild(listItem);
                 caIndex += 1;
                 calcCAXP();
-                cXP();
             }
 
             function calcCAXP() {
@@ -931,17 +889,17 @@
                 for (c = 0; c < ca.length; c++) {
                     caxp += Number(ca[c].childNodes[1].value);
                 }
-                document.getElementById("caTotalXP").innerHTML = caxp;
+                _$.set("caTotalXP", caxp);
+                cXP();
             }
 
             function removeListItem_CA(item) {
                 document.getElementById(item).remove();
                 var ca = document.querySelectorAll("#p_caList li");
                 calcCAXP();
-                cXP();
             }
 
-            function addListItem_NA() {                
+            function addListItem_NA() {
                 var a = "na" + naIndex;
                 var a2 = "removeListItem_NA(" + "'" + a + "'" + ");";
                 const listItem = document.createElement("li");
@@ -959,7 +917,7 @@
                 const spn = document.createElement("span");
                 spn.setAttribute("onclick", a2);
                 spn.innerHTML= "X";
-                
+
                 listItem.appendChild(inText);
                 listItem.appendChild(inText2);
                 listItem.appendChild(spn);
@@ -967,7 +925,6 @@
                 document.getElementById("p_naList").appendChild(listItem);
                 naIndex += 1;
                 calcNAXP();
-                cXP();
             }
 
             function calcNAXP() {
@@ -976,17 +933,17 @@
                 for (n = 0; n < na.length; n++) {
                     naxp += Number(na[n].childNodes[1].value);
                 }
-                document.getElementById("naTotalXP").innerHTML = naxp;
+                _$.set("naTotalXP",naxp);
+                cXP();
             }
 
             function removeListItem_NA(item) {
                 document.getElementById(item).remove();
                 var na = document.querySelectorAll("#p_naList li");
                 calcNAXP();
-                cXP();
             }
 
-            function addListItem_EA() {                
+            function addListItem_EA() {
                 var a = "ea" + eaIndex;
                 var a2 = "removeListItem_EA(" + "'" + a + "'" + ");";
                 const listItem = document.createElement("li");
@@ -1004,7 +961,7 @@
                 const spn = document.createElement("span");
                 spn.setAttribute("onclick", a2);
                 spn.innerHTML= "X";
-                
+
                 listItem.appendChild(inText);
                 listItem.appendChild(inText2);
                 listItem.appendChild(spn);
@@ -1012,7 +969,6 @@
                 document.getElementById("p_eaList").appendChild(listItem);
                 eaIndex += 1;
                 calcEAXP();
-                cXP();
             }
 
             function calcEAXP() {
@@ -1021,14 +977,14 @@
                 for (e = 0; e < ea.length; e++) {
                     eaxp += Number(ea[e].childNodes[1].value);
                 }
-                document.getElementById("eaTotalXP").innerHTML = eaxp;
+                _$.set("eaTotalXP", eaxp);
+                cXP();
             }
 
             function removeListItem_EA(item) {
                 document.getElementById(item).remove();
                 var ea = document.querySelectorAll("#p_eaList li");
                 calcEAXP();
-                cXP();
             }
         </script>
     </head>
@@ -1304,7 +1260,7 @@
             </span>
             </div>
             <input type="checkbox" id="npc_qual_chat" name="q_chat" value="2" onclick="cXP()"><label for="q_chat">Charge Attack (+2)</label><br>
-            <input type="checkbox" id="npc_qual_clab" name="q_clab" value="0" onclick="toggleSection('clab_list'); cXP()"><label for="q_clab">Class Abilities (varies)</label>            
+            <input type="checkbox" id="npc_qual_clab" name="q_clab" value="0" onclick="toggleSection('clab_list'); cXP()"><label for="q_clab">Class Abilities (varies)</label>
                 <div id="clab_list" style="display:none">
             <p>Class Abilities Total XP: <span id="caTotalXP">0</span></p>
             <ul id="p_caList">
@@ -1705,14 +1661,14 @@
                 <h3>Weapons</h3>
 
                 <h3 onclick="toggleSection('na_list'); cXP()">Natural Attacks (<span id="naTotalXP">0</span>)</h3>
-                <div id="na_list" style="display:none">            
+                <div id="na_list" style="display:none">
                     <ul id="p_naList">
                     </ul>
                     <input type="button" value="Add Natural Attack" onclick="addListItem_NA()" />
                 </div>
 
                 <h3 onclick="toggleSection('ea_list'); cXP()">Extraordinary Attacks (<span id="eaTotalXP">0</span>)</h3>
-                <div id="ea_list" style="display:none">            
+                <div id="ea_list" style="display:none">
                     <ul id="p_eaList">
                     </ul>
                     <input type="button" value="Add Extraordinary Attack" onclick="addListItem_EA()" />

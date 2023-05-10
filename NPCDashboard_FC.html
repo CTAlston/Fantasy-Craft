@@ -5,6 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script>
             var NPC_special = 0;
+            var caIndex = 0;
+            var eaIndex = 0;
+            var naIndex = 0;
             var spellIndex = 0;
             var featIndex = 0;
             var nsIndex = 0;
@@ -336,7 +339,7 @@
                 if (document.getElementById("npc_qual_ch2_pl").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch2_pl").value);}
                 if (document.getElementById("npc_qual_ch2_sw").checked) { qualityPoints += Number(document.getElementById("npc_qual_ch2_sw").value);}
                 if (document.getElementById("npc_qual_chat").checked) { qualityPoints += Number(document.getElementById("npc_qual_chat").value);}
-                if (document.getElementById("npc_qual_clab").checked) { qualityPoints += Number(document.getElementById("npc_qual_clab").value);}
+                if (document.getElementById("npc_qual_clab").checked) { qualityPoints += Number(document.getElementById("caTotalXP").innerHTML);}
                 if (document.getElementById("npc_qual_cl").checked) { qualityPoints += Number(document.getElementById("npc_qual_cl").value);}
                 if (document.getElementById("npc_qual_cb").checked) { qualityPoints += Number(document.getElementById("npc_qual_cb").value);}
                 if (document.getElementById("npc_qual_ci").checked) { qualityPoints += Number(document.getElementById("npc_qual_ci").value);}
@@ -892,6 +895,141 @@
                 calcNSXP();
                 cXP();
             }
+
+            function addListItem_CA() {                
+                var c = "ca" + caIndex;
+                var c2 = "removeListItem_CA(" + "'" + c + "'" + ");";
+                const listItem = document.createElement("li");
+                listItem.id = c;
+                const inText = document.createElement("input");
+                inText.type = "text";
+                const inText2 = document.createElement("input");
+                inText2.type = "number";
+                inText2.min = 1;
+                inText2.max = 10;
+                inText2.step = 1;
+                inText2.value = 1;
+                inText2.setAttribute("onchange", "calcCAXP()");
+                //Add other attributes here
+                const spn = document.createElement("span");
+                spn.setAttribute("onclick", c2);
+                spn.innerHTML= "X";
+                
+                listItem.appendChild(inText);
+                listItem.appendChild(inText2);
+                listItem.appendChild(spn);
+
+                document.getElementById("p_caList").appendChild(listItem);
+                caIndex += 1;
+                calcCAXP();
+                cXP();
+            }
+
+            function calcCAXP() {
+                var ca = document.querySelectorAll("#p_caList li");
+                var caxp = 0;
+                for (c = 0; c < ca.length; c++) {
+                    caxp += Number(ca[c].childNodes[1].value);
+                }
+                document.getElementById("caTotalXP").innerHTML = caxp;
+            }
+
+            function removeListItem_CA(item) {
+                document.getElementById(item).remove();
+                var ca = document.querySelectorAll("#p_caList li");
+                calcCAXP();
+                cXP();
+            }
+
+            function addListItem_NA() {                
+                var a = "na" + naIndex;
+                var a2 = "removeListItem_NA(" + "'" + a + "'" + ");";
+                const listItem = document.createElement("li");
+                listItem.id = a;
+                const inText = document.createElement("input");
+                inText.type = "text";
+                const inText2 = document.createElement("input");
+                inText2.type = "number";
+                inText2.min = 0;
+                inText2.max = 9;
+                inText2.step = 1;
+                inText2.value = 0;
+                inText2.setAttribute("onchange", "calcNAXP()");
+                //Add other attributes here
+                const spn = document.createElement("span");
+                spn.setAttribute("onclick", a2);
+                spn.innerHTML= "X";
+                
+                listItem.appendChild(inText);
+                listItem.appendChild(inText2);
+                listItem.appendChild(spn);
+
+                document.getElementById("p_naList").appendChild(listItem);
+                naIndex += 1;
+                calcNAXP();
+                cXP();
+            }
+
+            function calcNAXP() {
+                var na = document.querySelectorAll("#p_naList li");
+                var naxp = 0;
+                for (n = 0; n < na.length; n++) {
+                    naxp += Number(na[n].childNodes[1].value);
+                }
+                document.getElementById("naTotalXP").innerHTML = naxp;
+            }
+
+            function removeListItem_NA(item) {
+                document.getElementById(item).remove();
+                var na = document.querySelectorAll("#p_naList li");
+                calcNAXP();
+                cXP();
+            }
+
+            function addListItem_EA() {                
+                var a = "ea" + eaIndex;
+                var a2 = "removeListItem_EA(" + "'" + a + "'" + ");";
+                const listItem = document.createElement("li");
+                listItem.id = a;
+                const inText = document.createElement("input");
+                inText.type = "text";
+                const inText2 = document.createElement("input");
+                inText2.type = "number";
+                inText2.min = 0;
+                inText2.max = 9;
+                inText2.step = 1;
+                inText2.value = 0;
+                inText2.setAttribute("onchange", "calcEAXP()");
+                //Add other attributes here
+                const spn = document.createElement("span");
+                spn.setAttribute("onclick", a2);
+                spn.innerHTML= "X";
+                
+                listItem.appendChild(inText);
+                listItem.appendChild(inText2);
+                listItem.appendChild(spn);
+
+                document.getElementById("p_eaList").appendChild(listItem);
+                eaIndex += 1;
+                calcEAXP();
+                cXP();
+            }
+
+            function calcEAXP() {
+                var ea = document.querySelectorAll("#p_eaList li");
+                var eaxp = 0;
+                for (e = 0; e < ea.length; e++) {
+                    eaxp += Number(ea[e].childNodes[1].value);
+                }
+                document.getElementById("eaTotalXP").innerHTML = eaxp;
+            }
+
+            function removeListItem_EA(item) {
+                document.getElementById(item).remove();
+                var ea = document.querySelectorAll("#p_eaList li");
+                calcEAXP();
+                cXP();
+            }
         </script>
     </head>
     <body onload="cXP()">
@@ -1166,10 +1304,13 @@
             </span>
             </div>
             <input type="checkbox" id="npc_qual_chat" name="q_chat" value="2" onclick="cXP()"><label for="q_chat">Charge Attack (+2)</label><br>
-            <input type="checkbox" id="npc_qual_clab" name="q_clab" value="0" onclick="toggleSection('clab_list'); cXP()"><label for="q_clab">Class Abilities (varies)</label><br>
-            <div id="clab_list" style="display:none">
-                &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="npc_clab_cl_ab" name="ab" value="0" onclick="cXP()"><label for="ab">Ability (+x)</label><br>
-            </div>
+            <input type="checkbox" id="npc_qual_clab" name="q_clab" value="0" onclick="toggleSection('clab_list'); cXP()"><label for="q_clab">Class Abilities (varies)</label>            
+                <div id="clab_list" style="display:none">
+            <p>Class Abilities Total XP: <span id="caTotalXP">0</span></p>
+            <ul id="p_caList">
+            </ul>
+            <input type="button" value="Add Class Ability" onclick="addListItem_CA()" />
+        </div><br>
             <input type="checkbox" id="npc_qual_cl" name="q_cl" value="-2" onclick="cXP()"><label for="q_cl">Clumsy (-2)</label><br>
             <input type="checkbox" id="npc_qual_cb" name="q_cb" value="-2" onclick="cXP()"><label for="q_cb">Cold-Blooded (-2)</label><br>
             <input type="checkbox" id="npc_qual_ci" name="q_ci" value="0" onclick="toggleSection('ci_list'); cXP()"><label for="q_ci">Condition Immunity (+4/Condition)</label><br>
@@ -1561,11 +1702,21 @@
             </div>
         <h2 onclick="toggleSection('step3')">Step 3: Attacks (<span id="attackXPTotal">0</span>)</h2>
             <div id="step3" style="display:none">
-        <h3>Weapons</h3>
+                <h3>Weapons</h3>
 
-        <h3>Natural Attacks</h3>
+                <h3 onclick="toggleSection('na_list'); cXP()">Natural Attacks (<span id="naTotalXP">0</span>)</h3>
+                <div id="na_list" style="display:none">            
+                    <ul id="p_naList">
+                    </ul>
+                    <input type="button" value="Add Natural Attack" onclick="addListItem_NA()" />
+                </div>
 
-        <h3>Extraordinary Attacks</h3>
+                <h3 onclick="toggleSection('ea_list'); cXP()">Extraordinary Attacks (<span id="eaTotalXP">0</span>)</h3>
+                <div id="ea_list" style="display:none">            
+                    <ul id="p_eaList">
+                    </ul>
+                    <input type="button" value="Add Extraordinary Attack" onclick="addListItem_EA()" />
+                </div>
             </div>
         <h2 onclick="toggleSection('step4')">Step 4: Gear and Treasure (<span id="gearXPTotal">0</span>)</h2>
             <div id="step4" style="display:none">

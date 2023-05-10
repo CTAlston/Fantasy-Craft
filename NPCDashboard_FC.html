@@ -116,8 +116,16 @@
                     _$.get("playSection").style.display="block";
                     _$.get("editSection").style.display="none";
 
+                    updatePlay();
+                }
+            }
+
+            function updatePlay() {
+
                     //Set size
                     _$.set("p_size", _$.val("sizeList"));
+                    _$.set("p_sz", _$.val("sizeList"));
+                    //Add conditional text to also provide reach and dimensions for sizes large and greater
 
                     //Assemble type definition
                     var play_type = '|';
@@ -137,8 +145,12 @@
                     //Set type definition
                     _$.set("p_type", play_type);
 
+                    //Set mobility definition
+                    _$.set("p_mobility", _$.val("mobi"));
+                    
+
                     //Set XP value
-                    _$.set("p_XPTotal", Number(_$.get("xp_num").innerHTML) * _$.num("p_threat_level"));
+                    _$.set("p_XPTotal", Number(_$.get("xp_num").innerHTML) * _$.val("p_threat_level"));
 
                     //Set attributes
                     _$.set("p_str", _$.num("npc_str"));
@@ -155,7 +167,7 @@
                     if (NPC_special === 0) {
                         _$.set("p_dam_save_mod", 0);
                     }
-                }
+                
             }
             
             function calcTypeXP() {
@@ -184,19 +196,19 @@
                 var fSpd = (_$.num("flyer_spd")) / 10;
                 var sSpd = (_$.num("swimmer_spd")) / 10;
 
-                if (_$.val("mobi") ==="walker") {
+                if (_$.val("mobi") ==="Walker") {
                     wSpd = (wSpd > 3) ? (wSpd - 3):0;
                 }
 
-                if (_$.val("mobi") === "burrower") {
+                if (_$.val("mobi") === "Burrower") {
                     bSpd = (bSpd > 3) ? (bSpd - 3):0;
                 }
 
-                if (_$.val("mobi") === "flyer") {
+                if (_$.val("mobi") === "Flyer") {
                     fSpd = (fSpd > 3) ? (fSpd - 3):0;
                 }
 
-                if (_$.val("mobi") === "swimmer") {
+                if (_$.val("mobi") === "Swimmer") {
                     sSpd = (sSpd > 3) ? (sSpd - 3):0;
                 }
                 
@@ -611,6 +623,18 @@
                 //Return sum of scores
                 return qualityPoints;
             }
+
+            function calcAttacksXP() {
+                var attackPoints = 0;
+
+                var na = Number(_$.get("naTotalXP").innerHTML);
+                var ea = Number(_$.get("eaTotalXP").innerHTML);
+                attackPoints = na + ea;
+
+                _$.set("attackXPTotal", attackPoints);
+
+                return attackPoints;
+            }
             
             function cXP() {
                 //Calculate XP
@@ -635,37 +659,40 @@
                 //NPC Qualities XP
                 var qt = calcQualitiesXP();
 
+                //Attacks XP
+                var at = calcAttacksXP();
+
                 var s1 = Number(ty + mo + ab + tr + he + ss);
                 _$.set("statXPTotal", s1);
-                _$.set("xp_num", (s1 + qt));
+                _$.set("xp_num", (s1 + qt + at));
             }
 
             function mobSelect() {
                 var sel = _$.val('mobi');
                 var mobXP = 0;
                 switch (sel) {
-                    case "walker":
+                    case "Walker":
                         _$.setVal("burrower_spd", 0);
                         _$.setVal("flyer_spd", 0);
                         _$.setVal("walker_spd", 30);
                         _$.setVal("swimmer_spd", 0);
                         break;
 
-                    case "burrower":
+                    case "Burrower":
                         _$.setVal("burrower_spd", 30);
                         _$.setVal("flyer_spd", 0);
                         _$.setVal("walker_spd", 0);
                         _$.setVal("swimmer_spd", 0);
                         break;
 
-                    case "flyer":
+                    case "Flyer":
                         _$.setVal("burrower_spd", 0);
                         _$.setVal("flyer_spd", 30);
                         _$.setVal("walker_spd", 0);
                         _$.setVal("swimmer_spd", 0);
                     break;
 
-                    case "swimmer":
+                    case "Swimmer":
                         _$.setVal("burrower_spd", 0);
                         _$.setVal("flyer_spd", 0);
                         _$.setVal("walker_spd", 0);
@@ -1066,10 +1093,10 @@
             </form>
             <div id="mobile">
             <select name="mobi" id="mobi" onchange="mobSelect(); cXP()">
-                <option value="walker" selected >Walker (+0)</option>
-                <option value="burrower">Burrower (+0)</option>
-                <option value="flyer">Flyer (+0)</option>
-                <option value="swimmer">Swimmer (+0)</option>
+                <option value="Walker" selected >Walker (+0)</option>
+                <option value="Burrower">Burrower (+0)</option>
+                <option value="Flyer">Flyer (+0)</option>
+                <option value="Swimmer">Swimmer (+0)</option>
             </select>
         
             <div id="walker" style="display:block">
@@ -1683,7 +1710,7 @@
             <p>(<span id="p_size">Large</span> <span id="p_type">Construct</span> <span id="p_mobility">Walker</span> - <span id="p_XPTotal">78</span>)</p>
 
             <form>
-                <select id="p_threat_level" onchange="translateNPCTraitsTables()">
+                <select id="p_threat_level" onchange="translateNPCTraitsTables(), updatePlay()">
                     <option id="tl01" name="tl01" value="1" selected>Threat Level 01</option>
                     <option id="tl02" name="tl02" value="2">Threat Level 02</option>
                     <option id="tl03" name="tl03" value="3">Threat Level 03</option>

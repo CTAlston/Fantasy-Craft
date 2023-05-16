@@ -1251,7 +1251,7 @@
                     //Adds 2XP per upgrade
                     for (x = 0; x < na[n].childNodes[3].length; x++) {
                         if (na[n].childNodes[3].childNodes[x].checked) {
-                            naxp += 2;
+                            naxp += Number(na[n].childNodes[3].childNodes[x].value);
                         }
                     }
                 }

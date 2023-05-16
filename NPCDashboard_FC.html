@@ -7,6 +7,7 @@
             const _$ = {
                 get: (id) => document.getElementById(id), // Get the element by id and return it
                 val: (id) => _$.get(id).value, // Gets the element by id and returns its value
+                html: (id) => _$.get(id).innerHTML, // Gets the element by id and returns its innerHTML
                 num: (id) => Number(_$.val(id)), // Gets the value and converts to a Number
                 checked: (id) => _$.get(id).checked === true, // Returns true if the element is checked
                 selected: (id) => _$.get(id).selected, // Returns true if the element is selected
@@ -22,6 +23,15 @@
             var featIndex = 0;
             var nsIndex = 0;
             var immobility = 0;
+
+            var strMod = 0;
+            var dexMod = 0;
+            var conMod = 0;
+            var intMod = 0;
+            var wisMod = 0;
+            var chaMod = 0;
+
+            var sizeMod = 0;
 
             // Grade increases Y, and Threat Level increases X
             const NPC_Traits_Tables = [
@@ -90,6 +100,67 @@
                 _$.set("p_fort", lookupTrait(2, _$.val("npc_res") - 1, _$.val("p_threat_level") - 1));
                 _$.set("p_ref", lookupTrait(2, _$.val("npc_res") - 1, _$.val("p_threat_level") - 1));
                 _$.set("p_wil", lookupTrait(2, _$.val("npc_res") - 1, _$.val("p_threat_level") - 1));
+
+                _$.set("p_wil", lookupTrait(2, _$.val("npc_res") - 1, _$.val("p_threat_level") - 1));
+                _$.set("p_comp", lookupTrait(2, _$.val("npc_comp") - 1, _$.val("p_threat_level") - 1));
+            }
+
+            function applyMods() {
+                //Update traits
+                _$.set("p_init", (Number(_$.get("p_init").innerHTML) + dexMod));
+                _$.set("p_atk", (Number(_$.get("p_atk").innerHTML) + strMod));
+                //_$.set("p_def", (Number(_$.get("p_def").innerHTML) + dexMod));
+                _$.set("p_fort", (Number(_$.get("p_fort").innerHTML) + conMod));
+                _$.set("p_ref", (Number(_$.get("p_ref").innerHTML) + dexMod));
+                _$.set("p_wil", (Number(_$.get("p_wil").innerHTML) + wisMod));
+
+                //Update health
+                _$.set("p_dam_save_mod", (Number(_$.get("p_dam_save_mod").innerHTML) + conMod + sizeMod));
+
+                //Update skills mod
+                _$.set("p_skill_acrobatics_mods", dexMod);
+                _$.set("p_skill_athletics_mods", strMod);
+                _$.set("p_skill_blend_mods", chaMod);
+                _$.set("p_skill_bluff_mods", chaMod);
+                _$.set("p_skill_crafting_mods", intMod);
+                _$.set("p_skill_disguise_mods", dexMod);
+                _$.set("p_skill_haggle_mods", wisMod);
+                _$.set("p_skill_impress_mods", chaMod);
+                _$.set("p_skill_intimidate_mods", wisMod);
+                _$.set("p_skill_investigate_mods", wisMod);
+                _$.set("p_skill_medicine_mods", intMod);
+                _$.set("p_skill_notice_mods", wisMod);
+                _$.set("p_skill_prestidigitation_mods", dexMod);
+                _$.set("p_skill_resolve_mods", conMod);
+                _$.set("p_skill_ride_mods", dexMod);
+                _$.set("p_skill_search_mods", intMod);
+                _$.set("p_skill_senseMotive_mods", wisMod);
+                _$.set("p_skill_sneak_mods", dexMod);
+                _$.set("p_skill_survival_mods", wisMod);
+                _$.set("p_skill_tactics_mods", intMod);
+            }
+
+            function calcSkillTotals() {
+                _$.set("p_skill_acrobatics_total", (Number(_$.html("p_skill_acrobatics_ranks")) + Number(_$.html("p_skill_acrobatics_mods")) + Number(_$.html("p_skill_acrobatics_misc"))));
+                _$.set("p_skill_athletics_total", (Number(_$.html("p_skill_athletics_ranks")) + Number(_$.html("p_skill_athletics_mods")) + Number(_$.html("p_skill_athletics_misc"))));
+                _$.set("p_skill_blend_total", (Number(_$.html("p_skill_blend_ranks")) + Number(_$.html("p_skill_blend_mods")) + Number(_$.html("p_skill_blend_misc"))));
+                _$.set("p_skill_bluff_total", (Number(_$.html("p_skill_bluff_ranks")) + Number(_$.html("p_skill_bluff_mods")) + Number(_$.html("p_skill_bluff_misc"))));
+                _$.set("p_skill_crafting_total", (Number(_$.html("p_skill_crafting_ranks")) + Number(_$.html("p_skill_crafting_mods")) + Number(_$.html("p_skill_crafting_misc"))));
+                _$.set("p_skill_disguise_total", (Number(_$.html("p_skill_disguise_ranks")) + Number(_$.html("p_skill_disguise_mods")) + Number(_$.html("p_skill_disguise_misc"))));
+                _$.set("p_skill_haggle_total", (Number(_$.html("p_skill_haggle_ranks")) + Number(_$.html("p_skill_haggle_mods")) + Number(_$.html("p_skill_haggle_misc"))));
+                _$.set("p_skill_impress_total", (Number(_$.html("p_skill_impress_ranks")) + Number(_$.html("p_skill_impress_mods")) + Number(_$.html("p_skill_impress_misc"))));
+                _$.set("p_skill_intimidate_total", (Number(_$.html("p_skill_intimidate_ranks")) + Number(_$.html("p_skill_intimidate_mods")) + Number(_$.html("p_skill_intimidate_misc"))));
+                _$.set("p_skill_investigate_total", (Number(_$.html("p_skill_investigate_ranks")) + Number(_$.html("p_skill_investigate_mods")) + Number(_$.html("p_skill_investigate_misc"))));
+                _$.set("p_skill_medicine_total", (Number(_$.html("p_skill_medicine_ranks")) + Number(_$.html("p_skill_medicine_mods")) + Number(_$.html("p_skill_medicine_misc"))));
+                _$.set("p_skill_notice_total", (Number(_$.html("p_skill_notice_ranks")) + Number(_$.html("p_skill_notice_mods")) + Number(_$.html("p_skill_notice_misc"))));
+                _$.set("p_skill_prestidigitation_total", (Number(_$.html("p_skill_prestidigitation_ranks")) + Number(_$.html("p_skill_prestidigitation_mods")) + Number(_$.html("p_skill_prestidigitation_misc"))));
+                _$.set("p_skill_resolve_total", (Number(_$.html("p_skill_resolve_ranks")) + Number(_$.html("p_skill_resolve_mods")) + Number(_$.html("p_skill_resolve_misc"))));
+                _$.set("p_skill_ride_total", (Number(_$.html("p_skill_ride_ranks")) + Number(_$.html("p_skill_ride_mods")) + Number(_$.html("p_skill_ride_misc"))));
+                _$.set("p_skill_search_total", (Number(_$.html("p_skill_search_ranks")) + Number(_$.html("p_skill_search_mods")) + Number(_$.html("p_skill_search_misc"))));
+                _$.set("p_skill_senseMotive_total", (Number(_$.html("p_skill_senseMotive_ranks")) + Number(_$.html("p_skill_senseMotive_mods")) + Number(_$.html("p_skill_senseMotive_misc"))));
+                _$.set("p_skill_sneak_total", (Number(_$.html("p_skill_sneak_ranks")) + Number(_$.html("p_skill_sneak_mods")) + Number(_$.html("p_skill_sneak_misc"))));
+                _$.set("p_skill_survival_total", (Number(_$.html("p_skill_survival_ranks")) + Number(_$.html("p_skill_survival_mods")) + Number(_$.html("p_skill_survival_misc"))));
+                _$.set("p_skill_tactics_total", (Number(_$.html("p_skill_tactics_ranks")) + Number(_$.html("p_skill_tactics_mods")) + Number(_$.html("p_skill_tactics_misc"))));
             }
 
             function setStandard() {
@@ -163,10 +234,56 @@
                     //Set traits
                     translateNPCTraitsTables();
 
+                    //Set defense
+                    calcDefense();
+
                     //Set health
                     if (NPC_special === 0) {
-                        _$.set("p_dam_save_mod", 0);
+                        _$.set("p_dam_save_mod", lookupTrait(2, _$.val("npc_res") - 1, _$.val("p_threat_level") - 1));
+                        _$.set("p_dam_save_mod", Number(_$.get("p_dam_save_mod").innerHTML) + conMod + (sizeMod * -2));
                     }
+
+                    _$.set("p_vitality", (_$.val("npc_hg") * _$.val("p_threat_level") * 5));
+
+                    if (_$.val("sizeList") === "Nuissance") {_$.set("p_wounds", Math.ceil(_$.val("npc_con") / 8));}
+                    if (_$.val("sizeList") === "Fine") {_$.set("p_wounds", Math.ceil(_$.val("npc_con") / 4));}
+                    if (_$.val("sizeList") === "Diminuitive") {_$.set("p_wounds", Math.ceil(_$.val("npc_con") / 3));}
+                    if (_$.val("sizeList") === "Tiny") {_$.set("p_wounds", Math.ceil(_$.val("npc_con") / 2));}
+                    if (_$.val("sizeList") === "Small") {_$.set("p_wounds", Math.ceil(_$.val("npc_con") * 2 / 3));} 
+                    if (_$.val("sizeList") === "Medium") {_$.set("p_wounds", _$.val("npc_con"));}
+                    if (_$.val("sizeList") === "Large") {_$.set("p_wounds", Math.ceil(_$.val("npc_con") * 1.5));}
+                    if (_$.val("sizeList") === "Huge") {_$.set("p_wounds", Math.ceil(_$.val("npc_con") * 2));}
+                    if (_$.val("sizeList") === "Gargantuan") {_$.set("p_wounds", Math.ceil(_$.val("npc_con") * 3));}
+                    if (_$.val("sizeList") === "Colossal") {_$.set("p_wounds", Math.ceil(_$.val("npc_con") * 4));}
+                    if (_$.val("sizeList") === "Enormous") {_$.set("p_wounds", Math.ceil(_$.val("npc_con") * 5));}
+                    if (_$.val("sizeList") === "Vast") {_$.set("p_wounds", Math.ceil(_$.val("npc_con") * 6));}
+                    
+                    //Set skill ranks to competence bonus for all skills that are not signature skills
+                    
+                    _$.set("p_skill_acrobatics_ranks", (_$.num("npc_ss_acr") === 0) ? lookupTrait(2, _$.val("npc_comp") - 1, _$.val("p_threat_level") - 1) : lookupTrait(3, _$.num("npc_ss_acr") - 1, _$.val("p_threat_level") - 1));
+                    _$.set("p_skill_athletics_ranks", (_$.num("npc_ss_ath") === 0) ? lookupTrait(2, _$.val("npc_comp") - 1, _$.val("p_threat_level") - 1) : lookupTrait(3, _$.num("npc_ss_ath") - 1, _$.val("p_threat_level") - 1));
+                    _$.set("p_skill_blend_ranks", (_$.num("npc_ss_ble") === 0) ? lookupTrait(2, _$.val("npc_comp") - 1, _$.val("p_threat_level") - 1) : lookupTrait(3, _$.num("npc_ss_ble") - 1, _$.val("p_threat_level") - 1));
+                    _$.set("p_skill_bluff_ranks", (_$.num("npc_ss_blu") === 0) ? lookupTrait(2, _$.val("npc_comp") - 1, _$.val("p_threat_level") - 1) : lookupTrait(3, _$.num("npc_ss_blu") - 1, _$.val("p_threat_level") - 1));
+                    _$.set("p_skill_crafting_ranks", (_$.num("npc_ss_cra") === 0) ? lookupTrait(2, _$.val("npc_comp") - 1, _$.val("p_threat_level") - 1) : lookupTrait(3, _$.num("npc_ss_cra") - 1, _$.val("p_threat_level") - 1));
+                    _$.set("p_skill_disguise_ranks", (_$.num("npc_ss_dis") === 0) ? lookupTrait(2, _$.val("npc_comp") - 1, _$.val("p_threat_level") - 1) : lookupTrait(3, _$.num("npc_ss_dis") - 1, _$.val("p_threat_level") - 1));
+                    _$.set("p_skill_haggle_ranks", (_$.num("npc_ss_hag") === 0) ? lookupTrait(2, _$.val("npc_comp") - 1, _$.val("p_threat_level") - 1) : lookupTrait(3, _$.num("npc_ss_hag") - 1, _$.val("p_threat_level") - 1));
+                    _$.set("p_skill_impress_ranks", (_$.num("npc_ss_imp") === 0) ? lookupTrait(2, _$.val("npc_comp") - 1, _$.val("p_threat_level") - 1) : lookupTrait(3, _$.num("npc_ss_imp") - 1, _$.val("p_threat_level") - 1));
+                    _$.set("p_skill_intimidate_ranks", (_$.num("npc_ss_int") === 0) ? lookupTrait(2, _$.val("npc_comp") - 1, _$.val("p_threat_level") - 1) : lookupTrait(3, _$.num("npc_ss_int") - 1, _$.val("p_threat_level") - 1));
+                    _$.set("p_skill_investigate_ranks", (_$.num("npc_ss_inv") === 0) ? lookupTrait(2, _$.val("npc_comp") - 1, _$.val("p_threat_level") - 1) : lookupTrait(3, _$.num("npc_ss_inv") - 1, _$.val("p_threat_level") - 1));
+                    _$.set("p_skill_medicine_ranks", (_$.num("npc_ss_med") === 0) ? lookupTrait(2, _$.val("npc_comp") - 1, _$.val("p_threat_level") - 1) : lookupTrait(3, _$.num("npc_ss_med") - 1, _$.val("p_threat_level") - 1));
+                    _$.set("p_skill_notice_ranks", (_$.num("npc_ss_not") === 0) ? lookupTrait(2, _$.val("npc_comp") - 1, _$.val("p_threat_level") - 1) : lookupTrait(3, _$.num("npc_ss_not") - 1, _$.val("p_threat_level") - 1));
+                    _$.set("p_skill_prestidigitation_ranks", (_$.num("npc_ss_pre") === 0) ? lookupTrait(2, _$.val("npc_comp") - 1, _$.val("p_threat_level") - 1) : lookupTrait(3, _$.num("npc_ss_pre") - 1, _$.val("p_threat_level") - 1));
+                    _$.set("p_skill_resolve_ranks", (_$.num("npc_ss_res") === 0) ? lookupTrait(2, _$.val("npc_comp") - 1, _$.val("p_threat_level") - 1) : lookupTrait(3, _$.num("npc_ss_res") - 1, _$.val("p_threat_level") - 1));
+                    _$.set("p_skill_ride_ranks", (_$.num("npc_ss_rid") === 0) ? lookupTrait(2, _$.val("npc_comp") - 1, _$.val("p_threat_level") - 1) : lookupTrait(3, _$.num("npc_ss_rid") - 1, _$.val("p_threat_level") - 1));
+                    _$.set("p_skill_search_ranks", (_$.num("npc_ss_sea") === 0) ? lookupTrait(2, _$.val("npc_comp") - 1, _$.val("p_threat_level") - 1) : lookupTrait(3, _$.num("npc_ss_sea") - 1, _$.val("p_threat_level") - 1));
+                    _$.set("p_skill_senseMotive_ranks", (_$.num("npc_ss_sen") === 0) ? lookupTrait(2, _$.val("npc_comp") - 1, _$.val("p_threat_level") - 1) : lookupTrait(3, _$.num("npc_ss_sen") - 1, _$.val("p_threat_level") - 1));
+                    _$.set("p_skill_sneak_ranks", (_$.num("npc_ss_sne") === 0) ? lookupTrait(2, _$.val("npc_comp") - 1, _$.val("p_threat_level") - 1) : lookupTrait(3, _$.num("npc_ss_sne") - 1, _$.val("p_threat_level") - 1));
+                    _$.set("p_skill_survival_ranks", (_$.num("npc_ss_sur") === 0) ? lookupTrait(2, _$.val("npc_comp") - 1, _$.val("p_threat_level") - 1) : lookupTrait(3, _$.num("npc_ss_sur") - 1, _$.val("p_threat_level") - 1));
+                    _$.set("p_skill_tactics_ranks", (_$.num("npc_ss_tac") === 0) ? lookupTrait(2, _$.val("npc_comp") - 1, _$.val("p_threat_level") - 1) : lookupTrait(3, _$.num("npc_ss_tac") - 1, _$.val("p_threat_level") - 1));
+
+                    //Apply modifiers
+                    applyMods();
+                    calcSkillTotals();
                 
             }
             
@@ -234,6 +351,15 @@
                 var nInt = _$.num("npc_int");
                 var nWis = _$.num("npc_wis");
                 var nCha = _$.num("npc_cha");
+
+                //Set modifiers
+
+                strMod = Math.floor((nStr - 10) / 2);
+                dexMod = Math.floor((nDex - 10) / 2);
+                conMod = Math.floor((nCon - 10) / 2);
+                intMod = Math.floor((nInt - 10) / 2);
+                wisMod = Math.floor((nWis - 10) / 2);
+                chaMod = Math.floor((nCha - 10) / 2);
 
                 //If scores are less than 10, XP value for the score is set to 0. Otherwise set points to score - 10.
                 nStr = (nStr < 11) ? 0 : (nStr - 10);
@@ -720,6 +846,24 @@
 
             function szSelect(szpass) {
                 switch (szpass) {
+                    case "Nuissance":
+                        sizeMod = 5;
+                        break;
+                    case "Fine":
+                        sizeMod = 4;
+                        break;
+                    case "Diminuitive":
+                        sizeMod = 3;
+                        break;
+                    case "Tiny":
+                        sizeMod = 2;
+                        break;
+                    case "Small":
+                        sizeMod = 1;
+                        break;
+                    case "Medium":
+                        sizeMod = 0;
+                        break;
                     case "Large":
                         _$.get("dimensions").style.display = "block";
                         _$.set("fp", "Up to 3 x 3");
@@ -727,6 +871,7 @@
                         _$.get("npc_fpl").max = 3;
                         _$.setVal("npc_fpw", 3);
                         _$.setVal("npc_fpl", 3);
+                        sizeMod = -1;
                         break;
                     case "Huge":
                         _$.get("dimensions").style.display = "block";
@@ -735,6 +880,7 @@
                         _$.get("npc_fpl").max = 6;
                         _$.setVal("npc_fpw", 4);
                         _$.setVal("npc_fpl", 4);
+                        sizeMod = -2;
                         break;
                     case "Gargantuan":
                         _$.get("dimensions").style.display = "block";
@@ -743,6 +889,7 @@
                         _$.get("npc_fpl").max = 12;
                         _$.setVal("npc_fpw", 7);
                         _$.setVal("npc_fpl", 7);
+                        sizeMod = -3;
                         break;
                     case "Colossal":
                         _$.get("dimensions").style.display = "block";
@@ -751,6 +898,7 @@
                         _$.get("npc_fpl").max = 25;
                         _$.setVal("npc_fpw", 13);
                         _$.setVal("npc_fpl", 13);
+                        sizeMod = -4;
                         break;
                     case "Enormous":
                         _$.get("dimensions").style.display = "block";
@@ -759,6 +907,7 @@
                         _$.get("npc_fpl").max = 50;
                         _$.setVal("npc_fpw", 26);
                         _$.setVal("npc_fpl", 26);
+                        sizeMod = -5;
                         break;
                     case "Vast":
                         _$.get("dimensions").style.display = "block";
@@ -767,6 +916,7 @@
                         _$.get("npc_fpl").max = 100;
                         _$.setVal("npc_fpw", 51);
                         _$.setVal("npc_fpl", 51);
+                        sizeMod = -32;
                         break;
                     default:
                         _$.get("dimensions").style.display = "none";
@@ -1012,6 +1162,12 @@
                 document.getElementById(item).remove();
                 var ea = document.querySelectorAll("#p_eaList li");
                 calcEAXP();
+            }
+
+            function calcDefense() {
+                _$.set("p_dex_mod", dexMod);
+                _$.set("p_sz_mod", sizeMod);
+                _$.set("p_def_score", (10 + Number(_$.html("p_def")) + dexMod + sizeMod));
             }
         </script>
     </head>
@@ -1705,6 +1861,8 @@
             <div id="step4" style="display:none">
             </div>
         </div>
+
+        <!--Below is the HTML for the "Play" section of the dashboard. It includes the threat level selector and all of the stats used in play. Aside form the threat level, it isn't intended to be edited.-->
         <div id="playSection" style="display:none">
             <h2 id="p_name">NPC Name</h2>
             <p>(<span id="p_size">Large</span> <span id="p_type">Construct</span> <span id="p_mobility">Walker</span> - <span id="p_XPTotal">78</span>)</p>
@@ -1754,7 +1912,7 @@
             <h3>Traits</h3>
             <p>Initiative bonus: <span id="p_init">0</span></p>
             <p>Attack bonus: <span id="p_atk">0</span></p>
-            <p>Defense score: <span id="p_def">0</span></p>
+            <p>Defense score: <span id="p_def_score">10</span> = 10 + <span id="p_def">0</span> + <span id="p_sz_mod">0</span> + <span id="p_dex_mod">0</span></p>
             <p>Fortitude Save bonus: <span id="p_fort">0</span></p>
             <p>Reflex Save bonus: <span id="p_ref">0</span></p>
             <p>Will Save bonus: <span id="p_wil">0</span></p>
@@ -1766,6 +1924,156 @@
             <div id="p_spc_health">
                 <p>Vitality: <span id="p_vitality">0</span></p>
                 <p>Wounds: <span id="p_wounds">0</span></p>
+            </div>
+
+            <h3>Skills</h3>
+            <div id="p_competence_container">
+                <p>Competence bonus: <span id="p_comp">0</span></p>
+            </div>
+            <p>Any skills not explicitly listed here are handled with the Competence bonus above.</p>
+            <div id="p_skills_container">
+                <table>
+                    <tr>
+                        <td>Acrobatics</td>
+                        <td id="p_skill_acrobatics_total">0</td>
+                        <td id="p_skill_acrobatics_ranks">0</td>
+                        <td id="p_skill_acrobatics_mods">0</td>
+                        <td id="p_skill_acrobatics_misc">0</td>
+                    </tr>
+                    <tr>
+                        <td>Athletics</td>
+                        <td id="p_skill_athletics_total">0</td>
+                        <td id="p_skill_athletics_ranks">0</td>
+                        <td id="p_skill_athletics_mods">0</td>
+                        <td id="p_skill_athletics_misc">0</td>
+                    </tr>
+                    <tr>
+                        <td>Blend</td>
+                        <td id="p_skill_blend_total">0</td>
+                        <td id="p_skill_blend_ranks">0</td>
+                        <td id="p_skill_blend_mods">0</td>
+                        <td id="p_skill_blend_misc">0</td>
+                    </tr>
+                    <tr>
+                        <td>Bluff</td>
+                        <td id="p_skill_bluff_total">0</td>
+                        <td id="p_skill_bluff_ranks">0</td>
+                        <td id="p_skill_bluff_mods">0</td>
+                        <td id="p_skill_bluff_misc">0</td>
+                    </tr>
+                    <tr>
+                        <td>Crafting</td>
+                        <td id="p_skill_crafting_total">0</td>
+                        <td id="p_skill_crafting_ranks">0</td>
+                        <td id="p_skill_crafting_mods">0</td>
+                        <td id="p_skill_crafting_misc">0</td>
+                    </tr>
+                    <tr>
+                        <td>Disguise</td>
+                        <td id="p_skill_disguise_total">0</td>
+                        <td id="p_skill_disguise_ranks">0</td>
+                        <td id="p_skill_disguise_mods">0</td>
+                        <td id="p_skill_disguise_misc">0</td>
+                    </tr>
+                    <tr>
+                        <td>Haggle</td>
+                        <td id="p_skill_haggle_total">0</td>
+                        <td id="p_skill_haggle_ranks">0</td>
+                        <td id="p_skill_haggle_mods">0</td>
+                        <td id="p_skill_haggle_misc">0</td>
+                    </tr>
+                    <tr>
+                        <td>Impress</td>
+                        <td id="p_skill_impress_total">0</td>
+                        <td id="p_skill_impress_ranks">0</td>
+                        <td id="p_skill_impress_mods">0</td>
+                        <td id="p_skill_impress_misc">0</td>
+                    </tr>
+                    <tr>
+                        <td>Intimidate</td>
+                        <td id="p_skill_intimidate_total">0</td>
+                        <td id="p_skill_intimidate_ranks">0</td>
+                        <td id="p_skill_intimidate_mods">0</td>
+                        <td id="p_skill_intimidate_misc">0</td>
+                    </tr>
+                    <tr>
+                        <td>Investigate</td>
+                        <td id="p_skill_investigate_total">0</td>
+                        <td id="p_skill_investigate_ranks">0</td>
+                        <td id="p_skill_investigate_mods">0</td>
+                        <td id="p_skill_investigate_misc">0</td>
+                    </tr>
+                    <tr>
+                        <td>Medicine</td>
+                        <td id="p_skill_medicine_total">0</td>
+                        <td id="p_skill_medicine_ranks">0</td>
+                        <td id="p_skill_medicine_mods">0</td>
+                        <td id="p_skill_medicine_misc">0</td>
+                    </tr>
+                    <tr>
+                        <td>Notice</td>
+                        <td id="p_skill_notice_total">0</td>
+                        <td id="p_skill_notice_ranks">0</td>
+                        <td id="p_skill_notice_mods">0</td>
+                        <td id="p_skill_notice_misc">0</td>
+                    </tr>
+                    <tr>
+                        <td>Prestidigitation</td>
+                        <td id="p_skill_prestidigitation_total">0</td>
+                        <td id="p_skill_prestidigitation_ranks">0</td>
+                        <td id="p_skill_prestidigitation_mods">0</td>
+                        <td id="p_skill_prestidigitation_misc">0</td>
+                    </tr>
+                    <tr>
+                        <td>Resolve</td>
+                        <td id="p_skill_resolve_total">0</td>
+                        <td id="p_skill_resolve_ranks">0</td>
+                        <td id="p_skill_resolve_mods">0</td>
+                        <td id="p_skill_resolve_misc">0</td>
+                    </tr>
+                    <tr>
+                        <td>Ride</td>
+                        <td id="p_skill_ride_total">0</td>
+                        <td id="p_skill_ride_ranks">0</td>
+                        <td id="p_skill_ride_mods">0</td>
+                        <td id="p_skill_ride_misc">0</td>
+                    </tr>
+                    <tr>
+                        <td>Search</td>
+                        <td id="p_skill_search_total">0</td>
+                        <td id="p_skill_search_ranks">0</td>
+                        <td id="p_skill_search_mods">0</td>
+                        <td id="p_skill_search_misc">0</td>
+                    </tr>
+                    <tr>
+                        <td>Sense Motive</td>
+                        <td id="p_skill_senseMotive_total">0</td>
+                        <td id="p_skill_senseMotive_ranks">0</td>
+                        <td id="p_skill_senseMotive_mods">0</td>
+                        <td id="p_skill_senseMotive_misc">0</td>
+                    </tr>
+                    <tr>
+                        <td>Sneak</td>
+                        <td id="p_skill_sneak_total">0</td>
+                        <td id="p_skill_sneak_ranks">0</td>
+                        <td id="p_skill_sneak_mods">0</td>
+                        <td id="p_skill_sneak_misc">0</td>
+                    </tr>
+                    <tr>
+                        <td>Survival</td>
+                        <td id="p_skill_survival_total">0</td>
+                        <td id="p_skill_survival_ranks">0</td>
+                        <td id="p_skill_survival_mods">0</td>
+                        <td id="p_skill_survival_misc">0</td>
+                    </tr>
+                    <tr>
+                        <td>Tactics</td>
+                        <td id="p_skill_tactics_total">0</td>
+                        <td id="p_skill_tactics_ranks">0</td>
+                        <td id="p_skill_tactics_mods">0</td>
+                        <td id="p_skill_tactics_misc">0</td>
+                    </tr>
+                </table>
             </div>
 
         </div>        

@@ -1098,104 +1098,32 @@
 
                 //Add upgrades checkboxes
                 const upgrades = document.createElement("form");
-                const up1 = document.createElement("input");
-                up1.type = "checkbox";
-                up1.id = "aligned" + naIndex;
-                up1.name = "Upgrades" + naIndex;
-                up1.value = 2;
-                up1.setAttribute("onchange", "calcNAXP()");
-                const aligned = document.createElement("label");
-                aligned.innerHTML = "Aligned";
+                const createUpgrade = function(id, label) {
+                    const upgrade = document.createElement("input");
+                    upgrade.type = "checkbox";
+                    upgrade.id = `${id}${naIndex}`;
+                    upgrade.name = `Upgrades${naIndex}`;
+                    upgrade.value = 2;
+                    upgrade.onchange = calcNAXP;
 
-                const up2 = document.createElement("input");
-                up2.type = "checkbox";
-                up2.id = "ad" + naIndex;
-                up2.name = "Upgrades" + naIndex;
-                up2.value = 2;
-                up2.setAttribute("onchange", "calcNAXP()");
-                const ad = document.createElement("label");
-                ad.innerHTML = "Alternate Damage";
+                    const upgradeLabel = document.createElement("label");
+                    upgradeLabel.setAttribute("for", `${id}${naIndex}`);
+                    upgradeLabel.innerHTML = label;
 
-                const up3 = document.createElement("input");
-                up3.type = "checkbox";
-                up3.id = "ap" + naIndex;
-                up3.name = "Upgrades" + naIndex;
-                up3.value = 2;
-                up3.setAttribute("onchange", "calcNAXP()");
-                const ap = document.createElement("label");
-                ap.innerHTML = "Armor-Piercing";
+                    return [upgrade, upgradeLabel];
+                }
 
-                const up4 = document.createElement("input");
-                up4.type = "checkbox";
-                up4.id = "bleed" + naIndex;
-                up4.name = "Upgrades" + naIndex;
-                up4.value = 2;
-                up4.setAttribute("onchange", "calcNAXP()");
-                const bleed = document.createElement("label");
-                bleed.innerHTML = "Bleed";
-
-                const up5 = document.createElement("input");
-                up5.type = "checkbox";
-                up5.id = "diseased" + naIndex;
-                up5.name = "Upgrades" + naIndex;
-                up5.value = 2;
-                up5.setAttribute("onchange", "calcNAXP()");
-                const diseased = document.createElement("label");
-                diseased.innerHTML = "Diseased";
-
-                const up6 = document.createElement("input");
-                up6.type = "checkbox";
-                up6.id = "finesse" + naIndex;
-                up6.name = "Upgrades" + naIndex;
-                up6.value = 2;
-                up6.setAttribute("onchange", "calcNAXP()");
-                const finesse = document.createElement("label");
-                finesse.innerHTML = "Finesse";
-
-                const up7 = document.createElement("input");
-                up7.type = "checkbox";
-                up7.id = "grab" + naIndex;
-                up7.name = "Upgrades" + naIndex;
-                up7.value = 2;
-                up7.setAttribute("onchange", "calcNAXP()");
-                const grab = document.createElement("label");
-                grab.innerHTML = "Grab";
-
-                const up8 = document.createElement("input");
-                up8.type = "checkbox";
-                up8.id = "keen" + naIndex;
-                up8.name = "Upgrades" + naIndex;
-                up8.value = 2;
-                up8.setAttribute("onchange", "calcNAXP()");
-                const keen = document.createElement("label");
-                keen.innerHTML = "Keen";
-
-                const up9 = document.createElement("input");
-                up9.type = "checkbox";
-                up9.id = "reach" + naIndex;
-                up9.name = "Upgrades" + naIndex;
-                up9.value = 2;
-                up9.setAttribute("onchange", "calcNAXP()");
-                const reach = document.createElement("label");
-                reach.innerHTML = "Reach";
-
-                const up10 = document.createElement("input");
-                up10.type = "checkbox";
-                up10.id = "trip" + naIndex;
-                up10.name = "Upgrades" + naIndex;
-                up10.value = 2;
-                up10.setAttribute("onchange", "calcNAXP()");
-                const trip = document.createElement("label");
-                trip.innerHTML = "Trip";
-
-                const up11 = document.createElement("input");
-                up11.type = "checkbox";
-                up11.id = "venomous" + naIndex;
-                up11.name = "Upgrades" + naIndex;
-                up11.value = 2;
-                up11.setAttribute("onchange", "calcNAXP()");
-                const venomous = document.createElement("label");
-                venomous.innerHTML = "Venomous";
+                const [up1, aligned] = createUpgrade("aligned", "Aligned");
+                const [up2, ad] = createUpgrade("ad", "Alternate Damage");
+                const [up3, ap] = createUpgrade("ap", "Armor-Piercing");
+                const [up4, bleed] = createUpgrade("bleed", "Bleed");
+                const [up5, diseased] = createUpgrade("diseased", "Diseased");
+                const [up6, finesse] = createUpgrade("finesse", "Finesse");
+                const [up7, grab] = createUpgrade("grab", "Grab");
+                const [up8, keen] = createUpgrade("keen", "Keen");
+                const [up9, reach] = createUpgrade("reach", "Reach");
+                const [up10, trip] = createUpgrade("trip", "Trip");
+                const [up11, venomous] = createUpgrade("venomous", "Venomous");
 
                 listItem.appendChild(inText);
                 listItem.appendChild(inText2);
@@ -1244,16 +1172,13 @@
             }
 
             function calcNAXP() {
-                var na = document.querySelectorAll("#p_naList li");
                 var naxp = 0;
-                for (n = 0; n < na.length; n++) {
-                    naxp += Number(na[n].childNodes[1].value) * 2; //Adds 2XP per grade
-                    //Adds 2XP per upgrade
-                    for (x = 0; x < na[n].childNodes[3].length; x++) {
-                        if (na[n].childNodes[3].childNodes[x].checked) {
-                            naxp += Number(na[n].childNodes[3].childNodes[x].value);
-                        }
-                    }
+                for(let naturalAttack of document.querySelectorAll("#p_naList li")) { // for each natural attack
+                    const grade = naturalAttack.querySelector("input[type='number']").value * 2; // get the number from the grade and * 2
+                    naxp += [...naturalAttack.querySelectorAll("input[type='checkbox']:checked")] // get all the checked children of the natural attack
+                        .map(checkbox => Number(checkbox.value)) // get the value out of the checkbox
+                        .reduce((accumulator, currentValue) => accumulator + currentValue, grade); // and sum them all up
+
                 }
                 _$.set("naTotalXP",naxp);
                 cXP();

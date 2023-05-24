@@ -1202,10 +1202,10 @@
                 inText.type = "text";
                 const inText2 = document.createElement("input");
                 inText2.type = "number";
-                inText2.min = 0;
-                inText2.max = 9;
+                inText2.min = 1;
+                inText2.max = 10;
                 inText2.step = 1;
-                inText2.value = 0;
+                inText2.value = 1;
                 inText2.setAttribute("onchange", "calcEADXP()");
                 //Add other attributes here
                 const spn = document.createElement("span");
@@ -1245,19 +1245,100 @@
                 listItem.id = a;
                 const inText = document.createElement("input");
                 inText.type = "text";
+                const selectOptions = document.createElement("select");
+                selectOptions.setAttribute("onchange", "calcEASXP()");
+
+                //Create select options for 18 different Extraordinary Save Attacks
+                const selectOption1 = document.createElement("option");
+                selectOption1.innerHTML = "Baffling";
+                selectOption1.value = 3;
+                const selectOption2 = document.createElement("option");
+                selectOption2.innerHTML = "Blinding";
+                selectOption2.value = 2;
+                const selectOption3 = document.createElement("option");
+                selectOption3.innerHTML = "Deafening";
+                selectOption3.value = 2;
+                const selectOption4 = document.createElement("option");
+                selectOption4.innerHTML = "Draining, attribute";
+                selectOption4.value = 4;
+                const selectOption5 = document.createElement("option");
+                selectOption5.innerHTML = "Draining, life";
+                selectOption5.value = 3;
+                const selectOption6 = document.createElement("option");
+                selectOption6.innerHTML = "Draining, soul";
+                selectOption6.value = 5;
+                const selectOption7 = document.createElement("option");
+                selectOption7.innerHTML = "Enraging";
+                selectOption7.value = 2;
+                const selectOption8 = document.createElement("option");
+                selectOption8.innerHTML = "Entangling";
+                selectOption8.value = 2;
+                const selectOption9 = document.createElement("option");
+                selectOption9.innerHTML = "Fatiguing";
+                selectOption9.value = 3;
+                const selectOption10 = document.createElement("option");
+                selectOption10.innerHTML = "Frightening";
+                selectOption10.value = 2;
+                const selectOption11 = document.createElement("option");
+                selectOption11.innerHTML = "Paralyzing";
+                selectOption11.value = 4;
+                const selectOption12 = document.createElement("option");
+                selectOption12.innerHTML = "Petrifying";
+                selectOption12.value = 5;
+                const selectOption13 = document.createElement("option");
+                selectOption13.innerHTML = "Shaking";
+                selectOption13.value = 3;
+                const selectOption14 = document.createElement("option");
+                selectOption14.innerHTML = "Sickening";
+                selectOption14.value = 2;
+                const selectOption15 = document.createElement("option");
+                selectOption15.innerHTML = "Slowing";
+                selectOption15.value = 3;
+                const selectOption16 = document.createElement("option");
+                selectOption16.innerHTML = "Sprawling";
+                selectOption16.value = 2;
+                const selectOption17 = document.createElement("option");
+                selectOption17.innerHTML = "Stunning";
+                selectOption17.value = 3;
+                const selectOption18 = document.createElement("option");
+                selectOption18.innerHTML = "Wounding";
+                selectOption18.value = 2;
+
                 const inText2 = document.createElement("input");
                 inText2.type = "number";
-                inText2.min = 0;
-                inText2.max = 9;
+                inText2.min = 1;
+                inText2.max = 10;
                 inText2.step = 1;
-                inText2.value = 0;
+                inText2.value = 1;
                 inText2.setAttribute("onchange", "calcEASXP()");
                 //Add other attributes here
                 const spn = document.createElement("span");
                 spn.setAttribute("onclick", a2);
                 spn.innerHTML= "X";
+                
+                //Create list of options
+                selectOptions.appendChild(selectOption1);
+                selectOptions.appendChild(selectOption2);
+                selectOptions.appendChild(selectOption3);
+                selectOptions.appendChild(selectOption4);
+                selectOptions.appendChild(selectOption5);
+                selectOptions.appendChild(selectOption6);
+                selectOptions.appendChild(selectOption7);
+                selectOptions.appendChild(selectOption8);
+                selectOptions.appendChild(selectOption9);
+                selectOptions.appendChild(selectOption10);
+                selectOptions.appendChild(selectOption11);
+                selectOptions.appendChild(selectOption12);
+                selectOptions.appendChild(selectOption13);
+                selectOptions.appendChild(selectOption14);
+                selectOptions.appendChild(selectOption15);
+                selectOptions.appendChild(selectOption16);
+                selectOptions.appendChild(selectOption17);
+                selectOptions.appendChild(selectOption18);
 
+                //Append pieces of the EAS option
                 listItem.appendChild(inText);
+                listItem.appendChild(selectOptions);
                 listItem.appendChild(inText2);
                 listItem.appendChild(spn);
 
@@ -1270,7 +1351,7 @@
                 var eas = document.querySelectorAll("#p_easList li");
                 var easxp = 0;
                 for (e = 0; e < eas.length; e++) {
-                    easxp += Number(eas[e].childNodes[1].value);
+                    easxp += (Number(eas[e].childNodes[1].value) * (Number(eas[e].childNodes[2].value)));
                 }
                 _$.set("easTotalXP", easxp);
                 cXP();

@@ -1083,8 +1083,45 @@
                 var a2 = "removeListItem_NA(" + "'" + a + "'" + ");";
                 const listItem = document.createElement("li");
                 listItem.id = a;
-                const inText = document.createElement("input");
-                inText.type = "text";
+                const selectOptions = document.createElement("select");
+                selectOptions.setAttribute("onchange", "calcNAXP()");
+                //Create select options for 12 different Natural Attacks
+                const selectOption1 = document.createElement("option");
+                selectOption1.innerHTML = "Bite";
+                selectOption1.value = 2;
+                const selectOption2 = document.createElement("option");
+                selectOption2.innerHTML = "Claw";
+                selectOption2.value = 2;
+                const selectOption3 = document.createElement("option");
+                selectOption3.innerHTML = "Kick";
+                selectOption3.value = 2;
+                const selectOption4 = document.createElement("option");
+                selectOption4.innerHTML = "Slam";
+                selectOption4.value = 2;
+                const selectOption5 = document.createElement("option");
+                selectOption5.innerHTML = "Talon";
+                selectOption5.value = 2;
+                const selectOption6 = document.createElement("option");
+                selectOption6.innerHTML = "Gore";
+                selectOption6.value = 2;
+                const selectOption7 = document.createElement("option");
+                selectOption7.innerHTML = "Squeeze";
+                selectOption7.value = 2;
+                const selectOption8 = document.createElement("option");
+                selectOption8.innerHTML = "Swallow";
+                selectOption8.value = 2;
+                const selectOption9 = document.createElement("option");
+                selectOption9.innerHTML = "Tail";
+                selectOption9.value = 2;
+                const selectOption10 = document.createElement("option");
+                selectOption10.innerHTML = "Tentacle";
+                selectOption10.value = 2;
+                const selectOption11 = document.createElement("option");
+                selectOption11.innerHTML = "Slap";
+                selectOption11.value = 2;
+                const selectOption12 = document.createElement("option");
+                selectOption12.innerHTML = "Trample";
+                selectOption12.value = 2;
                 const inText2 = document.createElement("input");
                 inText2.type = "number";
                 inText2.min = 1;
@@ -1092,11 +1129,26 @@
                 inText2.step = 1;
                 inText2.value = 1;
                 inText2.setAttribute("onchange", "calcNAXP()");
+
                 //Add other attributes here
                 const spn = document.createElement("span");
                 spn.setAttribute("onclick", a2);
                 spn.innerHTML= "X";
                 const brk = document.createElement("br");
+
+                //Create list of options
+                selectOptions.appendChild(selectOption1);
+                selectOptions.appendChild(selectOption2);
+                selectOptions.appendChild(selectOption3);
+                selectOptions.appendChild(selectOption4);
+                selectOptions.appendChild(selectOption5);
+                selectOptions.appendChild(selectOption6);
+                selectOptions.appendChild(selectOption7);
+                selectOptions.appendChild(selectOption8);
+                selectOptions.appendChild(selectOption9);
+                selectOptions.appendChild(selectOption10);
+                selectOptions.appendChild(selectOption11);
+                selectOptions.appendChild(selectOption12);
 
                 //Add upgrades checkboxes
                 const upgrades = document.createElement("form");
@@ -1127,7 +1179,7 @@
                 const [up10, trip] = createUpgrade("trip", "Trip");
                 const [up11, venomous] = createUpgrade("venomous", "Venomous");
 
-                listItem.appendChild(inText);
+                listItem.appendChild(selectOptions);
                 listItem.appendChild(inText2);
                 listItem.appendChild(spn);
                 listItem.appendChild(brk);
@@ -1198,12 +1250,23 @@
                 var a2 = "removeListItem_EAD(" + "'" + a + "'" + ");";
                 const listItem = document.createElement("li");
                 listItem.id = a;
-                const inText = document.createElement("input");
-                inText.type = "text";
+                const selectOptions = document.createElement("select");
+                selectOptions.setAttribute("onchange", "calcEADXP()");
+
+                //Create select options for 3 different Extraordinary Damage Attacks
+                const selectOption1 = document.createElement("option");
+                selectOption1.innerHTML = "Damage";
+                selectOption1.value = 2;
+                const selectOption2 = document.createElement("option");
+                selectOption2.innerHTML = "Rotting";
+                selectOption2.value = 2;
+                const selectOption3 = document.createElement("option");
+                selectOption3.innerHTML = "Rusting";
+                selectOption3.value = 2;
                 const inText2 = document.createElement("input");
                 inText2.type = "number";
                 inText2.min = 1;
-                inText2.max = 10;
+                inText2.max = 5;
                 inText2.step = 1;
                 inText2.value = 1;
                 inText2.setAttribute("onchange", "calcEADXP()");
@@ -1212,7 +1275,12 @@
                 spn.setAttribute("onclick", a2);
                 spn.innerHTML= "X";
 
-                listItem.appendChild(inText);
+                //Create list of options
+                selectOptions.appendChild(selectOption1);
+                selectOptions.appendChild(selectOption2);
+                selectOptions.appendChild(selectOption3);
+
+                listItem.appendChild(selectOptions);
                 listItem.appendChild(inText2);
                 listItem.appendChild(spn);
 
@@ -1225,7 +1293,7 @@
                 var ead = document.querySelectorAll("#p_eadList li");
                 var eadxp = 0;
                 for (e = 0; e < ead.length; e++) {
-                    eadxp += Number(ead[e].childNodes[1].value);
+                    eadxp += Number(ead[e].childNodes[1].value) * 2;
                 }
                 _$.set("eadTotalXP", eadxp);
                 cXP();
@@ -1307,7 +1375,7 @@
                 const inText2 = document.createElement("input");
                 inText2.type = "number";
                 inText2.min = 1;
-                inText2.max = 10;
+                inText2.max = 5;
                 inText2.step = 1;
                 inText2.value = 1;
                 inText2.setAttribute("onchange", "calcEASXP()");

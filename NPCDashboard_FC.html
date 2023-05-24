@@ -17,7 +17,8 @@
 
             var NPC_special = 0;
             var caIndex = 0;
-            var eaIndex = 0;
+            var eadIndex = 0;
+            var easIndex = 0;
             var naIndex = 0;
             var spellIndex = 0;
             var featIndex = 0;
@@ -754,7 +755,8 @@
                 var attackPoints = 0;
 
                 var na = Number(_$.html("naTotalXP"));
-                var ea = Number(_$.html("eaTotalXP"));
+                var ea = Number(_$.html("eadTotalXP")) + Number(_$.html("easTotalXP"));
+                _$.set("eaTotalXP", ea);
                 attackPoints = na + ea;
 
                 _$.set("attackXPTotal", attackPoints);
@@ -1190,9 +1192,10 @@
                 calcNAXP();
             }
 
-            function addListItem_EA() {
-                var a = "ea" + eaIndex;
-                var a2 = "removeListItem_EA(" + "'" + a + "'" + ");";
+            //Extraordinary Damage Attack
+            function addListItem_EAD() {
+                var a = "ead" + eadIndex;
+                var a2 = "removeListItem_EAD(" + "'" + a + "'" + ");";
                 const listItem = document.createElement("li");
                 listItem.id = a;
                 const inText = document.createElement("input");
@@ -1203,7 +1206,7 @@
                 inText2.max = 9;
                 inText2.step = 1;
                 inText2.value = 0;
-                inText2.setAttribute("onchange", "calcEAXP()");
+                inText2.setAttribute("onchange", "calcEADXP()");
                 //Add other attributes here
                 const spn = document.createElement("span");
                 spn.setAttribute("onclick", a2);
@@ -1213,25 +1216,70 @@
                 listItem.appendChild(inText2);
                 listItem.appendChild(spn);
 
-                document.getElementById("p_eaList").appendChild(listItem);
-                eaIndex += 1;
-                calcEAXP();
+                document.getElementById("p_eadList").appendChild(listItem);
+                eadIndex += 1;
+                calcEADXP();
             }
 
-            function calcEAXP() {
-                var ea = document.querySelectorAll("#p_eaList li");
-                var eaxp = 0;
-                for (e = 0; e < ea.length; e++) {
-                    eaxp += Number(ea[e].childNodes[1].value);
+            function calcEADXP() {
+                var ead = document.querySelectorAll("#p_eadList li");
+                var eadxp = 0;
+                for (e = 0; e < ead.length; e++) {
+                    eadxp += Number(ead[e].childNodes[1].value);
                 }
-                _$.set("eaTotalXP", eaxp);
+                _$.set("eadTotalXP", eadxp);
                 cXP();
             }
 
-            function removeListItem_EA(item) {
+            function removeListItem_EAD(item) {
                 document.getElementById(item).remove();
-                var ea = document.querySelectorAll("#p_eaList li");
-                calcEAXP();
+                var ead = document.querySelectorAll("#p_eadList li");
+                calcEADXP();
+            }
+
+            //Extraordinary Save Attack
+            function addListItem_EAS() {
+                var a = "eas" + easIndex;
+                var a2 = "removeListItem_EAS(" + "'" + a + "'" + ");";
+                const listItem = document.createElement("li");
+                listItem.id = a;
+                const inText = document.createElement("input");
+                inText.type = "text";
+                const inText2 = document.createElement("input");
+                inText2.type = "number";
+                inText2.min = 0;
+                inText2.max = 9;
+                inText2.step = 1;
+                inText2.value = 0;
+                inText2.setAttribute("onchange", "calcEASXP()");
+                //Add other attributes here
+                const spn = document.createElement("span");
+                spn.setAttribute("onclick", a2);
+                spn.innerHTML= "X";
+
+                listItem.appendChild(inText);
+                listItem.appendChild(inText2);
+                listItem.appendChild(spn);
+
+                document.getElementById("p_easList").appendChild(listItem);
+                easIndex += 1;
+                calcEASXP();
+            }
+
+            function calcEASXP() {
+                var eas = document.querySelectorAll("#p_easList li");
+                var easxp = 0;
+                for (e = 0; e < eas.length; e++) {
+                    easxp += Number(eas[e].childNodes[1].value);
+                }
+                _$.set("easTotalXP", easxp);
+                cXP();
+            }
+
+            function removeListItem_EAS(item) {
+                document.getElementById(item).remove();
+                var eas = document.querySelectorAll("#p_easList li");
+                calcEASXP();
             }
 
             function calcDefense() {
@@ -1922,9 +1970,14 @@
 
                 <h3 onclick="toggleSection('ea_list'); cXP()">Extraordinary Attacks (<span id="eaTotalXP">0</span>)</h3>
                 <div id="ea_list" style="display:none">
-                    <ul id="p_eaList">
+                    <p>Extraordinary Damage Attacks (<span id="eadTotalXP">0</span>)</p>
+                    <ul id="p_eadList">
                     </ul>
-                    <input type="button" value="Add Extraordinary Attack" onclick="addListItem_EA()" />
+                    <input type="button" value="Add Extraordinary Damage Attack" onclick="addListItem_EAD()" />
+                    <p>Extraordinary Save Attacks (<span id="easTotalXP">0</span>)</p>
+                    <ul id="p_easList">
+                    </ul>
+                    <input type="button" value="Add Extraordinary Save Attack" onclick="addListItem_EAS()" />
                 </div>
             </div>
         <h2 onclick="toggleSection('step4')">Step 4: Gear and Treasure (<span id="gearXPTotal">0</span>)</h2>

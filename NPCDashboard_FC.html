@@ -1284,16 +1284,65 @@
                 listItem.appendChild(inText2);
                 listItem.appendChild(spn);
 
+                //Add upgrades checkboxes
+                const upgrades = document.createElement("form");
+                const createUpgrade = function(id, label) {
+                    const upgrade = document.createElement("input");
+                    upgrade.type = "checkbox";
+                    upgrade.id = `${id}${eadIndex}`;
+                    upgrade.name = `Upgrades${eadIndex}`;
+                    upgrade.value = 2;
+                    upgrade.onchange = calcEADXP;
+
+                    const upgradeLabel = document.createElement("label");
+                    upgradeLabel.setAttribute("for", `${id}${eadIndex}`);
+                    upgradeLabel.innerHTML = label;
+
+                    return [upgrade, upgradeLabel];
+                }
+
+                const [up1, aligned] = createUpgrade("aligned", "Aligned");
+                const [up2, ad] = createUpgrade("ad", "Alternate Damage");
+                const [up3, ap] = createUpgrade("ap", "Armor-Piercing");
+                const [up4, bleed] = createUpgrade("bleed", "Bleed");
+                const [up5, diseased] = createUpgrade("diseased", "Diseased");
+                const [up6, keen] = createUpgrade("keen", "Keen");
+                const [up7, venomous] = createUpgrade("venomous", "Venomous");
+
+                listItem.appendChild(selectOptions);
+                listItem.appendChild(inText2);
+                listItem.appendChild(spn);
+                //Prepare the upgrades list
+                upgrades.appendChild(up1);
+                upgrades.appendChild(aligned);
+                upgrades.appendChild(up2);
+                upgrades.appendChild(ad);
+                upgrades.appendChild(up3);
+                upgrades.appendChild(ap);
+                upgrades.appendChild(up4);
+                upgrades.appendChild(bleed);
+                upgrades.appendChild(up5);
+                upgrades.appendChild(diseased);
+                upgrades.appendChild(up6);
+                upgrades.appendChild(keen);
+                upgrades.appendChild(up7);
+                upgrades.appendChild(venomous);
+
+                listItem.appendChild(upgrades);
+
                 document.getElementById("p_eadList").appendChild(listItem);
                 eadIndex += 1;
                 calcEADXP();
             }
 
             function calcEADXP() {
-                var ead = document.querySelectorAll("#p_eadList li");
                 var eadxp = 0;
-                for (e = 0; e < ead.length; e++) {
-                    eadxp += Number(ead[e].childNodes[1].value) * 2;
+                for(let exDamAttack of document.querySelectorAll("#p_eadList li")) { // for each extraordinary damage attack
+                    const grade = exDamAttack.querySelector("input[type='number']").value * 2; // get the number from the grade and * 2
+                    eadxp += [...exDamAttack.querySelectorAll("input[type='checkbox']:checked")] // get all the checked children of the extraordinary damage attack
+                        .map(checkbox => Number(checkbox.value)) // get the value out of the checkbox
+                        .reduce((accumulator, currentValue) => accumulator + currentValue, grade); // and sum them all up
+
                 }
                 _$.set("eadTotalXP", eadxp);
                 cXP();

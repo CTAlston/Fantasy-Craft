@@ -1301,6 +1301,43 @@
                     return [upgrade, upgradeLabel];
                 }
 
+                const createAreaUpgrade = function(id, label) {
+                    const upgrade = document.createElement("input");
+                    upgrade.type = "checkbox";
+                    upgrade.id = `${id}${eadIndex}`;
+                    upgrade.name = `Upgrades${eadIndex}`;
+                    upgrade.value = 0;
+                    upgrade.onchange = calcEADXP;
+
+                    const area = document.createElement("select");
+                    area.value = 0;
+                    //Create select options for 18 different Extraordinary Save Attacks
+                    const selectOption1 = document.createElement("option");
+                    selectOption1.innerHTML = "Aura";
+                    selectOption1.value = 3;
+                    const selectOption2 = document.createElement("option");
+                    selectOption2.innerHTML = "Beam";
+                    selectOption2.value = 2;
+                    const selectOption3 = document.createElement("option");
+                    selectOption3.innerHTML = "Blast";
+                    selectOption3.value = 2;
+                    const selectOption4 = document.createElement("option");
+                    selectOption4.innerHTML = "Cone";
+                    selectOption4.value = 4;
+                    const selectOption5 = document.createElement("option");
+                    selectOption5.innerHTML = "Gaze";
+                    selectOption5.value = 3;
+                    const selectOption6 = document.createElement("option");
+                    selectOption6.innerHTML = "Ray";
+                    selectOption6.value = 5;
+
+                    const upgradeLabel = document.createElement("label");
+                    upgradeLabel.setAttribute("for", `${id}${eadIndex}`);
+                    upgradeLabel.innerHTML = label;
+
+                    return [upgrade, upgradeLabel];
+                }
+
                 const [up1, aligned] = createUpgrade("aligned", "Aligned");
                 const [up2, ad] = createUpgrade("ad", "Alternate Damage");
                 const [up3, ap] = createUpgrade("ap", "Armor-Piercing");
@@ -1490,12 +1527,14 @@
     <body onload="cXP()">
         <h1>NPC Dashboard</h1>
         <p>Total XP: <span id="xp_num">0</span></p>
+        <!--
         <form>
             <input type="radio" id="edit" onclick="togglePlay()" name="playToggle" checked>
             <label for="edit">Edit</label>
             <input type="radio" id="play" onclick="togglePlay()" name="playToggle">
             <label for="play">Play</label>
         </form>
+        -->
         <div id="editSection">
 
         <h2 onclick="toggleSection('step0')">Step 0: Concept</h2>
@@ -2212,13 +2251,14 @@
                     <option id="tl20" name="tl20" value="20">Threat Level 20</option>
                 </select>
             </form>
+            
             <form>
                 <input type="radio" id="t_standard" onclick="setStandard()" name="toggleStandard" checked>
                 <label for="edit">Standard</label>
                 <input type="radio" id="t_special" onclick="setSpecial()" name="toggleStandard">
                 <label for="play">Special</label>
             </form>
-
+            
             <h3>Attributes</h3>
             <p> Str: <span id="p_str">18</span><br>
                 Dex: <span id="p_dex">9</span><br>

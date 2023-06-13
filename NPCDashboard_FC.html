@@ -290,19 +290,11 @@
             
             function calcTypeXP() {
                 var typePoints = 0;
-                if (_$.checked("ty_animal")) { typePoints += _$.num("ty_animal");}
-                if (_$.checked("ty_beast")) { typePoints += _$.num("ty_beast");}
-                if (_$.checked("ty_construct")) { typePoints += _$.num("ty_construct");}
-                if (_$.checked("ty_elemental")) { typePoints += _$.num("ty_elemental");}
-                if (_$.checked("ty_fey")) { typePoints += _$.num("ty_fey");}
-                if (_$.checked("ty_folk")) { typePoints += _$.num("ty_folk");}
-                if (_$.checked("ty_horror")) { typePoints += _$.num("ty_horror");}
-                if (_$.checked("ty_ooze")) { typePoints += _$.num("ty_ooze");}
-                if (_$.checked("ty_outsider")) { typePoints += _$.num("ty_outsider");}
-                if (_$.checked("ty_plant")) { typePoints += _$.num("ty_plant");}
-                if (_$.checked("ty_spirit")) { typePoints += _$.num("ty_spirit");}
-                if (_$.checked("ty_undead")) { typePoints += _$.num("ty_undead");}
-                _$.set("typeXP", typePoints);
+                var types = ["ty_animal", "ty_beast", "ty_construct", "ty_elemental", "ty_fey", "ty_folk", "ty_horror",
+                 "ty_ooze", "ty_outsider", "ty_plant", "ty_spirit", "ty_undead"];
+                for(var type of types) {
+                    if(_$.checked(type)) { typePoints += _$.num(type) }
+                }
                 return typePoints;
             }
 
@@ -1305,44 +1297,7 @@
                     upgradeLabel.innerHTML = label;
 
                     return [upgrade, upgradeLabel];
-                }
-
-                const createAreaUpgrade = function(id, label) {
-                    const upgrade = document.createElement("input");
-                    upgrade.type = "checkbox";
-                    upgrade.id = `${id}${eadIndex}`;
-                    upgrade.name = `Upgrades${eadIndex}`;
-                    upgrade.value = 0;
-                    upgrade.onchange = calcEADXP;
-
-                    const area = document.createElement("select");
-                    area.value = 0;
-                    //Create select options for 18 different Extraordinary Save Attacks
-                    const selectOption1 = document.createElement("option");
-                    selectOption1.innerHTML = "Aura";
-                    selectOption1.value = 3;
-                    const selectOption2 = document.createElement("option");
-                    selectOption2.innerHTML = "Beam";
-                    selectOption2.value = 2;
-                    const selectOption3 = document.createElement("option");
-                    selectOption3.innerHTML = "Blast";
-                    selectOption3.value = 2;
-                    const selectOption4 = document.createElement("option");
-                    selectOption4.innerHTML = "Cone";
-                    selectOption4.value = 4;
-                    const selectOption5 = document.createElement("option");
-                    selectOption5.innerHTML = "Gaze";
-                    selectOption5.value = 3;
-                    const selectOption6 = document.createElement("option");
-                    selectOption6.innerHTML = "Ray";
-                    selectOption6.value = 5;
-
-                    const upgradeLabel = document.createElement("label");
-                    upgradeLabel.setAttribute("for", `${id}${eadIndex}`);
-                    upgradeLabel.innerHTML = label;
-
-                    return [upgrade, upgradeLabel];
-                }
+                }                
 
                 const [up1, aligned] = createUpgrade("aligned", "Aligned");
                 const [up2, ad] = createUpgrade("ad", "Alternate Damage");
@@ -1396,6 +1351,13 @@
                 var ead = document.querySelectorAll("#p_eadList li");
                 calcEADXP();
             }
+
+            function calcAreaXP(id) {
+                document.getElementById(id).value = document.getElementById(id).nextSibling.value;
+                calcEASXP();
+            }
+
+            
 
             //Extraordinary Save Attack
             function addListItem_EAS() {
@@ -1496,11 +1458,82 @@
                 selectOptions.appendChild(selectOption17);
                 selectOptions.appendChild(selectOption18);
 
+                //Add upgrades checkboxes
+                const upgrades = document.createElement("form");
+                const createUpgrade = function(id, label) {
+                    const upgrade = document.createElement("input");
+                    upgrade.type = "checkbox";
+                    upgrade.id = `${id}${easIndex}`;
+                    upgrade.name = `Upgrades${easIndex}`;
+                    upgrade.value = 2;
+                    upgrade.onchange = calcEASXP;
+
+                    const upgradeLabel = document.createElement("label");
+                    upgradeLabel.setAttribute("for", `${id}${easIndex}`);
+                    upgradeLabel.innerHTML = label;
+
+                    return [upgrade, upgradeLabel];
+                }
+                
+                const createAreaUpgrade = function(id, label) {
+                    const upgrade = document.createElement("input");
+                    upgrade.type = "checkbox";
+                    upgrade.id = `${id}${easIndex}`;
+                    upgrade.name = `Upgrades${easIndex}`;
+                    upgrade.value = 3;
+                    upgrade.setAttribute("onchange", "calcAreaXP('" + upgrade.id + "')");
+
+                    const area = document.createElement("select");
+                    //Create select options for 6 different Extraordinary Save Attacks
+                    const selectOption1 = document.createElement("option");
+                    selectOption1.innerHTML = "Aura";
+                    selectOption1.value = 3;
+                    const selectOption2 = document.createElement("option");
+                    selectOption2.innerHTML = "Beam";
+                    selectOption2.value = 2;
+                    const selectOption3 = document.createElement("option");
+                    selectOption3.innerHTML = "Blast";
+                    selectOption3.value = 2;
+                    const selectOption4 = document.createElement("option");
+                    selectOption4.innerHTML = "Cone";
+                    selectOption4.value = 4;
+                    const selectOption5 = document.createElement("option");
+                    selectOption5.innerHTML = "Gaze";
+                    selectOption5.value = 3;
+                    const selectOption6 = document.createElement("option");
+                    selectOption6.innerHTML = "Ray";
+                    selectOption6.value = 5;
+
+                    //Assemble area options
+                    area.appendChild(selectOption1);
+                    area.appendChild(selectOption2);
+                    area.appendChild(selectOption3);
+                    area.appendChild(selectOption4);
+                    area.appendChild(selectOption5);
+                    area.appendChild(selectOption6);
+                    area.setAttribute("onchange", "calcAreaXP('" + upgrade.id + "')");
+
+                    return [upgrade, area];
+                }
+
+                const [up1, sa] = createUpgrade("sa", "Supernatural Attack");
+                const [up2, ar] = createAreaUpgrade("ar", "Area");
+
+                listItem.appendChild(selectOptions);
+                listItem.appendChild(inText2);
+                listItem.appendChild(spn);
+                //Prepare the upgrades list
+                upgrades.appendChild(up1);
+                upgrades.appendChild(sa);
+                upgrades.appendChild(up2);
+                upgrades.appendChild(ar);                
+
                 //Append pieces of the EAS option
                 listItem.appendChild(inText);
                 listItem.appendChild(selectOptions);
                 listItem.appendChild(inText2);
                 listItem.appendChild(spn);
+                listItem.appendChild(upgrades);
 
                 document.getElementById("p_easList").appendChild(listItem);
                 easIndex += 1;
@@ -1510,8 +1543,12 @@
             function calcEASXP() {
                 var eas = document.querySelectorAll("#p_easList li");
                 var easxp = 0;
-                for (e = 0; e < eas.length; e++) {
-                    easxp += (Number(eas[e].childNodes[1].value) * (Number(eas[e].childNodes[2].value)));
+                for(let exSavAttack of document.querySelectorAll("#p_easList li")) { // for each extraordinary save attack
+                    const grade = Number(exSavAttack.querySelector("input[type='number']").value) * Number(exSavAttack.querySelector("select").value); // get the number from the grade and
+                    easxp += [...exSavAttack.querySelectorAll("input[type='checkbox']:checked")] // get all the checked children of the extraordinary damage attack
+                        .map(checkbox => Number(checkbox.value)) // get the value out of the checkbox
+                        .reduce((accumulator, currentValue) => accumulator + currentValue, grade); // and sum them all up
+
                 }
                 _$.set("easTotalXP", easxp);
                 cXP();

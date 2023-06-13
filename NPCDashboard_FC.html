@@ -1353,7 +1353,14 @@
             }
 
             function calcAreaXP(id) {
-                document.getElementById(id).value = document.getElementById(id).nextSibling.value;
+                var i = id + "Area";
+                if (document.getElementById(id).nextSibling.selectedIndex == 4) {
+                    document.getElementById(id).value = 3;
+                }
+                else {
+                document.getElementById(id).value = (Number(document.getElementById(id).nextSibling.value) * Number(document.getElementById(i).value));
+                }
+
                 calcEASXP();
             }
 
@@ -1499,10 +1506,20 @@
                     selectOption4.value = 4;
                     const selectOption5 = document.createElement("option");
                     selectOption5.innerHTML = "Gaze";
-                    selectOption5.value = 3;
+                    selectOption5.value = 0;
                     const selectOption6 = document.createElement("option");
                     selectOption6.innerHTML = "Ray";
                     selectOption6.value = 5;
+
+                    const areaSize = document.createElement("input");
+                    areaSize.type = "number";
+                    areaSize.id = `${id}${easIndex}Area`;
+                    areaSize.type = "number";
+                    areaSize.min = 1;
+                    areaSize.max = 5;
+                    areaSize.step = 1;
+                    areaSize.value = 1;
+                    areaSize.setAttribute("onchange", "calcAreaXP('" + upgrade.id + "')");
 
                     //Assemble area options
                     area.appendChild(selectOption1);
@@ -1513,11 +1530,11 @@
                     area.appendChild(selectOption6);
                     area.setAttribute("onchange", "calcAreaXP('" + upgrade.id + "')");
 
-                    return [upgrade, area];
+                    return [upgrade, area, areaSize];
                 }
 
                 const [up1, sa] = createUpgrade("sa", "Supernatural Attack");
-                const [up2, ar] = createAreaUpgrade("ar", "Area");
+                const [up2, ar, ars] = createAreaUpgrade("ar", "Area", "Area Size");
 
                 listItem.appendChild(selectOptions);
                 listItem.appendChild(inText2);
@@ -1526,7 +1543,8 @@
                 upgrades.appendChild(up1);
                 upgrades.appendChild(sa);
                 upgrades.appendChild(up2);
-                upgrades.appendChild(ar);                
+                upgrades.appendChild(ar);
+                upgrades.appendChild(ars);                
 
                 //Append pieces of the EAS option
                 listItem.appendChild(inText);
